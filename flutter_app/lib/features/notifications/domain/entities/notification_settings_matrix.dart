@@ -112,7 +112,8 @@ class NotificationSettingsMatrix {
   }
 
   NotificationCategoryChannels channel(NotificationMatrixCategory category) {
-    final resolved = categories[category] ??
+    final resolved =
+        categories[category] ??
         NotificationSettingsMatrix.defaults().categories[category];
     if (resolved != null) return resolved;
     if (category == NotificationMatrixCategory.organisationFoster) {

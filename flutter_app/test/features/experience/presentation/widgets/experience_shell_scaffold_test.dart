@@ -1067,5 +1067,4 @@ void main() {
       expect(find.byType(PetCareNavigationSidebar), findsOneWidget);
     });
   });
-
 }

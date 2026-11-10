@@ -34,10 +34,7 @@ class ExperienceInviteScreen extends ConsumerWidget {
               const SizedBox(height: 16),
               Text(l.invite, style: Theme.of(context).textTheme.headlineSmall),
               const SizedBox(height: 8),
-              Text(
-                l.experiencePetCareInviteHint,
-                textAlign: TextAlign.center,
-              ),
+              Text(l.experiencePetCareInviteHint, textAlign: TextAlign.center),
               const SizedBox(height: 24),
               FilledButton(
                 onPressed: () => context.push('/add'),

@@ -61,12 +61,15 @@ class ExperienceShellScaffold extends ConsumerWidget {
     final shellTheme = themeForAppExperience(theme, AppExperience.petCare);
     final isRoot = _isRoot();
     final viewportWidth = MediaQuery.sizeOf(context).width;
-    final usesPetCarePrimaryNavigation =
-        PetCarePrimaryDestinations.isCompact(viewportWidth);
-    final usesPetCareNavigationSidebar =
-        PetCarePrimaryDestinations.isExpanded(viewportWidth);
-    final usesPetCareNavigationRail =
-        PetCarePrimaryDestinations.isMedium(viewportWidth);
+    final usesPetCarePrimaryNavigation = PetCarePrimaryDestinations.isCompact(
+      viewportWidth,
+    );
+    final usesPetCareNavigationSidebar = PetCarePrimaryDestinations.isExpanded(
+      viewportWidth,
+    );
+    final usesPetCareNavigationRail = PetCarePrimaryDestinations.isMedium(
+      viewportWidth,
+    );
     final usesPetCareLeadingNav =
         usesPetCareNavigationRail || usesPetCareNavigationSidebar;
     final usesCompactShellWithoutHamburger = usesPetCarePrimaryNavigation;
@@ -83,11 +86,9 @@ class ExperienceShellScaffold extends ConsumerWidget {
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
         MediaQuery.textScalerOf(context).scale(14) > 18;
-    final suppressSectionRootAppBarTitle =
-        usesPetCareLeadingNav && isRoot;
+    final suppressSectionRootAppBarTitle = usesPetCareLeadingNav && isRoot;
     final usesDesktopContentHeader =
-        usesPetCareLeadingNav &&
-        !suppressSectionRootAppBarTitle;
+        usesPetCareLeadingNav && !suppressSectionRootAppBarTitle;
     final showTitle =
         screenTitle != null &&
         !hideTitleForAccessibleCompactHeader &&
@@ -126,11 +127,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   onPressed: () => _onBack(context),
                 )
               : null)
-        : _buildCompactShellLeading(
-            context: context,
-            l: l,
-            isRoot: isRoot,
-          );
+        : _buildCompactShellLeading(context: context, l: l, isRoot: isRoot);
 
     return Theme(
       data: shellTheme,
