@@ -1,44 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
-import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
-/// Cross-experience surface for administrative actions (accept/decline, etc.).
-///
-/// Opened from notification bell deep links when a pending object needs action.
-class PendingActionsScreen extends ConsumerWidget {
+/// Legacy deep-link target for frozen foster/adoption/custody notifications.
+class PendingActionsScreen extends StatelessWidget {
   const PendingActionsScreen({super.key, this.focus});
 
-  /// Optional section focus from query param (`foster`, `adoption`, `custody`).
   final String? focus;
 
-  static const _validFocus = {'foster', 'adoption', 'custody'};
-
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
-    final effectiveFocus = _validFocus.contains(focus) ? focus : null;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l.notificationActionNeeded)),
       body: ListView(
         key: const Key('pending_actions_screen'),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(24),
         children: [
-          if (_showsSection('foster', effectiveFocus))
-            PendingFosterPlacementsSection(),
-          if (_showsSection('adoption', effectiveFocus))
-            PendingAdoptionPlacementsSection(),
-          if (_showsSection('custody', effectiveFocus))
-            PendingCustodyTransfersSection(),
+          Icon(
+            Icons.inbox_outlined,
+            size: 48,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            l.pendingActionsUnavailableTitle,
+            style: theme.textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l.pendingActionsUnavailableBody,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 24),
+          FilledButton(
+            key: const Key('pending_actions_open_inbox'),
+            onPressed: () => context.go('/notifications'),
+            child: Text(l.pendingActionsOpenInbox),
+          ),
         ],
       ),
     );
-  }
-
-  bool _showsSection(String section, String? focus) {
-    if (focus == null || focus.isEmpty) return true;
-    return focus == section;
   }
 }

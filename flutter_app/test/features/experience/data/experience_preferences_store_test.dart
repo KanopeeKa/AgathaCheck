@@ -37,7 +37,7 @@ void main() {
     test('persists last app section wire values', () async {
       final store = ExperiencePreferencesStore(prefs);
       await store.writeLastAppSection(AppExperience.organization);
-      expect(store.readLastAppSection(), AppExperience.organization);
+      expect(store.readLastAppSection(), AppExperience.petCare);
       await store.writeLastAppSection(AppExperience.petCare);
       expect(store.readLastAppSection(), AppExperience.petCare);
       expect(store.readDefaultExperience(), isNull);

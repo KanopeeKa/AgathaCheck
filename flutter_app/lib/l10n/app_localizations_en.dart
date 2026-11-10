@@ -6339,6 +6339,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notificationActionNeeded => 'Action needed';
 
   @override
+  String get pendingActionsUnavailableTitle => 'No actions here';
+
+  @override
+  String get pendingActionsUnavailableBody =>
+      'Foster, adoption and custody approvals are no longer handled on this page. Open your inbox for people updates and Agatha suggestions.';
+
+  @override
+  String get pendingActionsOpenInbox => 'Open inbox';
+
+  @override
   String get notificationRead => 'Read';
 
   @override

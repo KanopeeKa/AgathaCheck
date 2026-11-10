@@ -2,19 +2,11 @@ part of 'pet_form_screen.dart';
 
 extension _PetFormScreenActions on _PetFormScreenState {
   void _navigateAfterForm() {
-    if (widget.initialOrgId != null) {
-      context.go('/organizations/${widget.initialOrgId}');
-      return;
-    }
     if (_isEditing && widget.petId != null) {
       goToPetDetail(context, widget.petId!);
       return;
     }
-    if (_controller.state.selectedOrgId != null) {
-      context.go('/organizations/${_controller.state.selectedOrgId}');
-      return;
-    }
-    context.go('/');
+    context.go(AppExperience.petCare.homePath());
   }
 
   Future<bool> _confirmDiscard() async {

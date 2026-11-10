@@ -5,13 +5,10 @@ import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/health_tracking.dart';
 import '../../../../pet_profile/pet_profile.dart';
 import '../../pet_profile/screens/widgets/manage_events_filters.dart';
-import '../../pet_profile/screens/widgets/org_events_collection_filter.dart';
 import '../../pet_profile/screens/widgets/pet_care_global_events_filters.dart';
 
 import 'global_events_list.dart';
 export 'global_events_list.dart' show GlobalEventsList;
-export '../../pet_profile/screens/widgets/org_events_collection_filter.dart'
-    show OrgGlobalEventsFilters;
 export '../../pet_profile/screens/widgets/pet_care_global_events_filters.dart'
     show PetCareEventsCohortFilter, PetCareGlobalEventsFilters;
 
@@ -27,28 +24,6 @@ final guardianGlobalEventHistoriesProvider =
       final pets = ref.watch(petListProvider).valueOrNull ?? [];
       final shellPetIds = PetListController()
           .guardianShellPets(pets)
-          .map((pet) => pet.id)
-          .toSet();
-      final scoped = entries.where((e) => shellPetIds.contains(e.petId));
-      final histories = <String, List<HealthHistoryEntry>>{};
-      await Future.wait(
-        scoped.map((entry) async {
-          histories[entry.id] = await ref.read(
-            entryHistoryProvider(entry.id).future,
-          );
-        }),
-      );
-      return histories;
-    });
-
-/// Histories for org shell-pet entries (org events list).
-final orgGlobalEventHistoriesProvider =
-    FutureProvider<Map<String, List<HealthHistoryEntry>>>((ref) async {
-      final entries =
-          ref.watch(healthEntriesNotifierProvider).valueOrNull ?? [];
-      final pets = ref.watch(petListProvider).valueOrNull ?? [];
-      final shellPetIds = PetListController()
-          .orgShellPets(pets)
           .map((pet) => pet.id)
           .toSet();
       final scoped = entries.where((e) => shellPetIds.contains(e.petId));
@@ -93,50 +68,6 @@ List<Pet> guardianGlobalEventsPets(
   return pets;
 }
 
-/// Returns the subset of [shellPets] that match pet-id and org-name filters.
-List<Pet> orgGlobalEventsPets(
-  List<Pet> shellPets,
-  OrgGlobalEventsFilters filters,
-) {
-  var pets = shellPets;
-
-  if (filters.orgNames.isNotEmpty) {
-    pets = pets
-        .where(
-          (pet) =>
-              pet.organizationName != null &&
-              filters.orgNames.contains(pet.organizationName),
-        )
-        .toList();
-  }
-
-  if (filters.petIds.isNotEmpty) {
-    pets = pets.where((pet) => filters.petIds.contains(pet.id)).toList();
-  }
-
-  return pets;
-}
-
-/// Filters [entries] to the scoped org pets and applied event filters.
-List<HealthEntry> filterOrgGlobalEvents(
-  List<HealthEntry> entries,
-  List<Pet> scopedPets,
-  OrgGlobalEventsFilters filters,
-  Map<String, List<HealthHistoryEntry>> histories,
-) {
-  final petIds = scopedPets.map((pet) => pet.id).toSet();
-  return entries
-      .where((entry) => petIds.contains(entry.petId))
-      .where(
-        (entry) => matchesManageEventsFilters(
-          entry,
-          filters.eventFilters,
-          histories[entry.id] ?? const [],
-        ),
-      )
-      .toList();
-}
-
 /// Filters and sorts [entries] to the scoped pets and applied event filters.
 List<HealthEntry> filterPetCareGlobalEvents(
   List<HealthEntry> entries,
@@ -145,10 +76,6 @@ List<HealthEntry> filterPetCareGlobalEvents(
   Map<String, List<HealthHistoryEntry>> histories,
 ) {
   final petIds = scopedPets.map((pet) => pet.id).toSet();
-  // The provider response is already the server-authoritative order for this
-  // destination. Apply the manage-event predicates without calling
-  // filterAndSortManageEvents, whose dedicated pet-management screens
-  // intentionally impose a different local sort.
   return entries
       .where((entry) => petIds.contains(entry.petId))
       .where(
@@ -165,7 +92,7 @@ List<HealthEntry> filterPetCareGlobalEvents(
 // Screen widget
 // ---------------------------------------------------------------------------
 
-/// Guardian events screen (`/g/events`) — unified list for all shell pets.
+/// Guardian events screen (`/pc/events`) — unified list for all shell pets.
 class PetCareDueEventsScreen extends ConsumerWidget {
   const PetCareDueEventsScreen({super.key});
 
@@ -188,33 +115,6 @@ class PetCareDueEventsScreen extends ConsumerWidget {
   }
 }
 
-/// Org events screen (`/o/events`) — unified list for org inventory pets.
-class OrgDueEventsScreen extends ConsumerWidget {
-  const OrgDueEventsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l = AppLocalizations.of(context)!;
-    final petsAsync = ref.watch(petListProvider);
-
-    return petsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => _PetLoadErrorView(
-        message: l.careLoadError,
-        onRetry: () => ref.invalidate(petListProvider),
-      ),
-      data: (allPets) {
-        final shellPets = PetListController().orgShellPets(allPets);
-        return GlobalEventsList(
-          shellPets: shellPets,
-          scope: GlobalEventsListScope.organization,
-        );
-      },
-    );
-  }
-}
-
-/// Localized, retryable pet-load error shown in [PetCareDueEventsScreen].
 class _PetLoadErrorView extends StatelessWidget {
   const _PetLoadErrorView({required this.message, required this.onRetry});
 
@@ -246,101 +146,6 @@ class _PetLoadErrorView extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// Filter bar widget
-// ---------------------------------------------------------------------------
-
-/// Pet and cohort filter chips for the global guardian events list.
-@Deprecated('Use PetCareGlobalEventsCollectionFilterBar')
-class PetCareGlobalEventsFilterBar extends StatelessWidget {
-  const PetCareGlobalEventsFilterBar({
-    super.key,
-    required this.shellPets,
-    required this.filters,
-    required this.onChanged,
-  });
-
-  final List<Pet> shellPets;
-  final PetCareGlobalEventsFilters filters;
-  final ValueChanged<PetCareGlobalEventsFilters> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    final sortedPets = [...shellPets]
-      ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _ChipRow(
-            children: [
-              _cohortChip(PetCareEventsCohortFilter.all, l.all),
-              _cohortChip(PetCareEventsCohortFilter.myPets, l.myPets),
-              _cohortChip(
-                PetCareEventsCohortFilter.fosterPets,
-                l.myFosteredPets,
-              ),
-            ],
-          ),
-          if (sortedPets.length > 1) ...[
-            const SizedBox(height: 8),
-            _ChipRow(
-              children: [
-                FilterChip(
-                  key: const Key('global_events_pet_all'),
-                  label: Text(l.allPets),
-                  selected: filters.isPetSelected(null),
-                  onSelected: (_) => onChanged(filters.copyWith(petIds: {})),
-                ),
-                for (final pet in sortedPets)
-                  FilterChip(
-                    key: Key('global_events_pet_${pet.id}'),
-                    label: Text(pet.name),
-                    selected: filters.isPetSelected(pet.id),
-                    onSelected: (_) => onChanged(filters.togglePetId(pet.id)),
-                  ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _cohortChip(PetCareEventsCohortFilter value, String label) {
-    return FilterChip(
-      key: Key('global_events_cohort_${value.name}'),
-      label: Text(label),
-      selected: filters.isCohortSelected(value),
-      onSelected: (_) => onChanged(filters.toggleCohort(value)),
-    );
-  }
-}
-
-class _ChipRow extends StatelessWidget {
-  const _ChipRow({required this.children});
-
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: [
-          for (var i = 0; i < children.length; i++) ...[
-            if (i > 0) const SizedBox(width: 8),
-            children[i],
-          ],
-        ],
       ),
     );
   }

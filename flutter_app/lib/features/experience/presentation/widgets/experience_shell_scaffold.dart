@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
-
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/shell_notification_bell.dart';
 import '../../../../core/theme/app_color_tokens.dart';
@@ -14,24 +13,13 @@ import '../../domain/entities/app_experience.dart';
 import '../config/drawer_menu_config.dart';
 import '../utils/experience_theme.dart';
 import 'experience_section_drawer.dart';
-import 'experience_workspace_toggle.dart';
 import '../config/pet_care_primary_destinations.dart';
-import '../config/shelter_primary_destinations.dart';
 import 'pet_care_bottom_navigation.dart';
 import 'pet_care_navigation_rail.dart';
 import 'pet_care_navigation_sidebar.dart';
 import 'experience_shell_chrome_bar.dart';
-import 'shelter_bottom_navigation.dart';
-import 'shelter_navigation_rail.dart';
-import 'shelter_navigation_sidebar.dart';
 
-/// Shell scaffold shared by guardian and organisation experience screens.
-///
-/// Navigation reversal (phase-1-navigation.md):
-/// - Workspace toggle on section roots (`/pc/home`, `/o/orgs`, `/account`).
-/// - Back arrow on all other screens (Navigator.canPop → pop; else → section root).
-/// - Persistent bell with combined unread badge opens notification panel (endDrawer).
-/// - No Home button.
+/// Shell scaffold for Pet Care experience screens.
 class ExperienceShellScaffold extends ConsumerWidget {
   const ExperienceShellScaffold({
     super.key,
@@ -51,104 +39,56 @@ class ExperienceShellScaffold extends ConsumerWidget {
   final AppExperience experience;
   final String currentLocation;
   final Widget child;
-
-  /// Centered logo + title in the app bar (omit on screens that set their own).
   final String? screenTitle;
-
-  /// Icons/menus to the right of the title, before `|` and the notification bell.
   final List<Widget> contextualActions;
-
-  /// When [Navigator.canPop] is false, navigate here instead of the section root.
   final String? backPath;
-
-  /// When true, [backPath] is used even when [Navigator.canPop] is true.
   final bool forceBackPath;
-
-  /// When set, overrides default shell back handling (e.g. org profile returnTo).
   final VoidCallback? onBackPressed;
-
-  /// Optional key for the back button (org deep routes preserve legacy keys).
   final Key? backButtonKey;
-
   final GlobalKey<ScaffoldState>? scaffoldKey;
-
   final Widget? floatingActionButton;
 
   static const _toolbarHeight = 64.0;
 
   bool _isRoot() => DrawerMenuConfig.sectionRootPaths.contains(currentLocation);
 
-  String _sectionRoot() => switch (experience) {
-    AppExperience.petCare => '/pc/home',
-    AppExperience.organization => '/o/orgs',
-  };
+  String _sectionRoot() => AppExperience.petCare.homePath();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final shellTheme = themeForAppExperience(theme, experience);
+    final shellTheme = themeForAppExperience(theme, AppExperience.petCare);
     final isRoot = _isRoot();
-    final isOrg = experience == AppExperience.organization;
     final viewportWidth = MediaQuery.sizeOf(context).width;
-    final isPetCareExperience = experience == AppExperience.petCare;
-    final shelterNavActive =
-        isOrg && ShelterPrimaryDestinations.supports(currentLocation);
-    final usesPetCarePrimaryNavigation =
-        isPetCareExperience &&
-        PetCarePrimaryDestinations.isCompact(viewportWidth);
-    final usesPetCareNavigationSidebar =
-        isPetCareExperience &&
-        PetCarePrimaryDestinations.isExpanded(viewportWidth);
-    final usesPetCareNavigationRail =
-        isPetCareExperience &&
-        PetCarePrimaryDestinations.isMedium(viewportWidth);
+    final usesPetCarePrimaryNavigation = PetCarePrimaryDestinations.isCompact(
+      viewportWidth,
+    );
+    final usesPetCareNavigationSidebar = PetCarePrimaryDestinations.isExpanded(
+      viewportWidth,
+    );
+    final usesPetCareNavigationRail = PetCarePrimaryDestinations.isMedium(
+      viewportWidth,
+    );
     final usesPetCareLeadingNav =
         usesPetCareNavigationRail || usesPetCareNavigationSidebar;
-    final usesShelterPrimaryNavigation =
-        shelterNavActive && ShelterPrimaryDestinations.isCompact(viewportWidth);
-    final usesShelterNavigationSidebar =
-        shelterNavActive &&
-        ShelterPrimaryDestinations.isExpanded(viewportWidth);
-    final usesShelterNavigationRail =
-        shelterNavActive && ShelterPrimaryDestinations.isMedium(viewportWidth);
-    final usesShelterLeadingNav =
-        usesShelterNavigationRail || usesShelterNavigationSidebar;
-    final usesLeadingNav = usesPetCareLeadingNav || usesShelterLeadingNav;
-    final hideSectionDrawer = usesLeadingNav;
-    final usesShelterPrimaryChrome = usesShelterPrimaryNavigation;
-    // Compact bottom nav replaces the hamburger drawer; left-align brand + title.
-    final usesCompactShellWithoutHamburger =
-        usesPetCarePrimaryNavigation || usesShelterPrimaryChrome;
+    final usesCompactShellWithoutHamburger = usesPetCarePrimaryNavigation;
     final appBarColor = usesPetCarePrimaryNavigation
         ? AppColorTokens.petCarePrimary
-        : usesShelterPrimaryChrome
-        ? AppColorTokens.organizationPrimary
         : AppColorTokens.background;
-    final appBarForeground =
-        usesPetCarePrimaryNavigation || usesShelterPrimaryChrome
+    final appBarForeground = usesPetCarePrimaryNavigation
         ? AppColorTokens.inverse
         : null;
-    const showShelterWorkspace = true;
-    // Workspace toggle is frozen (zero-size); reserve only real leading chrome.
-    final leadingWidth = usesLeadingNav
+    final leadingWidth = usesPetCareLeadingNav
         ? (isRoot ? null : 56.0)
         : (isRoot ? 0.0 : 56.0);
     final hideTitleForAccessibleCompactHeader =
         isRoot &&
         MediaQuery.sizeOf(context).width < 360 &&
         MediaQuery.textScalerOf(context).scale(14) > 18;
-    final suppressSectionRootAppBarTitle =
-        (isPetCareExperience && usesPetCareLeadingNav && isRoot) ||
-        (shelterNavActive && usesShelterLeadingNav && isRoot);
+    final suppressSectionRootAppBarTitle = usesPetCareLeadingNav && isRoot;
     final usesDesktopContentHeader =
-        (isPetCareExperience &&
-            usesPetCareLeadingNav &&
-            !suppressSectionRootAppBarTitle) ||
-        (shelterNavActive &&
-            usesShelterLeadingNav &&
-            !suppressSectionRootAppBarTitle &&
-            screenTitle != null);
+        usesPetCareLeadingNav && !suppressSectionRootAppBarTitle;
     final showTitle =
         screenTitle != null &&
         !hideTitleForAccessibleCompactHeader &&
@@ -171,15 +111,14 @@ class ExperienceShellScaffold extends ConsumerWidget {
           )
         : AppLogoTitle(
             title: screenTitle!,
-            experience: experience,
+            experience: AppExperience.petCare,
             useShellLogo: usesPetCarePrimaryNavigation,
           );
     final trailingActions = _buildTrailingActions(
       theme: theme,
       usesPetCarePrimaryNavigation: usesPetCarePrimaryNavigation,
-      usesShelterPrimaryChrome: usesShelterPrimaryChrome,
     );
-    final leadingWidget = usesLeadingNav
+    final leadingWidget = usesPetCareLeadingNav
         ? (!isRoot
               ? IconButton(
                   key: backButtonKey ?? const Key('experience_back_button'),
@@ -188,24 +127,14 @@ class ExperienceShellScaffold extends ConsumerWidget {
                   onPressed: () => _onBack(context),
                 )
               : null)
-        : _buildCompactShellLeading(
-            context: context,
-            l: l,
-            isRoot: isRoot,
-            usesPetCarePrimaryNavigation: usesPetCarePrimaryNavigation,
-            usesShelterPrimaryChrome: usesShelterPrimaryChrome,
-            currentLocation: currentLocation,
-            showShelterWorkspace: showShelterWorkspace,
-          );
+        : _buildCompactShellLeading(context: context, l: l, isRoot: isRoot);
 
     return Theme(
       data: shellTheme,
       child: Scaffold(
         key: scaffoldKey,
-        backgroundColor: experience == AppExperience.petCare
-            ? AppColorTokens.background
-            : null,
-        appBar: usesLeadingNav
+        backgroundColor: AppColorTokens.background,
+        appBar: usesPetCareLeadingNav
             ? null
             : AppBar(
                 automaticallyImplyLeading: false,
@@ -223,7 +152,7 @@ class ExperienceShellScaffold extends ConsumerWidget {
                 title: titleWidget,
                 actions: trailingActions,
               ),
-        drawer: hideSectionDrawer ? null : const ExperienceSectionDrawer(),
+        drawer: usesPetCareLeadingNav ? null : const ExperienceSectionDrawer(),
         endDrawer: Consumer(
           builder: (context, ref, _) => ProviderScope(
             overrides: [
@@ -235,21 +164,11 @@ class ExperienceShellScaffold extends ConsumerWidget {
           ),
         ),
         floatingActionButton: floatingActionButton,
-        body: usesLeadingNav
+        body: usesPetCareLeadingNav
             ? Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (usesShelterLeadingNav)
-                    usesShelterNavigationSidebar
-                        ? ShelterNavigationSidebar(
-                            currentLocation: currentLocation,
-                            pinnedOrg: null,
-                          )
-                        : ShelterNavigationRail(
-                            currentLocation: currentLocation,
-                            pinnedOrg: null,
-                          )
-                  else if (usesPetCareNavigationSidebar)
+                  if (usesPetCareNavigationSidebar)
                     PetCareNavigationSidebar(currentLocation: currentLocation)
                   else
                     PetCareNavigationRail(currentLocation: currentLocation),
@@ -280,11 +199,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
             : child,
         bottomNavigationBar: usesPetCarePrimaryNavigation
             ? PetCareBottomNavigation(currentLocation: currentLocation)
-            : usesShelterPrimaryNavigation
-            ? ShelterBottomNavigation(
-                currentLocation: currentLocation,
-                pinnedOrg: null,
-              )
             : null,
       ),
     );
@@ -293,7 +207,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
   List<Widget> _buildTrailingActions({
     required ThemeData theme,
     required bool usesPetCarePrimaryNavigation,
-    required bool usesShelterPrimaryChrome,
   }) {
     return [
       if (contextualActions.isNotEmpty) ...contextualActions,
@@ -304,8 +217,6 @@ class ExperienceShellScaffold extends ConsumerWidget {
           endIndent: 18,
           color: usesPetCarePrimaryNavigation
               ? AppColorTokens.petCareLight
-              : usesShelterPrimaryChrome
-              ? AppColorTokens.organizationLight
               : theme.colorScheme.outlineVariant,
         ),
       Builder(builder: (ctx) => const ShellNotificationBell()),
@@ -327,40 +238,20 @@ class ExperienceShellScaffold extends ConsumerWidget {
     );
   }
 
-  Widget _buildCompactShellLeading({
+  Widget? _buildCompactShellLeading({
     required BuildContext context,
     required AppLocalizations l,
     required bool isRoot,
-    required bool usesPetCarePrimaryNavigation,
-    required bool usesShelterPrimaryChrome,
-    required String currentLocation,
-    required bool showShelterWorkspace,
   }) {
-    final toggle = Padding(
-      padding: EdgeInsets.only(left: isRoot ? 8 : 0),
-      child: ExperienceWorkspaceToggle(
-        currentLocation: currentLocation,
-        onDarkBackground:
-            usesPetCarePrimaryNavigation || usesShelterPrimaryChrome,
-        showShelter: showShelterWorkspace,
-      ),
-    );
-
     if (isRoot) {
-      return toggle;
+      return null;
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          key: backButtonKey ?? const Key('experience_back_button'),
-          icon: const Icon(Icons.arrow_back),
-          tooltip: l.goBack,
-          onPressed: () => _onBack(context),
-        ),
-        toggle,
-      ],
+    return IconButton(
+      key: backButtonKey ?? const Key('experience_back_button'),
+      icon: const Icon(Icons.arrow_back),
+      tooltip: l.goBack,
+      onPressed: () => _onBack(context),
     );
   }
 }

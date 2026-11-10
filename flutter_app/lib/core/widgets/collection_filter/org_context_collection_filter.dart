@@ -34,16 +34,6 @@ List<CollectionFilterDimension> buildPetListOrgContextDimensions({
           id: OrgContextCollectionFilterIds.personal,
           label: l.myPets,
         ),
-        if (showFosteredChoice)
-          CollectionFilterChoice(
-            id: OrgContextCollectionFilterIds.fostered,
-            label: l.myFosteredPets,
-          ),
-        for (final name in orgNames)
-          CollectionFilterChoice(
-            id: OrgContextCollectionFilterIds.orgByName(name),
-            label: name,
-          ),
       ],
     ),
   ];

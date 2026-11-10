@@ -6436,6 +6436,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationActionNeeded => 'Action requise';
 
   @override
+  String get pendingActionsUnavailableTitle => 'Aucune action ici';
+
+  @override
+  String get pendingActionsUnavailableBody =>
+      'Les validations famille d\'accueil, adoption et garde ne sont plus gérées sur cette page. Ouvrez votre boîte de réception pour les messages et les suggestions d\'Agatha.';
+
+  @override
+  String get pendingActionsOpenInbox => 'Ouvrir la boîte de réception';
+
+  @override
   String get notificationRead => 'Lu';
 
   @override
