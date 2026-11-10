@@ -7496,6 +7496,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not load this away plan. Try again.';
 
   @override
+  String get awayPlansLoading => 'Loading away plans';
+
+  @override
+  String get awayPlanLoading => 'Loading away plan';
+
+  @override
+  String get awayPetNamesUnavailable => 'Pet names unavailable';
+
+  @override
+  String get awayPetsLoading => 'Loading your pets';
+
+  @override
+  String get awayNoEligiblePets =>
+      'No pets are eligible for this absence. Passed-away pets are not included.';
+
+  @override
+  String get awayPlanPetsLoadError => 'We couldn\'t load pets for this plan';
+
+  @override
   String get careContextAwayPlanCareDuringTitle => 'Care during your absence';
 
   @override

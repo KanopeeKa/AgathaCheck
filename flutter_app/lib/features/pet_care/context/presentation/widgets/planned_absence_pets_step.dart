@@ -1,21 +1,31 @@
 import 'package:flutter/material.dart';
 
+import '../../../../../core/widgets/async_state/async_state.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../pet_profile/pet_profile.dart';
+
+/// How the guardian pet list resolved for the away-plan pets step.
+enum AwayPlanPetsLoadPhase { loading, error, ready }
 
 class PlannedAbsencePetsStep extends StatelessWidget {
   const PlannedAbsencePetsStep({
     super.key,
+    required this.loadPhase,
     required this.pets,
     required this.selectedPetIds,
     required this.onSelectionChanged,
     this.validationMessage,
+    this.onRetryPetsLoad,
+    this.accountHasPets = false,
   });
 
+  final AwayPlanPetsLoadPhase loadPhase;
   final List<Pet> pets;
   final Set<String> selectedPetIds;
   final ValueChanged<Set<String>> onSelectionChanged;
   final String? validationMessage;
+  final VoidCallback? onRetryPetsLoad;
+  final bool accountHasPets;
 
   @override
   Widget build(BuildContext context) {
@@ -35,9 +45,20 @@ class PlannedAbsencePetsStep extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        if (selectablePets.isEmpty)
+        if (loadPhase == AwayPlanPetsLoadPhase.loading)
+          LabelledProgress(
+            label: l.awayPetsLoading,
+            centered: false,
+          )
+        else if (loadPhase == AwayPlanPetsLoadPhase.error)
+          AsyncErrorState(
+            title: l.loadErrorYourPets,
+            onRetry: onRetryPetsLoad,
+            retryKey: const Key('planned_absence_pets_load_retry'),
+          )
+        else if (selectablePets.isEmpty)
           Text(
-            l.noPetsYet,
+            accountHasPets ? l.awayNoEligiblePets : l.noPetsYet,
             style: theme.textTheme.bodyLarge?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
             ),
