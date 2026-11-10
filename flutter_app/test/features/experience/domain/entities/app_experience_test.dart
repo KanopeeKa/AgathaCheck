@@ -9,10 +9,7 @@ void main() {
     });
 
     test('fromWire maps legacy organization wire to pet care', () {
-      expect(
-        AppExperienceWire.fromWire('organization'),
-        AppExperience.petCare,
-      );
+      expect(AppExperienceWire.fromWire('organization'), AppExperience.petCare);
     });
 
     test('fromWire dual-reads legacy guardian wire', () {
