@@ -21,7 +21,6 @@ void main() {
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
           builder: (context) {
-            final l = AppLocalizations.of(context)!;
             return Scaffold(
               body: PaywallBodyContent(
                 theme: Theme.of(context),
