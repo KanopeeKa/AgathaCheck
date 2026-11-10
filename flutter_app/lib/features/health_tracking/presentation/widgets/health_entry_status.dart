@@ -30,6 +30,8 @@ enum HealthEntryStatusKind {
   dueSoon,
   scheduled,
   neutral,
+  paused,
+  lifecycleClosed,
 }
 
 /// Accessible status colours: semantic foreground on optional subtle background.

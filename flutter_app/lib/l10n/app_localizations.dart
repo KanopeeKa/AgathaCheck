@@ -830,6 +830,36 @@ abstract class AppLocalizations {
   /// **'Other care'**
   String get allCareInactiveSection;
 
+  /// No description provided for @allCareClosedCareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed care'**
+  String get allCareClosedCareTitle;
+
+  /// No description provided for @allCareClosedCareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed care ({count})'**
+  String allCareClosedCareLink(int count);
+
+  /// No description provided for @allCareClosedCareEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No closed care yet.'**
+  String get allCareClosedCareEmpty;
+
+  /// No description provided for @careItemClosedByYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed by you'**
+  String get careItemClosedByYou;
+
+  /// No description provided for @careItemEndedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get careItemEndedStatus;
+
   /// No description provided for @eventFilterClosed.
   ///
   /// In en, this message translates to:

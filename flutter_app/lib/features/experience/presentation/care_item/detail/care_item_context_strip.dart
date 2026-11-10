@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:pet_profile_app/features/experience/presentation/config/pet_care_primary_destinations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_lifecycle_list_status.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -27,7 +28,8 @@ String? careItemStripChipLabel(
   String? careClosedReason,
 }) {
   return switch (careItemStripChip(entry)) {
-    _CareItemStripChip.closed => careItemClosedSubtitleLabel(careClosedReason),
+    _CareItemStripChip.closed =>
+      formatHealthEntryClosedStatusLabel(l, careClosedReason),
     _CareItemStripChip.paused => l.careItemPausedStatus,
     null => null,
   };
@@ -110,13 +112,18 @@ class CareItemContextStrip extends StatelessWidget {
                 padding: const EdgeInsets.only(top: 6),
                 child: Align(
                   alignment: Alignment.centerLeft,
-                  child: Chip(
-                    key: const Key('care_item_context_strip_chip'),
-                    label: Text(chipLabel),
-                    visualDensity: VisualDensity.compact,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    backgroundColor: colorScheme.surfaceContainerHighest,
-                    side: BorderSide.none,
+                  child: Semantics(
+                    container: true,
+                    identifier: 'care_item_context_strip_chip',
+                    child: HealthEntryStatusLabel(
+                      key: const Key('care_item_context_strip_chip'),
+                      text: chipLabel,
+                      treatment: healthEntryLifecycleStatusTreatment(
+                        entry,
+                        colorScheme,
+                      ),
+                      compact: false,
+                    ),
                   ),
                 ),
               );
