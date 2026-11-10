@@ -85,8 +85,7 @@ void main() {
         const {},
       );
 
-      // Default status filter is due/overdue — only the overdue foster entry.
-      expect(visible.map((entry) => entry.id), ['entry-foster']);
+      expect(visible.map((entry) => entry.id), ['entry-foster', 'entry-owned']);
     });
 
     test('all status filter includes non-due open entries', () {
@@ -108,11 +107,11 @@ void main() {
   // Screen-level widget tests (default ~800px → desktop layout)
   // ---------------------------------------------------------------------------
 
-  testWidgets('shows unified All Actions list without tabs', (tester) async {
+  testWidgets('shows unified All care list without tabs', (tester) async {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    expect(find.text('All Actions'), findsNWidgets(2));
+    expect(find.text('All care'), findsNWidgets(2));
     expect(find.byType(TabBar), findsNothing);
     expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.text('Heartgard'), findsNothing);
@@ -161,23 +160,20 @@ void main() {
   // Filter / cohort chip tests
   // ---------------------------------------------------------------------------
 
-  testWidgets('due/overdue filter hides non-due entries', (tester) async {
+  testWidgets('agenda surfaces non-due open entries without status filter', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       buildEventsScreen(entries: [_fosterEntry, _ownedEntry]),
     );
     await tester.pumpAndSettle();
 
     expect(find.text('Flea treatment'), findsOneWidget);
-    expect(find.text('Heartgard'), findsNothing);
-
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'status',
-      choiceId: 'all',
-    );
-
-    expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.byKey(const Key('care_agenda_upcoming')), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('care_agenda_upcoming')));
+    await tester.pumpAndSettle();
+    expect(find.text('Heartgard'), findsOneWidget);
   });
 
   testWidgets('my pets cohort hides foster entries', (tester) async {
@@ -249,16 +245,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'pet',
-      choiceId: 'pet:pet-owned',
-    );
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'pet',
-      choiceId: 'pet:pet-foster',
-    );
+    await tester.tap(find.byKey(const Key('global_events_pet_pet-owned')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('global_events_pet_pet-foster')));
+    await tester.pumpAndSettle();
 
     expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsOneWidget);
@@ -415,12 +405,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'status',
-      choiceId: 'all',
-    );
-
     expect(
       find.byKey(const Key('global_events_paused_section')),
       findsOneWidget,
@@ -458,12 +442,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'status',
-      choiceId: 'all',
-    );
 
     expect(find.byKey(const Key('global_events_list')), findsOneWidget);
     expect(

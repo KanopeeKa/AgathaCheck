@@ -28,6 +28,8 @@ abstract final class ManageEventsCollectionFilterIds {
 
   static const primary = [pet, filterGroup, family, status];
   static const more = [recurring, skipped, cohort];
+  static const globalPrimary = [filterGroup, family];
+  static const globalMore = [recurring, cohort];
   static const perPetPrimary = [filterGroup, family, status];
   static const perPetMore = [recurring, skipped];
   static const orgMore = [recurring, skipped, organization];
@@ -220,16 +222,15 @@ CollectionFilterSelections _coreSelectionsFromManageEventsFilters(
   };
 }
 
-/// Builds canonical filter dimensions for the global events list.
-List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
-  required AppLocalizations l,
-  required List<Pet> shellPets,
-}) {
-  final sortedPets = [...shellPets]
-    ..sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
-
-  final dimensions = <CollectionFilterDimension>[
-    ..._manageEventsCoreDimensions(l),
+List<CollectionFilterDimension> _globalGuardianEventsFilterDimensions(
+  AppLocalizations l,
+) {
+  return [
+    ..._manageEventsCoreDimensions(l).where(
+      (dimension) =>
+          dimension.id != ManageEventsCollectionFilterIds.status &&
+          dimension.id != ManageEventsCollectionFilterIds.skipped,
+    ),
     CollectionFilterDimension(
       id: ManageEventsCollectionFilterIds.cohort,
       label: l.eventFilterCohortLabel,
@@ -245,30 +246,14 @@ List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
       ],
     ),
   ];
+}
 
-  if (sortedPets.length > 1) {
-    dimensions.insert(
-      0,
-      CollectionFilterDimension(
-        id: ManageEventsCollectionFilterIds.pet,
-        label: l.petsNavLabel,
-        choices: [
-          CollectionFilterChoice(
-            id: ManageEventsCollectionFilterIds.all,
-            label: l.allPets,
-            isDefault: true,
-          ),
-          for (final pet in sortedPets)
-            CollectionFilterChoice(
-              id: ManageEventsCollectionFilterIds.petChoice(pet.id),
-              label: pet.name,
-            ),
-        ],
-      ),
-    );
-  }
-
-  return dimensions;
+/// Builds canonical filter dimensions for the global events list.
+List<CollectionFilterDimension> buildGlobalEventsFilterDimensions({
+  required AppLocalizations l,
+  required List<Pet> shellPets,
+}) {
+  return _globalGuardianEventsFilterDimensions(l);
 }
 
 /// Per-pet manage events — Group, Category, Status, Recurrence, Skipped.
@@ -279,14 +264,7 @@ List<CollectionFilterDimension> buildPerPetManageEventsFilterDimensions(
 }
 
 List<String> primaryGlobalEventsFilterDimensionIds(List<Pet> shellPets) {
-  if (shellPets.length > 1) {
-    return ManageEventsCollectionFilterIds.primary;
-  }
-  return [
-    ManageEventsCollectionFilterIds.filterGroup,
-    ManageEventsCollectionFilterIds.family,
-    ManageEventsCollectionFilterIds.status,
-  ];
+  return ManageEventsCollectionFilterIds.globalPrimary;
 }
 
 CollectionFilterSelections selectionsFromManageEventsFilters(

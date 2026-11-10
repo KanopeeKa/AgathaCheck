@@ -2435,7 +2435,7 @@ abstract class AppLocalizations {
   /// No description provided for @allCare.
   ///
   /// In en, this message translates to:
-  /// **'All Actions'**
+  /// **'All care'**
   String get allCare;
 
   /// No description provided for @careForPet.
@@ -2453,7 +2453,7 @@ abstract class AppLocalizations {
   /// No description provided for @careNavLabel.
   ///
   /// In en, this message translates to:
-  /// **'Actions'**
+  /// **'Care'**
   String get careNavLabel;
 
   /// No description provided for @peopleNavLabel.
