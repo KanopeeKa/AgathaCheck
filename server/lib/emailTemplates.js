@@ -3,63 +3,9 @@
  */
 import { v4 as uuidv4 } from 'uuid';
 
-export const EMAIL_TEMPLATE_FOSTER_INVITATION_NEW_USER = 'foster_invitation_new_user';
-export const EMAIL_TEMPLATE_FOSTER_INVITATION_EXISTING_USER = 'foster_invitation_existing_user';
-
 const SUPPORTED_LOCALES = new Set(['en', 'fr']);
 
-const DEFAULT_TEMPLATES = {
-  [EMAIL_TEMPLATE_FOSTER_INVITATION_NEW_USER]: {
-    en: {
-      subject: 'Invitation to foster via {{org.name}} on Agatha Track',
-      body_html:
-        '<p>{{org.name}} invited you to begin fostering through Agatha Track.</p>'
-        + '<p>{{org.description}}</p>'
-        + '<p>Contact: {{org.contact_email}}</p>'
-        + '<p>Invited by {{inviter.name}} ({{inviter.role}}).</p>'
-        + '<p><a href="{{signup_url}}">Create your account</a></p>',
-      body_text:
-        '{{org.name}} invited you to foster via Agatha Track.\n'
-        + '{{org.description}}\nContact: {{org.contact_email}}\n'
-        + 'Invited by {{inviter.name}} ({{inviter.role}}).\n'
-        + 'Sign up: {{signup_url}}',
-    },
-    fr: {
-      subject: 'Invitation à accueillir via {{org.name}} sur Agatha Track',
-      body_html:
-        '<p>{{org.name}} vous invite à accueillir des animaux via Agatha Track.</p>'
-        + '<p>{{org.description}}</p>'
-        + '<p>Contact : {{org.contact_email}}</p>'
-        + '<p>Invitation envoyée par {{inviter.name}} ({{inviter.role}}).</p>'
-        + '<p><a href="{{signup_url}}">Créer votre compte</a></p>',
-      body_text:
-        '{{org.name}} vous invite à accueillir via Agatha Track.\n'
-        + '{{org.description}}\nContact : {{org.contact_email}}\n'
-        + 'Invitation de {{inviter.name}} ({{inviter.role}}).\n'
-        + 'Créer un compte : {{signup_url}}',
-    },
-  },
-  [EMAIL_TEMPLATE_FOSTER_INVITATION_EXISTING_USER]: {
-    en: {
-      subject: 'Foster for {{org.name}}',
-      body_html:
-        '<p>{{org.name}} invited you to begin fostering on Agatha Track.</p>'
-        + '<p>Sign in to review the invitation in your notifications.</p>',
-      body_text:
-        '{{org.name}} invited you to begin fostering on Agatha Track.\n'
-        + 'Sign in to review the invitation in your notifications.',
-    },
-    fr: {
-      subject: 'Accueil pour {{org.name}}',
-      body_html:
-        '<p>{{org.name}} vous invite à accueillir sur Agatha Track.</p>'
-        + '<p>Connectez-vous pour voir l\'invitation dans vos notifications.</p>',
-      body_text:
-        '{{org.name}} vous invite à accueillir sur Agatha Track.\n'
-        + 'Connectez-vous pour voir l\'invitation dans vos notifications.',
-    },
-  },
-};
+const DEFAULT_TEMPLATES = {};
 
 function normaliseLocale(locale) {
   const base = String(locale || 'en').toLowerCase().split('-')[0];
