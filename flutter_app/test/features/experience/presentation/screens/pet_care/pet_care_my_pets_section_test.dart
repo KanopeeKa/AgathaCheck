@@ -149,7 +149,8 @@ void main() {
       expect(
         myPetsSemantics.hasFlag(SemanticsFlag.isHeader),
         isFalse,
-        reason: 'PetCareDashboardSectionHeader must not leak header into parent',
+        reason:
+            'PetCareDashboardSectionHeader must not leak header into parent',
       );
     },
   );
