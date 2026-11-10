@@ -226,9 +226,9 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
       final token = await ref.read(authProvider.notifier).getValidAccessToken();
       if (token == null) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.shareInviteDecisionFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
         return;
       }
       final repo = ref.read(sharingRepositoryProvider);
@@ -242,9 +242,9 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
       context.go('/');
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.shareInviteDecisionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
     } finally {
       if (mounted) setState(() => _accepting = false);
     }
@@ -259,9 +259,9 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
       final token = await ref.read(authProvider.notifier).getValidAccessToken();
       if (token == null) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.shareInviteDecisionFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
         return;
       }
       final repo = ref.read(sharingRepositoryProvider);
@@ -273,9 +273,9 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
       context.go('/');
     } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.shareInviteDecisionFailed)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
     } finally {
       if (mounted) setState(() => _declining = false);
     }

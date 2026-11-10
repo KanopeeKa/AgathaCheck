@@ -91,15 +91,16 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
       if (diff >= 0.95 && diff < 1.5) {
         return l.sharedPetAgeYearsOne;
       }
-      final years = NumberFormat.decimalPattern(locale).format(
-        double.parse(diff.toStringAsFixed(1)),
-      );
+      final years = NumberFormat.decimalPattern(
+        locale,
+      ).format(double.parse(diff.toStringAsFixed(1)));
       return l.sharedPetAgeYearsFormatted(years);
     }
     if (pet['age'] != null) {
       final ageNum = pet['age'];
-      final ageDouble =
-          ageNum is num ? ageNum.toDouble() : double.tryParse('$ageNum') ?? 0;
+      final ageDouble = ageNum is num
+          ? ageNum.toDouble()
+          : double.tryParse('$ageNum') ?? 0;
       if (ageDouble >= 0.95 && ageDouble < 1.5) {
         return l.sharedPetAgeYearsOne;
       }
@@ -158,8 +159,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
 
     final pet = _petData!;
     final name = (pet['name'] as String?)?.trim();
-    final displayName =
-        (name != null && name.isNotEmpty) ? name : l.unknownPet;
+    final displayName = (name != null && name.isNotEmpty) ? name : l.unknownPet;
     final species = pet['species'] as String? ?? '';
     final breed = pet['breed'] as String? ?? '';
     final ageDisplay = _ageDisplay(context, pet);
@@ -231,9 +231,9 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                     .getValidAccessToken();
                 if (token == null) {
                   if (!mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l.shareAcceptFailed)),
-                  );
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text(l.shareAcceptFailed)));
                   return;
                 }
                 await repo.acceptShare(widget.shareCode, token);
@@ -246,9 +246,9 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                 context.go('/');
               } catch (_) {
                 if (!mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l.shareAcceptFailed)),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(SnackBar(content: Text(l.shareAcceptFailed)));
               } finally {
                 if (mounted) setState(() => _accepting = false);
               }
