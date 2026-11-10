@@ -14,13 +14,10 @@ import 'package:pet_profile_app/features/experience/presentation/providers/exper
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_rail.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_navigation_sidebar.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/shelter_pinned_org_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/config/shelter_primary_destinations.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_kind.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -44,10 +41,6 @@ List<AppNotification> _bellBadgeNotifications(int count) {
   );
 }
 
-class _EmptyOrgListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => [];
-}
 
 /// Builds a test app wrapping [ExperienceShellScaffold] with minimal overrides.
 Widget _buildApp({
@@ -89,7 +82,6 @@ Widget _buildApp({
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
-      organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
       careActionsAttentionCountProvider.overrideWith((ref) => 0),
     ],
     child: MaterialApp(
@@ -144,7 +136,6 @@ Widget _buildWorkspaceRouterApp({
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
-      organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
     ],
     child: MaterialApp.router(
       localizationsDelegates: const [
@@ -189,7 +180,6 @@ void main() {
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
             authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
           ],
           child: MaterialApp(
             theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -248,7 +238,6 @@ void main() {
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
             authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
           ],
           child: MaterialApp(
             theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -309,7 +298,6 @@ void main() {
           guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         ],
         child: MaterialApp(
           theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -733,7 +721,6 @@ void main() {
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
             authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
           ],
           child: MaterialApp(
             theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -818,7 +805,6 @@ void main() {
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
             authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
           ],
           child: MaterialApp(
             theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -1013,7 +999,6 @@ void main() {
               guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
               orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
               authProvider.overrideWith((ref) => FakeAuthNotifier()),
-              organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
             ],
             child: MaterialApp(
               theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -1073,7 +1058,6 @@ void main() {
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
             authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
           ],
           child: MaterialApp(
             theme: ThemeData(splashFactory: NoSplash.splashFactory),
@@ -1271,8 +1255,6 @@ void main() {
             guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
             orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
             authProvider.overrideWith((ref) => FakeAuthNotifier()),
-            organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
-            shelterPinnedOrganizationProvider.overrideWithValue(pinnedOrg),
           ],
           child: MaterialApp(
             theme: ThemeData(splashFactory: NoSplash.splashFactory),

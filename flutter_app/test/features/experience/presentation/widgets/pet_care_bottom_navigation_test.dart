@@ -10,18 +10,12 @@ import 'package:pet_profile_app/features/experience/presentation/widgets/experie
 import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/care_actions_attention_provider.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/pet_care_bottom_navigation.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/fakes.dart';
 
-class _EmptyOrgListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => [];
-}
 
 Widget _buildCompactShell({
   required SharedPreferences prefs,
@@ -43,7 +37,6 @@ Widget _buildCompactShell({
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
       orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
-      organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
       careActionsAttentionCountProvider.overrideWith((ref) => 0),
     ],
     child: MaterialApp(

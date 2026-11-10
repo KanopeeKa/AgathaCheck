@@ -5,8 +5,6 @@ import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/pet_form_screen.dart';
@@ -59,17 +57,6 @@ class _PeopleVetRosterNotifier extends RosterNotifier {
   );
 }
 
-class _OrgsNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => const [
-    Organization(
-      id: 'org-1',
-      name: 'Happy Paws Clinic',
-      type: OrganizationType.professional,
-      role: 'super_user',
-    ),
-  ];
-}
 
 Widget _wrapAddForm({RecordingPetRepository? repo, String? initialOrgId}) {
   final repository = repo ?? RecordingPetRepository();
@@ -91,7 +78,6 @@ Widget _wrapAddForm({RecordingPetRepository? repo, String? initialOrgId}) {
     overrides: [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
       petRepositoryProvider.overrideWithValue(repository),
-      organizationListProvider.overrideWith(_OrgsNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
     ],

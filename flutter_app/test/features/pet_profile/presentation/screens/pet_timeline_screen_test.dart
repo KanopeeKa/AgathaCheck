@@ -8,8 +8,6 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_timeline_segment.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -19,10 +17,6 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
 
-class _EmptyOrgListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => [];
-}
 
 class _TestPetListNotifier extends PetListNotifier {
   _TestPetListNotifier(this.pets);
@@ -75,7 +69,6 @@ void main() {
             ),
           ),
         ),
-        organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
         guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
         orgUnreadNotificationCountProvider.overrideWith((ref) => 0),

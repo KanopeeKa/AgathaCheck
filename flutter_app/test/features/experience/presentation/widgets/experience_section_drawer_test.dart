@@ -5,17 +5,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/widgets/experience_section_drawer.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/fakes.dart';
 
-class _EmptyOrgListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => [];
-}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -32,7 +26,6 @@ void main() {
           sharedPreferencesProvider.overrideWithValue(prefs),
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
           // removed activeExperienceProvider mock
-          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         ],
         child: MaterialApp(
           localizationsDelegates: const [
@@ -89,7 +82,6 @@ void main() {
         overrides: [
           sharedPreferencesProvider.overrideWithValue(prefs),
           authProvider.overrideWith((ref) => FakeAuthNotifier()),
-          organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         ],
         child: MaterialApp(
           builder: (context, child) => MediaQuery(

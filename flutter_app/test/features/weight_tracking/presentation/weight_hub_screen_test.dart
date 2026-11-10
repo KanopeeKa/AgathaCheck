@@ -12,8 +12,6 @@ import 'package:pet_profile_app/features/auth/presentation/providers/auth_provid
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_fulfils.dart';
@@ -37,10 +35,6 @@ class _FakeWeightEntriesNotifier extends WeightEntriesNotifier {
   Future<List<WeightEntry>> build(String arg) async => _entries;
 }
 
-class _EmptyOrgListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => [];
-}
 
 WeightEntry _entry(
   String id,
@@ -124,7 +118,6 @@ void main() {
             ),
           ),
         ),
-        organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
         guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
         orgUnreadNotificationCountProvider.overrideWith((ref) => 0),

@@ -8,7 +8,6 @@ import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
@@ -54,7 +53,6 @@ Widget _app({required GoRouter router}) {
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
       petListProvider.overrideWith(() => TestPetListNotifier([_pet])),
       allPetsIncludingOrgProvider.overrideWith((ref) async => [_pet]),
-      organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
       healthEntriesNotifierProvider.overrideWith(FakeHealthEntriesNotifier.new),
       combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
       guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
