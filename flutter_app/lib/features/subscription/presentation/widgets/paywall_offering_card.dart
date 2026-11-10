@@ -122,7 +122,8 @@ class PaywallOfferingCard extends StatelessWidget {
                 runSpacing: 0,
                 children: [
                   TextButton(
-                    onPressed: () => context.push(LegalDocumentId.termsOfUse.routePath),
+                    onPressed: () =>
+                        context.push(LegalDocumentId.termsOfUse.routePath),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       minimumSize: const Size(48, 48),
@@ -137,7 +138,8 @@ class PaywallOfferingCard extends StatelessWidget {
                     ),
                   ),
                   TextButton(
-                    onPressed: () => context.push(LegalDocumentId.privacyNotice.routePath),
+                    onPressed: () =>
+                        context.push(LegalDocumentId.privacyNotice.routePath),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(horizontal: 4),
                       minimumSize: const Size(48, 48),

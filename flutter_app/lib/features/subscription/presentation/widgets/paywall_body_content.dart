@@ -184,8 +184,9 @@ class PaywallBodyContent extends StatelessWidget {
         final fallbackTitle = isAnnual
             ? l.subscriptionFallbackTitleYearly
             : l.subscriptionFallbackTitleMonthly;
-        final savingsTag =
-            (hasMultipleCadences && showBestValue && isAnnual) ? l.subscriptionBestValue : null;
+        final savingsTag = (hasMultipleCadences && showBestValue && isAnnual)
+            ? l.subscriptionBestValue
+            : null;
 
         final display = PaywallOfferDisplay.fromStoreProduct(
           product: product,

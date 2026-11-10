@@ -8,7 +8,7 @@ void main() {
   testWidgets('manage subscription enabled when management URL exists', (
     tester,
   ) async {
-  var manageTapped = false;
+    var manageTapped = false;
     const status = SubscriptionStatus(
       tier: SubscriptionTier.unlimited,
       isActive: true,
@@ -88,7 +88,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('manage_subscription_button')), findsNothing);
-    expect(find.byKey(const Key('manage_subscription_disabled_button')), findsOneWidget);
+    expect(
+      find.byKey(const Key('manage_subscription_disabled_button')),
+      findsOneWidget,
+    );
     expect(find.text(l.subscriptionManagementNoUrl), findsOneWidget);
   });
 }

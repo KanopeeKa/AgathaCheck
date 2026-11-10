@@ -15,7 +15,9 @@ void main() {
         home: Builder(
           builder: (context) {
             l = AppLocalizations.of(context)!;
-            return Scaffold(body: PaywallFeatureListCard(theme: Theme.of(context)));
+            return Scaffold(
+              body: PaywallFeatureListCard(theme: Theme.of(context)),
+            );
           },
         ),
       ),

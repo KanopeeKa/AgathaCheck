@@ -87,9 +87,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       if (mounted) {
         setState(() => _purchasing = false);
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.subscriptionPurchaseFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.subscriptionPurchaseFailed)));
       }
     }
   }
@@ -107,9 +107,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     } catch (_) {
       if (mounted) {
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.subscriptionRestoreFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.subscriptionRestoreFailed)));
       }
     } finally {
       if (mounted) setState(() => _loading = false);
@@ -131,7 +131,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       return;
     }
     try {
-      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final launched = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
       if (!launched && mounted) {
         _showManagementFallback(l, url);
       }
@@ -198,8 +201,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         onPurchasePackage: _purchasePackage,
         onRestorePurchases: _restorePurchases,
         onReloadOfferings: _loadOfferings,
-        onManageSubscription:
-            subscriptionStatus.managementUrl != null ? _manageSubscription : null,
+        onManageSubscription: subscriptionStatus.managementUrl != null
+            ? _manageSubscription
+            : null,
         formatDate: _formatDate,
       ),
     );

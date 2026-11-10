@@ -35,16 +35,26 @@ class PaywallOfferDisplay {
       title: product.title.isNotEmpty ? product.title : (fallbackTitle ?? ''),
       priceString: product.priceString,
       recurringCadenceLabel: cadence,
-      autoRenewLine: l.subscriptionAutoRenewDisclosure(product.priceString, cadence),
+      autoRenewLine: l.subscriptionAutoRenewDisclosure(
+        product.priceString,
+        cadence,
+      ),
       cancelLine: l.subscriptionCancelDisclosure,
       introductoryLine: _introductoryLine(product.introductoryPrice, l),
       savingsTag: savingsTag,
     );
   }
 
-  static String? _introductoryLine(IntroductoryPrice? intro, AppLocalizations l) {
+  static String? _introductoryLine(
+    IntroductoryPrice? intro,
+    AppLocalizations l,
+  ) {
     if (intro == null) return null;
-    final unitLabel = _periodUnitLabel(intro.periodUnit, intro.periodNumberOfUnits, l);
+    final unitLabel = _periodUnitLabel(
+      intro.periodUnit,
+      intro.periodNumberOfUnits,
+      l,
+    );
     if (unitLabel == null) return null;
     return l.subscriptionIntroductoryOffer(
       intro.priceString,
@@ -70,7 +80,9 @@ class PaywallOfferDisplay {
   }
 
   static String? _isoPeriodToCadence(String iso, AppLocalizations l) {
-    final match = RegExp(r'^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?$').firstMatch(iso);
+    final match = RegExp(
+      r'^P(?:(\d+)Y)?(?:(\d+)M)?(?:(\d+)W)?(?:(\d+)D)?$',
+    ).firstMatch(iso);
     if (match == null) return null;
     final years = int.tryParse(match.group(1) ?? '') ?? 0;
     final months = int.tryParse(match.group(2) ?? '') ?? 0;
@@ -92,16 +104,28 @@ class PaywallOfferDisplay {
     return l.subscriptionPeriodRecurring;
   }
 
-  static String? _periodUnitLabel(PeriodUnit unit, int count, AppLocalizations l) {
+  static String? _periodUnitLabel(
+    PeriodUnit unit,
+    int count,
+    AppLocalizations l,
+  ) {
     switch (unit) {
       case PeriodUnit.day:
-        return count == 1 ? l.subscriptionIntroPeriodOneDay : l.subscriptionIntroPeriodDays(count);
+        return count == 1
+            ? l.subscriptionIntroPeriodOneDay
+            : l.subscriptionIntroPeriodDays(count);
       case PeriodUnit.week:
-        return count == 1 ? l.subscriptionIntroPeriodOneWeek : l.subscriptionIntroPeriodWeeks(count);
+        return count == 1
+            ? l.subscriptionIntroPeriodOneWeek
+            : l.subscriptionIntroPeriodWeeks(count);
       case PeriodUnit.month:
-        return count == 1 ? l.subscriptionIntroPeriodOneMonth : l.subscriptionIntroPeriodMonths(count);
+        return count == 1
+            ? l.subscriptionIntroPeriodOneMonth
+            : l.subscriptionIntroPeriodMonths(count);
       case PeriodUnit.year:
-        return count == 1 ? l.subscriptionIntroPeriodOneYear : l.subscriptionIntroPeriodYears(count);
+        return count == 1
+            ? l.subscriptionIntroPeriodOneYear
+            : l.subscriptionIntroPeriodYears(count);
       case PeriodUnit.unknown:
         return null;
     }
@@ -116,8 +140,7 @@ class PaywallOfferDisplay {
     final monthly = monthlyPackage.storeProduct.price;
     if (monthly <= 0) return false;
     final annual = annualPackage.storeProduct;
-    final annualMonthly =
-        annual.pricePerMonth ?? (annual.price / 12);
+    final annualMonthly = annual.pricePerMonth ?? (annual.price / 12);
     return annualMonthly < monthly;
   }
 
