@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../../../../l10n/app_localizations.dart';
 
-/// Subscription, organizations and language cards shown on `MyDetailsScreen`.
+/// Subscription and language cards shown on `MyDetailsScreen`.
 class ProfileSettingsSection extends StatelessWidget {
   const ProfileSettingsSection({
     super.key,
@@ -11,7 +11,6 @@ class ProfileSettingsSection extends StatelessWidget {
     required this.currentLocale,
     required this.currentTimezone,
     required this.onSubscription,
-    required this.onOrganizations,
     required this.onLocaleChanged,
     required this.onTimezoneChanged,
   });
@@ -21,7 +20,6 @@ class ProfileSettingsSection extends StatelessWidget {
   final String currentLocale;
   final String currentTimezone;
   final VoidCallback onSubscription;
-  final VoidCallback onOrganizations;
   final ValueChanged<String> onLocaleChanged;
   final ValueChanged<String> onTimezoneChanged;
 
@@ -41,16 +39,6 @@ class ProfileSettingsSection extends StatelessWidget {
             subtitle: Text(l10n.managePlan),
             trailing: const Icon(Icons.chevron_right),
             onTap: onSubscription,
-          ),
-        ),
-        const SizedBox(height: 16),
-        Card(
-          child: ListTile(
-            key: const Key('organizations_tile'),
-            leading: Icon(Icons.business, color: theme.colorScheme.primary),
-            title: Text(l10n.myOrganizations),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: onOrganizations,
           ),
         ),
         const SizedBox(height: 16),
