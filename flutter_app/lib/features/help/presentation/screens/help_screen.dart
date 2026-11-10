@@ -16,8 +16,6 @@ import '../../../../l10n/app_localizations.dart';
 /// - Weight Tracking
 /// - Veterinarian Management
 /// - Pet Sharing
-/// - Organisations
-/// - Family Events
 /// - Notifications
 /// - Reports
 /// - Subscription
@@ -105,26 +103,6 @@ class HelpScreen extends StatelessWidget {
               _FaqItem(q: l.faqSharingQ2, a: l.faqSharingA2),
               _FaqItem(q: l.faqSharingQ3, a: l.faqSharingA3),
               _FaqItem(q: l.faqSharingQ4, a: l.faqSharingA4),
-            ],
-          ),
-          _FaqSection(
-            icon: Icons.business_outlined,
-            title: l.faqOrgTitle,
-            items: [
-              _FaqItem(q: l.faqOrgQ1, a: l.faqOrgA1),
-              _FaqItem(q: l.faqOrgQ2, a: l.faqOrgA2),
-              _FaqItem(q: l.faqOrgQ3, a: l.faqOrgA3),
-              _FaqItem(q: l.faqOrgQ4, a: l.faqOrgA4),
-              _FaqItem(q: l.faqOrgQ5, a: l.faqOrgA5),
-            ],
-          ),
-          _FaqSection(
-            icon: Icons.family_restroom_outlined,
-            title: l.faqFamilyEventsTitle,
-            items: [
-              _FaqItem(q: l.faqFamilyEventsQ1, a: l.faqFamilyEventsA1),
-              _FaqItem(q: l.faqFamilyEventsQ2, a: l.faqFamilyEventsA2),
-              _FaqItem(q: l.faqFamilyEventsQ3, a: l.faqFamilyEventsA3),
             ],
           ),
           _FaqSection(
