@@ -233,7 +233,7 @@ test.describe('People core journeys @people', () => {
     await loginAs(page, user);
 
     const dashboard = new GuardianDashboardPage(page);
-    await dashboard.expectLoaded();
+    await dashboard.open();
     await dashboard.expectVetVisible('Desk Vet Card');
     await dashboard.openVet('Desk Vet Card');
     await waitForFlutterRoutePattern(page, /\/pc\/people\/[^/?]+/, 30_000);
