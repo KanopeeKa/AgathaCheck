@@ -10,17 +10,15 @@ import {
   assertVisitScheduledToday,
   createAdoptionVisit,
   loadAdoptionVisitForOrg,
-  recordVisitOutcome,
-  VISIT_OUTCOME_POSITIVE,
-  VISIT_STATUS_COMPLETED,
-} from './adoptionVisits.js';
-import {
   normalizePlacementStatus,
   placementToMap,
+  recordVisitOutcome,
   revokeFosterPetAccess,
   SESSION_STATUS_ADOPTION_IN_PROGRESS,
   SESSION_STATUS_CONVERTED_TO_ADOPTION,
   SESSION_TYPE_FOSTER_IN_VIEW_TO_ADOPT,
+  VISIT_OUTCOME_POSITIVE,
+  VISIT_STATUS_COMPLETED,
 } from './fosterPlacements.js';
 import {
   clearOrgPetHomeHiddenForPet,
