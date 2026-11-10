@@ -1832,6 +1832,8 @@
   "consentBannerMessage": "Nous utilisons des cookies et services essentiels pour faire fonctionner AgathaTrack. Nous aimerions également définir des cookies optionnels pour l'analyse et le marketing afin d'améliorer votre expérience. Vous pouvez gérer vos préférences à tout moment.",
   "consentAcceptAll": "Tout accepter",
   "consentManagePreferences": "Gérer les préférences",
+  "consentRejectOptional": "Refuser l'optionnel",
+  "consentBannerSaving": "Enregistrement de votre choix",
   "consentSettings": "Préférences de confidentialité",
   "consentPreferencesDescription": "Choisissez les types de traitement de données auxquels vous consentez. Les services essentiels sont toujours actifs car ils sont nécessaires au fonctionnement de l'application.",
   "consentEssential": "Essentiel",

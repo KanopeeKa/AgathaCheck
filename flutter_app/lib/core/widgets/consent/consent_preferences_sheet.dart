@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
-
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../services/consent_service.dart';
 import '../../theme/app_color_tokens.dart';
+import 'consent_timestamp_format.dart';
 
 class ConsentPreferencesSheet extends ConsumerStatefulWidget {
   const ConsentPreferencesSheet({super.key});
@@ -106,7 +105,7 @@ class _ConsentPreferencesSheetState
                         Expanded(
                           child: Text(
                             l10n.consentLastUpdated(
-                              _formatTimestamp(
+                              formatConsentTimestamp(
                                 context,
                                 consent.consentTimestamp!,
                               ),
@@ -184,13 +183,4 @@ class _ConsentPreferencesSheetState
     );
   }
 
-  String _formatTimestamp(BuildContext context, String iso) {
-    try {
-      final dt = DateTime.parse(iso).toLocal();
-      final locale = Localizations.localeOf(context).toString();
-      return DateFormat.yMd(locale).add_Hm().format(dt);
-    } catch (_) {
-      return iso;
-    }
-  }
 }

@@ -5280,6 +5280,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentManagePreferences => 'Manage Preferences';
 
   @override
+  String get consentRejectOptional => 'Reject Optional';
+
+  @override
+  String get consentBannerSaving => 'Saving your privacy choice';
+
+  @override
   String get consentSettings => 'Privacy Preferences';
 
   @override
