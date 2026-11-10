@@ -2377,6 +2377,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get markAllRead => 'Tout marquer comme lu';
 
   @override
+  String get notificationsMarkedRead => 'Tout est marqué comme lu';
+
+  @override
+  String get notificationOpenInbox => 'Ouvrir la boîte complète';
+
+  @override
   String get notificationSettingsTooltip => 'Paramètres de notification';
 
   @override
@@ -6605,7 +6611,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notificationInboxForYouEmpty =>
-      'Pas de suggestion pour l\'instant. Agatha vous préviendra quand quelque chose mérite un coup d\'œil.';
+      'Pas de suggestion pour l\'instant.';
 
   @override
   String get notificationInboxV2Explainer =>

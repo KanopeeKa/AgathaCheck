@@ -4,7 +4,9 @@ import 'package:pet_profile_app/features/notifications/presentation/widgets/noti
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('NotificationPanelHeader mark all read', (tester) async {
+  testWidgets('NotificationPanelHeader mark all read when enabled', (
+    tester,
+  ) async {
     var marked = false;
     late AppLocalizations l;
 
@@ -19,6 +21,8 @@ void main() {
               body: NotificationPanelHeader(
                 l: l,
                 theme: Theme.of(context),
+                onOpenInbox: () {},
+                onOpenSettings: () {},
                 onMarkAllRead: () => marked = true,
               ),
             );
@@ -30,5 +34,37 @@ void main() {
 
     await tester.tap(find.text(l.markAllRead));
     expect(marked, isTrue);
+  });
+
+  testWidgets('NotificationPanelHeader disables mark all read when null', (
+    tester,
+  ) async {
+  late AppLocalizations l;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            l = AppLocalizations.of(context)!;
+            return Scaffold(
+              body: NotificationPanelHeader(
+                l: l,
+                theme: Theme.of(context),
+                onOpenInbox: () {},
+                onOpenSettings: () {},
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final button = tester.widget<TextButton>(
+      find.widgetWithText(TextButton, l.markAllRead),
+    );
+    expect(button.onPressed, isNull);
   });
 }

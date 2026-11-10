@@ -2348,6 +2348,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markAllRead => 'Mark all as read';
 
   @override
+  String get notificationsMarkedRead => 'All marked as read';
+
+  @override
+  String get notificationOpenInbox => 'Open full inbox';
+
+  @override
   String get notificationSettingsTooltip => 'Notification settings';
 
   @override
@@ -6501,8 +6507,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Nothing new. When someone shares a pet or joins your household, you\'ll see it here.';
 
   @override
-  String get notificationInboxForYouEmpty =>
-      'No suggestions right now. Agatha will let you know when something\'s worth a look.';
+  String get notificationInboxForYouEmpty => 'No suggestions right now.';
 
   @override
   String get notificationInboxV2Explainer =>

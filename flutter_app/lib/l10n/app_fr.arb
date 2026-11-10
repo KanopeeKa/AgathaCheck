@@ -832,6 +832,8 @@
 
   "noNotifications": "Aucune notification",
   "markAllRead": "Tout marquer comme lu",
+  "notificationsMarkedRead": "Tout est marqué comme lu",
+  "notificationOpenInbox": "Ouvrir la boîte complète",
   "notificationSettingsTooltip": "Paramètres de notification",
   "dueSoonAlertsLabel": "Alertes d'échéance proche",
   "generalLabel": "Général",
@@ -2321,7 +2323,7 @@
   "notificationInboxTabForYou": "Pour vous",
   "notificationNeedsResponse": "Réponse attendue",
   "notificationInboxActivityEmpty": "Rien de nouveau pour l'instant. Quand quelqu'un partage un animal ou rejoint votre foyer, vous le verrez ici.",
-  "notificationInboxForYouEmpty": "Pas de suggestion pour l'instant. Agatha vous préviendra quand quelque chose mérite un coup d'œil.",
+  "notificationInboxForYouEmpty": "Pas de suggestion pour l'instant.",
   "notificationInboxV2Explainer": "Les rappels sont dans Actions. Votre boîte de réception regroupe les nouvelles des personnes et les suggestions d'Agatha.",
   "notificationInboxV2ExplainerActionsLink": "Ouvrir Actions",
   "notificationInboxForYouSuggestionsOff": "Les suggestions Agatha sont désactivées. Réactivez-les ici pour qu'Agatha repère à nouveau des pistes de soins.",
