@@ -28,7 +28,7 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
     final entriesAsync = ref.watch(petHealthEntriesByIdProvider(widget.petId));
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: entriesAsync.when(
         loading: () => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

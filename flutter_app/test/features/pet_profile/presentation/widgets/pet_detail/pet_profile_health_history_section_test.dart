@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/widgets/pet_detail/pet_profile_health_history_section.dart';
+import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
+import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
+import 'package:pet_profile_app/features/weight_tracking/presentation/providers/weight_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_issue.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_issue_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -17,6 +20,13 @@ class _FakeHealthIssueNotifier extends HealthIssueNotifier {
   Future<List<HealthIssue>> build(String arg) async => _issues;
 }
 
+class _EmptyWeightEntriesNotifier extends WeightEntriesNotifier {
+  @override
+  Future<List<WeightEntry>> build(String arg) async => [];
+}
+
+const _testPet = Pet(id: 'pet-1', name: 'Miso', species: 'Dog');
+
 void main() {
   Widget buildSection({
     required GoRouter router,
@@ -26,6 +36,9 @@ void main() {
       overrides: [
         healthIssueNotifierProvider.overrideWith(
           () => _FakeHealthIssueNotifier(issues),
+        ),
+        weightEntriesNotifierProvider.overrideWith(
+          () => _EmptyWeightEntriesNotifier(),
         ),
       ],
       child: MaterialApp.router(
@@ -37,7 +50,7 @@ void main() {
     );
   }
 
-  testWidgets('shows health issues and timeline destination rows', (
+  testWidgets('weight insight precedes health destination rows', (
     tester,
   ) async {
     final router = GoRouter(
@@ -48,6 +61,7 @@ void main() {
           builder: (context, state) => Scaffold(
             body: PetProfileHealthHistorySection(
               petId: state.pathParameters['petId']!,
+              pet: _testPet,
             ),
           ),
         ),
@@ -67,6 +81,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Health & history'), findsOneWidget);
+    expect(find.byKey(const Key('pet_profile_weight_insight')), findsOneWidget);
+    expect(find.text('Weight tracking'), findsOneWidget);
     expect(find.text('Health Issues'), findsOneWidget);
     expect(find.text('Timeline'), findsOneWidget);
     expect(find.byIcon(Icons.chevron_right), findsNWidgets(2));
@@ -85,6 +101,7 @@ void main() {
           builder: (context, state) => Scaffold(
             body: PetProfileHealthHistorySection(
               petId: state.pathParameters['petId']!,
+              pet: _testPet,
             ),
           ),
         ),
@@ -106,6 +123,7 @@ void main() {
           builder: (context, state) => Scaffold(
             body: PetProfileHealthHistorySection(
               petId: state.pathParameters['petId']!,
+              pet: _testPet,
             ),
           ),
         ),

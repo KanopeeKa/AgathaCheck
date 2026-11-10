@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/pet_care_dashboard_section_header.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/auth.dart';
 import '../../application/people_providers.dart';
@@ -34,33 +35,31 @@ class PetPeopleSection extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  l.peopleAroundPetTitle(petName),
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-              if (canManage && async.valueOrNull?.scope == 'full')
-                TextButton(
-                  key: const Key('pet_emergency_manage_button'),
-                  onPressed: async.valueOrNull == null
-                      ? null
-                      : () => showPetEmergencyManageSheet(
-                          context: context,
-                          ref: ref,
-                          people: async.valueOrNull!,
-                        ),
-                  child: Text(l.peoplePetEmergencyManage),
-                ),
-            ],
+          padding: const EdgeInsets.fromLTRB(
+            16,
+            kPetDetailSectionInsetTop,
+            16,
+            0,
+          ),
+          child: PetCareDashboardSectionChrome(
+            title: l.peopleAroundPetTitle(petName),
+            linkLabel: canManage && async.valueOrNull?.scope == 'full'
+                ? l.peoplePetEmergencyManage
+                : null,
+            linkKey: const Key('pet_emergency_manage_button'),
+            onLinkPressed:
+                canManage &&
+                    async.valueOrNull?.scope == 'full' &&
+                    async.valueOrNull != null
+                ? () => showPetEmergencyManageSheet(
+                    context: context,
+                    ref: ref,
+                    people: async.valueOrNull!,
+                  )
+                : null,
           ),
         ),
+        const SizedBox(height: kPetDetailSectionTitleGap),
         async.when(
           loading: () => const _PetPeopleBoxState(child: _LoadingBody()),
           error: (_, __) =>

@@ -2,28 +2,62 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 
+/// Top inset and title-to-content gap shared by pet detail section blocks.
+const double kPetDetailSectionInsetTop = 16;
+const double kPetDetailSectionTitleGap = 10;
+const EdgeInsets kPetDetailSectionHorizontalPadding = EdgeInsets.symmetric(
+  horizontal: 16,
+);
+
+bool _titleUsesUppercaseEyebrowTracking(String title) {
+  if (title.isEmpty) return false;
+  final hasAlpha = RegExp(r'[A-Za-z]').hasMatch(title);
+  return hasAlpha && title == title.toUpperCase();
+}
+
+TextStyle? _sectionTitleTextStyle(
+  TextTheme textTheme,
+  String title,
+  Color titleColor,
+) {
+  final base = textTheme.labelSmall;
+  if (base == null) return null;
+  final fontSize = base.fontSize ?? 12;
+  final letterSpacing = _titleUsesUppercaseEyebrowTracking(title)
+      ? fontSize * 0.08
+      : base.letterSpacing;
+  return base.copyWith(
+    color: titleColor,
+    fontWeight: FontWeight.w700,
+    letterSpacing: letterSpacing,
+    height: 16 / fontSize,
+  );
+}
+
 /// Eyebrow title for dashboard sections.
 class PetCareDashboardSectionHeader extends StatelessWidget {
   const PetCareDashboardSectionHeader({
     super.key,
     required this.title,
     this.titleColor = AppColorTokens.petCareActive,
+    this.maxLines = 2,
   });
 
   final String title;
   final Color titleColor;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Text(
-      title,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: theme.textTheme.labelLarge?.copyWith(
-        color: titleColor,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 1.2,
+    final style = _sectionTitleTextStyle(theme.textTheme, title, titleColor);
+    return Semantics(
+      header: true,
+      child: Text(
+        title,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+        style: style,
       ),
     );
   }

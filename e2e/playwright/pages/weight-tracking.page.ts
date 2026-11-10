@@ -33,7 +33,7 @@ export class WeightTrackingPage {
   /** Any stable affordance that the dedicated weight screen is open. */
   private weightScreenLocator() {
     return this.kgUnitLocator()
-      .or(this.page.getByRole('banner', { name: /Weight Tracking|Suivi du poids/i }))
+      .or(this.page.getByRole('banner', { name: /Weight tracking|Suivi du poids/i }))
       .or(
         this.page.getByRole('button', {
           name: /Record weight|Enregistrer le poids/i,
@@ -70,7 +70,7 @@ export class WeightTrackingPage {
           15_000,
         );
       } else {
-        const navRow = semanticsByName(this.page, /Weight Tracking|Suivi du poids/i);
+        const navRow = semanticsByName(this.page, /Weight tracking|Suivi du poids/i);
         await navRow.scrollIntoViewIfNeeded();
         await navRow.click();
       }

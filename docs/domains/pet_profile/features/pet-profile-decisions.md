@@ -3,7 +3,7 @@ title: Pet profile decisions
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-09
+last_updated: 2026-11-10
 tags: [pet_profile, decisions]
 domain: pet_profile
 feature_id: pet-profile-decisions
@@ -241,6 +241,57 @@ Private per-user labels for organizing and filtering pets on `/pc/pets`. No shar
 | **ACJ-PF-PL-005** | New identification/neuter status fields excluded from org shadow copy and share preview by default | Live | `orgPetShadow.js` explicit field list; `sharePreview.js` excludes status fields. Authorized `GET /pets/:id` still returns status to users with access; org **redacted** member views were not re-audited in programme closeout. |
 
 Agatha care journey delivery record: [care-intelligence.md](../../pet_care/features/care-intelligence.md) § Agatha care journey — delivery record.
+
+## Pet detail — section titles
+
+Today the pet detail screen (`pet_detail_scroll_body.dart`) renders each block title with a different style. This spec
+gives the screen two title levels only, matching the dashboard pattern in
+[guardian-dashboard-brief.md](guardian-dashboard-brief.md) § Structural pattern.
+
+| Block | Role | Today | Target |
+|-------|------|-------|--------|
+| `{Pet}'s care` | Section | Dashboard eyebrow (`PetCareDashboardSectionHeader`) | Unchanged |
+| `People around {Pet}` | Section | Hand-built `titleMedium` weight 700 row with **Manage** | Section title + **Manage** as trailing action |
+| `Health & history` | Section | `titleSmall` weight 600, muted colour | Section title |
+| `Away plans` (when the viewer can plan absences) | Section | Hand-built `titleMedium` weight 700 row with **All absences** | Section title + **All absences** as trailing action |
+| `Agatha recommends` | Card title | Agatha card eyebrow | Unchanged |
+| `Weight Tracking` | Card title | Insight card title, floating between two sections | Card title, inside **Health & history** |
+
+### Requirements
+
+| ID | Requirement | Status |
+|----|-------------|--------|
+| **PET-PROFILE-DECISIONS-R-001** | Pet detail has exactly two title levels: **section title** (outside any card) and **card title** (inside a card). No third style. | Live |
+| **PET-PROFILE-DECISIONS-R-002** | Every section title on pet detail (`{Pet}'s care`, `People around {Pet}`, `Away plans`, `Health & history`) renders through the shared `PetCareDashboardSectionChrome` in `core/widgets/` — same type style, colour and spacing as dashboard sections. No per-section `Text` styling. | Live |
+| **PET-PROFILE-DECISIONS-R-003** | A section-level action sits on the title row as the chrome's trailing link. **Manage** on `People around {Pet}` keeps its key (`pet_emergency_manage_button`), visibility rule (`canManage` and full scope) and 48px touch target; **All absences** on `Away plans` keeps `pet_page_all_absences_link` and its `hasMore` rule. | Live |
+| **PET-PROFILE-DECISIONS-R-004** | Every section title is exposed to assistive technology as a heading (`Semantics(header: true)`), provided by the shared widget rather than by each caller. | Live |
+| **PET-PROFILE-DECISIONS-R-005** | The weight insight card moves inside **Health & history**: directly under the section title, above the **Health issues** and **Timeline** rows. Card content, tap target (`/pet/{id}/weight`) and empty state are unchanged. | Live |
+| **PET-PROFILE-DECISIONS-R-006** | Card titles use sentence case: English `weightTracking` becomes `Weight tracking` everywhere the key is used (card, weight hub screen title, report options). French is unchanged. | Live |
+| **PET-PROFILE-DECISIONS-R-007** | `Agatha recommends` keeps the Agatha card eyebrow (`AgathaRecommendationEyebrow`); it is a card title, never restyled as a section title. | Live |
+| **PET-PROFILE-DECISIONS-R-008** | `docs/design/system.md` documents the section title (eyebrow) as its own type role, with **system.md** §2.3 token values (weight 700, xs scale, uppercase letter-spacing only when the string is uppercase), and limits `font-size-xl` to card and page-level titles. Ships in the same PR as R-002. | Live |
+| **PET-PROFILE-DECISIONS-R-009** | Section titles on pet detail may wrap to two lines instead of truncating, so a long pet name and 200% text scaling stay readable (system.md §2.3). The shared widget's `maxLines: 1` ellipsis is lifted for this use; the trailing action keeps its 48px target and never overlaps the title. | Live |
+| **PET-PROFILE-DECISIONS-R-010** | Sections on pet detail use one vertical rhythm: **16px** inset above each section title and **10px** between title and content (`kPetDetailSectionInsetTop` / `kPetDetailSectionTitleGap` in `pet_care_dashboard_section_header.dart`). | Live |
+
+### Acceptance criteria
+
+| Requirement | Given / When / Then | Coverage |
+|-------------|---------------------|----------|
+| R-002, R-004 | Given a pet with care, people and health data, when pet detail renders, then every section title shares one text style and each is a semantic heading. | test: flutter_app/test/core/widgets/pet_care_dashboard_section_header_test.dart#section title exposes header semantics |
+| R-003 | Given a user who can manage the pet's people, when pet detail renders, then **Manage** is on the `People around {Pet}` title row and opens the manage flow; given a user who cannot, then no action is shown. | test: flutter_app/test/features/people/presentation/pet/pet_people_section_test.dart |
+| R-005 | Given any pet, when pet detail renders, then the weight card is below the **Health & history** title and above **Health issues**; tapping it opens the weight hub. | test: flutter_app/test/features/pet_profile/presentation/widgets/pet_detail/pet_profile_health_history_section_test.dart#weight insight precedes health destination rows |
+| R-009 | Given a pet with a 30-character name and text scale 200%, when pet detail renders, then `People around {Pet}` wraps and **Manage** stays tappable without overlap. | test: flutter_app/test/features/people/presentation/pet/pet_people_section_test.dart#long pet name wraps section title at 200% text scale |
+| R-006 | Given the app in English, when the weight card or weight hub is shown, then the title reads `Weight tracking`. | test: flutter_app/test/features/weight_tracking/presentation/weight_hub_screen_test.dart; bdd: weight_tracking.feature |
+
+### Decision log (section titles)
+
+| ID | Decision | Status |
+|----|----------|--------|
+| **PET-PROFILE-DECISIONS-D-001** | Pet detail section titles adopt the dashboard eyebrow rather than the `font-size-xl` title in `docs/design/system.md`. The eyebrow is already the written dashboard standard and has a shared widget with a trailing action; the design system doc is corrected to match, not the other way round. | Live |
+| **PET-PROFILE-DECISIONS-D-002** | Weight is part of **Health & history** on pet detail, not a standalone block between sections. | Live |
+| **PET-PROFILE-DECISIONS-D-003** | Titles inside cards (`Agatha recommends`, `Weight tracking`) are a separate, quieter level and are not unified with section titles. | Live |
+| **PET-PROFILE-DECISIONS-D-004** | Section title typography follows **system.md** §2.3 (weight 700), not the legacy widget values (w800 / 1.2px tracking on `labelLarge`). | Live |
+
+**Decision log note:** **Live** on a decision row means product-agreed, not necessarily shipped in the app until linked requirements are **Live**.
 
 ## How to use
 

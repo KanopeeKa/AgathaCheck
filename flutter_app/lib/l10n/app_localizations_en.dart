@@ -618,7 +618,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rainbowBridge => 'Rainbow bridge';
 
   @override
-  String get weightTracking => 'Weight Tracking';
+  String get weightTracking => 'Weight tracking';
 
   @override
   String get weightHubSettingsTitle => 'Weight settings';
