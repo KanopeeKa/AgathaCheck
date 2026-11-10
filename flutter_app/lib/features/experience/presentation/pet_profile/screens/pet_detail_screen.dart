@@ -3,6 +3,7 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:pet_profile_app/core/widgets/async_state/async_state.dart';
 import 'package:pet_profile_app/core/widgets/screen_overflow_actions.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
@@ -37,22 +38,54 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
   Widget build(BuildContext context) {
     final petListAsync = ref.watch(petListProvider);
     final l = AppLocalizations.of(context)!;
+    final experience = AppExperience.petCare;
+    final location = GoRouterState.of(context).uri.path;
+
+    Widget routeShell({
+      required Widget child,
+      String? screenTitle,
+      List<Widget> contextualActions = const [],
+    }) {
+      return ExperienceShellScaffold(
+        experience: experience,
+        currentLocation: location,
+        screenTitle: screenTitle ?? l.petDetails,
+        contextualActions: contextualActions,
+        child: child,
+      );
+    }
 
     return petListAsync.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, _) => Scaffold(
-        body: Center(child: Text(l.errorWithMessage(error.toString()))),
+      loading: () => routeShell(
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, _) => routeShell(
+        child: AsyncErrorState(
+          title: l.loadErrorYourPets,
+          onRetry: () => ref.invalidate(petListProvider),
+          retryKey: const Key('pet_detail_load_retry'),
+        ),
       ),
       data: (pets) {
         final pet = pets.where((p) => p.id == widget.petId).firstOrNull;
         if (pet == null) {
-          return Scaffold(body: Center(child: Text(l.petNotFound)));
+          return routeShell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AsyncErrorState(title: l.petNotFound),
+                TextButton(
+                  key: const Key('pet_detail_back_to_pets'),
+                  onPressed: () => context.go('/pc/pets'),
+                  child: Text(l.backToPets),
+                ),
+              ],
+            ),
+          );
         }
 
         final theme = Theme.of(context);
         final isOrgPet = pet.organizationId != null;
-        final experience = AppExperience.petCare;
         final useOrgChrome =
             isOrgPet && experience == AppExperience.organization;
         final viewerContext = ref.watch(

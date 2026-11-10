@@ -74,6 +74,26 @@ void main() {
       expect(names, ['Older', 'Newer']);
     });
 
+    testWidgets('omits care status when entries are unavailable', (
+      tester,
+    ) async {
+      final pets = [const Pet(id: '1', name: 'Milo', species: 'Cat')];
+
+      await tester.pumpWidget(
+        wrap(
+          PetCarePetsTileGrid(
+            pets: pets,
+            careSummary: null,
+            careSummaryResolution: CareSummaryResolution.unavailable,
+            onPetTap: (_) {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('All set'), findsNothing);
+    });
+
     testWidgets('selection mode toggles via onToggleSelection', (tester) async {
       final pets = [const Pet(id: '1', name: 'Milo', species: 'Cat')];
       Pet? toggled;

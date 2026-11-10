@@ -334,6 +334,21 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loadErrorRetryHint => 'Vérifiez votre connexion et réessayez.';
 
   @override
+  String get loadErrorYourPets => 'Impossible de charger vos animaux';
+
+  @override
+  String get tagFiltersLoading => 'Chargement des étiquettes…';
+
+  @override
+  String get tagFiltersUnavailable => 'Étiquettes indisponibles';
+
+  @override
+  String get careStatusUnavailable => 'État des soins indisponible';
+
+  @override
+  String get backToPets => 'Retour aux animaux';
+
+  @override
   String get loadingLabel => 'Chargement';
 
   @override

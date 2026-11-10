@@ -369,4 +369,89 @@ void main() {
     expect(find.text('Download Pet Report'), findsWidgets);
     expect(find.text('Pet Profile'), findsOneWidget);
   });
+
+  testWidgets('load error shows Retry inside shell without exception text', (
+    tester,
+  ) async {
+    var attempts = 0;
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(
+              ExperienceEligibilityRules.compute(
+                pets: [ownedPet],
+                orgMembershipCount: 0,
+              ),
+            ),
+          ),
+          petListProvider.overrideWith(() => _RetryPetListNotifier(() async {
+            attempts++;
+            if (attempts < 2) {
+              throw Exception('DioException failed');
+            }
+            return [ownedPet];
+          })),
+          allPetsIncludingOrgProvider.overrideWith((ref) async => [ownedPet]),
+          organizationListProvider.overrideWith(
+            FakeOrganizationListNotifier.new,
+          ),
+          healthEntriesNotifierProvider.overrideWith(
+            FakeHealthEntriesNotifier.new,
+          ),
+          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          sharingRepositoryProvider.overrideWith(
+            (ref) => _FakeSharingRepository(),
+          ),
+          petShareLinksNotifierProvider('pet-1').overrideWith(
+            (ref) => PetShareLinksNotifier(ref, 'pet-1')
+              ..state = const AsyncValue.data([]),
+          ),
+          weightEntriesNotifierProvider.overrideWith(
+            () => _EmptyWeightEntriesNotifier(),
+          ),
+          petTagListProvider.overrideWith(_PetDetailTagListNotifier.new),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: GoRouter(
+            initialLocation: '/pet/pet-1',
+            routes: [
+              GoRoute(
+                path: '/pet/:petId',
+                builder: (context, state) =>
+                    PetDetailScreen(petId: state.pathParameters['petId']!),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text("We couldn't load your pets"), findsOneWidget);
+    expect(find.textContaining('DioException'), findsNothing);
+    expect(find.textContaining('Error:'), findsNothing);
+
+    await tester.tap(find.byKey(const Key('pet_detail_load_retry')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Rex'), findsWidgets);
+  });
+}
+
+class _RetryPetListNotifier extends PetListNotifier {
+  _RetryPetListNotifier(this._load);
+
+  final Future<List<Pet>> Function() _load;
+
+  @override
+  Future<List<Pet>> build() async => _load();
 }

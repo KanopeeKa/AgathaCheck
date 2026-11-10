@@ -103,6 +103,11 @@
   "retry": "Réessayer",
   "loadErrorTitle": "Impossible de charger ce contenu",
   "loadErrorRetryHint": "Vérifiez votre connexion et réessayez.",
+  "loadErrorYourPets": "Impossible de charger vos animaux",
+  "tagFiltersLoading": "Chargement des étiquettes…",
+  "tagFiltersUnavailable": "Étiquettes indisponibles",
+  "careStatusUnavailable": "État des soins indisponible",
+  "backToPets": "Retour aux animaux",
   "loadingLabel": "Chargement",
 
   "language": "Langue",

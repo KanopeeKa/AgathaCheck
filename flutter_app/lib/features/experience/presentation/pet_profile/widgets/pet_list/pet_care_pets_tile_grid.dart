@@ -4,6 +4,18 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../utils/pet_care_dashboard_helpers.dart';
 
+/// Whether care-entry data for tile status lines has resolved.
+enum CareSummaryResolution {
+  /// Care entries have not loaded yet — omit status lines.
+  loading,
+
+  /// Care entries failed — omit false "all set" claims on tiles.
+  unavailable,
+
+  /// Care entries loaded; [careSummary] may still be null when the list is empty.
+  ready,
+}
+
 /// Dashboard-aligned unified pet tiles in a responsive wrap grid for guardian list screens.
 class PetCarePetsTileGrid extends StatelessWidget {
   const PetCarePetsTileGrid({
@@ -11,6 +23,7 @@ class PetCarePetsTileGrid extends StatelessWidget {
     required this.pets,
     required this.careSummary,
     required this.onPetTap,
+    this.careSummaryResolution = CareSummaryResolution.ready,
     this.selectionMode = false,
     this.selectedPetIds = const {},
     this.onToggleSelection,
@@ -18,6 +31,7 @@ class PetCarePetsTileGrid extends StatelessWidget {
 
   final List<Pet> pets;
   final PetCareTodayCareSummary? careSummary;
+  final CareSummaryResolution careSummaryResolution;
   final ValueChanged<Pet> onPetTap;
   final bool selectionMode;
   final Set<String> selectedPetIds;
@@ -78,15 +92,19 @@ class PetCarePetsTileGrid extends StatelessWidget {
     required double tileHeight,
   }) {
     final theme = Theme.of(context);
-    final careStatus = careSummary == null
-        ? CareStatus.allSet
-        : petCareStatusFor(pet, careSummary!);
-    final statusLine = resolvePetTileStatusLine(
-      l: l,
-      pet: pet,
-      context: PetTileContext.petCare,
-      careStatus: careStatus,
-    );
+    final PetTileStatusLineData? statusLine = switch (careSummaryResolution) {
+      CareSummaryResolution.loading ||
+      CareSummaryResolution.unavailable =>
+        const PetTileStatusLineData(label: ''),
+      CareSummaryResolution.ready => resolvePetTileStatusLine(
+        l: l,
+        pet: pet,
+        context: PetTileContext.petCare,
+        careStatus: careSummary == null
+            ? CareStatus.allSet
+            : petCareStatusFor(pet, careSummary!),
+      ),
+    };
     final selected = selectedPetIds.contains(pet.id);
 
     final tile = UnifiedPetTile(
