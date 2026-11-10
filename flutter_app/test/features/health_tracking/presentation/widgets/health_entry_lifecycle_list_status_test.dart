@@ -20,42 +20,44 @@ HealthEntry _closedEntry({String? careClosedReason}) {
 }
 
 void main() {
-  testWidgets('user-closed row shows Closed by you with stop icon and grey pill', (
-    tester,
-  ) async {
-    late AppLocalizations l;
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: AppTheme.lightTheme,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: Builder(
-          builder: (context) {
-            l = AppLocalizations.of(context)!;
-            final entry = _closedEntry(careClosedReason: 'stopped_by_user');
-            final treatment = healthEntryLifecycleStatusTreatment(
-              entry,
-              Theme.of(context).colorScheme,
-            );
-            return Scaffold(
-              body: HealthEntryStatusLabel(
-                text: formatHealthEntryLifecycleStatusLabel(entry, l),
-                treatment: treatment,
-              ),
-            );
-          },
+  testWidgets(
+    'user-closed row shows Closed by you with stop icon and grey pill',
+    (tester) async {
+      late AppLocalizations l;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Builder(
+            builder: (context) {
+              l = AppLocalizations.of(context)!;
+              final entry = _closedEntry(careClosedReason: 'stopped_by_user');
+              final treatment = healthEntryLifecycleStatusTreatment(
+                entry,
+                Theme.of(context).colorScheme,
+              );
+              return Scaffold(
+                body: HealthEntryStatusLabel(
+                  text: formatHealthEntryLifecycleStatusLabel(entry, l),
+                  treatment: treatment,
+                ),
+              );
+            },
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    expect(find.text('Closed by you'), findsOneWidget);
-    expect(find.byIcon(Icons.stop_circle_outlined), findsOneWidget);
-    final scheme = Theme.of(tester.element(find.byType(HealthEntryStatusLabel)))
-        .colorScheme;
-    final entry = _closedEntry(careClosedReason: 'stopped_by_user');
-    final treatment = healthEntryLifecycleStatusTreatment(entry, scheme);
-    expect(treatment.backgroundColor, scheme.surfaceContainerHighest);
-    expect(treatment.iconColor, scheme.onSurfaceVariant);
-  });
+      expect(find.text('Closed by you'), findsOneWidget);
+      expect(find.byIcon(Icons.stop_circle_outlined), findsOneWidget);
+      final scheme = Theme.of(
+        tester.element(find.byType(HealthEntryStatusLabel)),
+      ).colorScheme;
+      final entry = _closedEntry(careClosedReason: 'stopped_by_user');
+      final treatment = healthEntryLifecycleStatusTreatment(entry, scheme);
+      expect(treatment.backgroundColor, scheme.surfaceContainerHighest);
+      expect(treatment.iconColor, scheme.onSurfaceVariant);
+    },
+  );
 }
