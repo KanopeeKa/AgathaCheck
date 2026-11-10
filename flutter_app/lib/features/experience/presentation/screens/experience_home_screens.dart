@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../notifications/notifications.dart';
 import '../../../pet_profile/pet_profile.dart';
@@ -54,25 +55,39 @@ class _PetCareHomeScreenState extends ConsumerState<PetCareHomeScreen> {
       next.whenData((_) => _redirectIfOnboardingNeeded());
     });
 
+    final l = AppLocalizations.of(context)!;
+
+    Widget petsBody(List<Pet> pets) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const PetListStaleBanner(),
+        Expanded(
+          child: PetCareShellHomeContent(
+            allPets: pets,
+            controller: _controller,
+          ),
+        ),
+      ],
+    );
+
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
       currentLocation: GoRouterState.of(context).uri.path,
-      screenTitle: AppLocalizations.of(context)!.appTitle,
+      screenTitle: l.appTitle,
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('$e')),
-        data: (pets) => Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const PetListStaleBanner(),
-            Expanded(
-              child: PetCareShellHomeContent(
-                allPets: pets,
-                controller: _controller,
-              ),
-            ),
-          ],
-        ),
+        error: (e, _) {
+          final cached = petListAsync.valueOrNull;
+          if (cached != null) {
+            return petsBody(cached);
+          }
+          return AsyncErrorState(
+            title: l.loadErrorYourPets,
+            onRetry: () => ref.invalidate(petListProvider),
+            retryKey: const Key('home_pet_list_retry'),
+          );
+        },
+        data: petsBody,
       ),
     );
   }

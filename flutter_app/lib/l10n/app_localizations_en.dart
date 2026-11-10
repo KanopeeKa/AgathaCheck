@@ -322,6 +322,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get loadErrorTitle => 'We couldn\'t load this';
+
+  @override
+  String get loadErrorRetryHint => 'Check your connection and try again.';
+
+  @override
+  String get loadErrorYourPets => 'We couldn\'t load your pets';
+
+  @override
+  String get tagFiltersLoading => 'Loading tag filters…';
+
+  @override
+  String get tagFiltersUnavailable => 'Tag filters unavailable';
+
+  @override
+  String get careStatusUnavailable => 'Care status unavailable';
+
+  @override
+  String get backToPets => 'Back to pets';
+
+  @override
+  String get loadingLabel => 'Loading';
+
+  @override
   String get language => 'Language';
 
   @override

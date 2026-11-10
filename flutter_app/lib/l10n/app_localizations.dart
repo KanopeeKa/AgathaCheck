@@ -680,6 +680,54 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// Default title of the shared load-error state when a screen has no more specific subject (AsyncErrorState).
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load this'**
+  String get loadErrorTitle;
+
+  /// Default one-line hint under a load-error title (AsyncErrorState).
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get loadErrorRetryHint;
+
+  /// Title when the pet list primary load fails (Home, pet detail).
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your pets'**
+  String get loadErrorYourPets;
+
+  /// Supplemental caption while pet tags load on All pets.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading tag filters…'**
+  String get tagFiltersLoading;
+
+  /// Supplemental caption when pet tags fail on All pets.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag filters unavailable'**
+  String get tagFiltersUnavailable;
+
+  /// Supplemental caption when care entries fail on tile grids.
+  ///
+  /// In en, this message translates to:
+  /// **'Care status unavailable'**
+  String get careStatusUnavailable;
+
+  /// Navigation when a pet record is missing or edit is blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to pets'**
+  String get backToPets;
+
+  /// Default accessible label of the shared progress indicator (LabelledProgress).
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loadingLabel;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
