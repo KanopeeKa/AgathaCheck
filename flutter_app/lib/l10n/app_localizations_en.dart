@@ -466,6 +466,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allCareInactiveSection => 'Other care';
 
   @override
+  String get allCareClosedCareTitle => 'Closed care';
+
+  @override
+  String allCareClosedCareLink(int count) {
+    return 'Closed care ($count)';
+  }
+
+  @override
+  String get allCareClosedCareEmpty => 'No closed care yet.';
+
+  @override
+  String get careItemClosedByYou => 'Closed by you';
+
+  @override
+  String get careItemEndedStatus => 'Ended';
+
+  @override
   String get eventFilterClosed => 'Closed';
 
   @override
@@ -4608,6 +4625,84 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shareInviteAlreadyAccepted =>
       'You have already accepted this invitation.';
+
+  @override
+  String get absenceInviteTitle => 'Absence invitation';
+
+  @override
+  String absenceInviteHeadline(String inviterName) {
+    return '$inviterName invited you to help during an absence';
+  }
+
+  @override
+  String get absenceInviteAccessScope => 'Temporary care during an absence';
+
+  @override
+  String get absenceInviteAccept => 'Accept invitation';
+
+  @override
+  String get absenceInviteAccepting => 'Accepting…';
+
+  @override
+  String get absenceInviteLoadFailed =>
+      'Could not load this invitation. Try again.';
+
+  @override
+  String get absenceInviteAcceptFailed =>
+      'Could not accept this invitation. Try again.';
+
+  @override
+  String get absenceInviteUnavailable => 'Invitation unavailable';
+
+  @override
+  String get inviteContinueWithAccount => 'Sign in or create an account';
+
+  @override
+  String inviteRecipientInvitedBy(String inviterName) {
+    return '$inviterName invited you';
+  }
+
+  @override
+  String inviteRecipientHousehold(String name) {
+    return 'Household: $name';
+  }
+
+  @override
+  String inviteRecipientAccessScope(String scope) {
+    return 'Access: $scope';
+  }
+
+  @override
+  String get sharedPetLinkIdentityUnavailable => 'A pet parent';
+
+  @override
+  String sharedPetAgeMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedPetAgeYearsOne => '1 year';
+
+  @override
+  String sharedPetAgeYearsFormatted(String formattedYears) {
+    return '$formattedYears years';
+  }
+
+  @override
+  String get shareAcceptFailed => 'We couldn\'t accept this share. Try again.';
+
+  @override
+  String get shareInviteDecisionFailed =>
+      'We couldn\'t complete this invitation. Try again.';
+
+  @override
+  String get entryResolutionFailed => 'We couldn\'t load your pets';
 
   @override
   String get invited => 'Invited';
@@ -8761,6 +8856,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleHouseholdInviteDecline => 'Decline';
+
+  @override
+  String get peopleHouseholdInviteLoadFailed =>
+      'Could not load this invitation. Try again.';
 
   @override
   String get peopleAddPetsEmpty => 'No pets to link yet.';

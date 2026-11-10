@@ -20,6 +20,7 @@ import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
 import 'experience_routes.dart';
 import 'frozen_domain_route_stubs.dart';
+import 'invite_return.dart';
 import 'occurrence_screen_route.dart';
 import 'vet_routes.dart';
 
@@ -115,9 +116,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           return null;
         }
         if (path == '/forgot-password') return null;
-        if (path.startsWith('/shared/')) return null;
-        if (path.startsWith('/invite/')) return null;
-        if (path.startsWith('/household-invite/')) return null;
+        if (isPublicInviteRecipientPath(path)) return null;
         if (isPublicOrganizationProfilePath(path)) return null;
         if (LegalDocumentId.publicRoutes.contains(path)) return null;
         if (path.startsWith('/legal/')) return null;
@@ -125,7 +124,10 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (isLoggedIn && path == '/landing') {
-        return '/app/resolve';
+        return appendInviteReturnQuery(
+          '/app/resolve',
+          state.uri.queryParameters['returnTo'],
+        );
       }
 
       if (isLoggedIn && path == '/') {

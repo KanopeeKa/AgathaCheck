@@ -908,6 +908,36 @@ abstract class AppLocalizations {
   /// **'Other care'**
   String get allCareInactiveSection;
 
+  /// No description provided for @allCareClosedCareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed care'**
+  String get allCareClosedCareTitle;
+
+  /// No description provided for @allCareClosedCareLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed care ({count})'**
+  String allCareClosedCareLink(int count);
+
+  /// No description provided for @allCareClosedCareEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No closed care yet.'**
+  String get allCareClosedCareEmpty;
+
+  /// No description provided for @careItemClosedByYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed by you'**
+  String get careItemClosedByYou;
+
+  /// No description provided for @careItemEndedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended'**
+  String get careItemEndedStatus;
+
   /// No description provided for @eventFilterClosed.
   ///
   /// In en, this message translates to:
@@ -8247,6 +8277,120 @@ abstract class AppLocalizations {
   /// **'You have already accepted this invitation.'**
   String get shareInviteAlreadyAccepted;
 
+  /// No description provided for @absenceInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence invitation'**
+  String get absenceInviteTitle;
+
+  /// No description provided for @absenceInviteHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invited you to help during an absence'**
+  String absenceInviteHeadline(String inviterName);
+
+  /// No description provided for @absenceInviteAccessScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary care during an absence'**
+  String get absenceInviteAccessScope;
+
+  /// No description provided for @absenceInviteAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invitation'**
+  String get absenceInviteAccept;
+
+  /// No description provided for @absenceInviteAccepting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting…'**
+  String get absenceInviteAccepting;
+
+  /// No description provided for @absenceInviteLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this invitation. Try again.'**
+  String get absenceInviteLoadFailed;
+
+  /// No description provided for @absenceInviteAcceptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not accept this invitation. Try again.'**
+  String get absenceInviteAcceptFailed;
+
+  /// No description provided for @absenceInviteUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation unavailable'**
+  String get absenceInviteUnavailable;
+
+  /// Primary action on signed-out invite recipient previews.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or create an account'**
+  String get inviteContinueWithAccount;
+
+  /// No description provided for @inviteRecipientInvitedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invited you'**
+  String inviteRecipientInvitedBy(String inviterName);
+
+  /// No description provided for @inviteRecipientHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Household: {name}'**
+  String inviteRecipientHousehold(String name);
+
+  /// No description provided for @inviteRecipientAccessScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Access: {scope}'**
+  String inviteRecipientAccessScope(String scope);
+
+  /// Fallback when a public share preview omits the inviter display name.
+  ///
+  /// In en, this message translates to:
+  /// **'A pet parent'**
+  String get sharedPetLinkIdentityUnavailable;
+
+  /// No description provided for @sharedPetAgeMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String sharedPetAgeMonths(int count);
+
+  /// No description provided for @sharedPetAgeYearsOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
+  String get sharedPetAgeYearsOne;
+
+  /// No description provided for @sharedPetAgeYearsFormatted.
+  ///
+  /// In en, this message translates to:
+  /// **'{formattedYears} years'**
+  String sharedPetAgeYearsFormatted(String formattedYears);
+
+  /// No description provided for @shareAcceptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t accept this share. Try again.'**
+  String get shareAcceptFailed;
+
+  /// No description provided for @shareInviteDecisionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete this invitation. Try again.'**
+  String get shareInviteDecisionFailed;
+
+  /// Title when post-login experience resolution fails to load pets.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your pets'**
+  String get entryResolutionFailed;
+
   /// No description provided for @invited.
   ///
   /// In en, this message translates to:
@@ -15321,6 +15465,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Decline'**
   String get peopleHouseholdInviteDecline;
+
+  /// No description provided for @peopleHouseholdInviteLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this invitation. Try again.'**
+  String get peopleHouseholdInviteLoadFailed;
 
   /// No description provided for @peopleAddPetsEmpty.
   ///

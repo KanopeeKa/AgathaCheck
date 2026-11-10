@@ -8,6 +8,16 @@ import '../domain/repositories/people_repository.dart';
 import 'dto/people_dtos.dart';
 import 'people_api_exception.dart';
 
+class HouseholdInvitePreviewNotFoundException implements Exception {}
+
+class HouseholdInvitePreviewExpiredException implements Exception {}
+
+class HouseholdInvitePreviewLoadException implements Exception {
+  HouseholdInvitePreviewLoadException({this.statusCode});
+
+  final int? statusCode;
+}
+
 class HouseholdsApi {
   HouseholdsApi({required this.baseUrl, required this.client, this.token});
 
@@ -212,8 +222,16 @@ class HouseholdsApi {
       Uri.parse('$baseUrl/api/households/invites/code/$code'),
       headers: _headers,
     );
+    if (response.statusCode == 410) {
+      throw HouseholdInvitePreviewExpiredException();
+    }
+    if (response.statusCode == 404) {
+      throw HouseholdInvitePreviewNotFoundException();
+    }
     if (response.statusCode >= 400) {
-      throw Exception('Household invite preview ${response.statusCode}');
+      throw HouseholdInvitePreviewLoadException(
+        statusCode: response.statusCode,
+      );
     }
     final decoded = json.decode(response.body) as Map<String, dynamic>;
     return HouseholdInvitePreview(
