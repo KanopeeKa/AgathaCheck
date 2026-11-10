@@ -9,6 +9,9 @@ const EdgeInsets kPetDetailSectionHorizontalPadding = EdgeInsets.symmetric(
   horizontal: 16,
 );
 
+/// Matches design token `font-size-section-title` (system.md §2.3).
+const double kFontSizeSectionTitle = 12;
+
 bool _titleUsesUppercaseEyebrowTracking(String title) {
   if (title.isEmpty) return false;
   final hasAlpha = RegExp(r'[A-Za-z]').hasMatch(title);
@@ -22,15 +25,15 @@ TextStyle? _sectionTitleTextStyle(
 ) {
   final base = textTheme.labelSmall;
   if (base == null) return null;
-  final fontSize = base.fontSize ?? 12;
   final letterSpacing = _titleUsesUppercaseEyebrowTracking(title)
-      ? fontSize * 0.08
-      : base.letterSpacing;
+      ? kFontSizeSectionTitle * 0.08
+      : 0.0;
   return base.copyWith(
     color: titleColor,
+    fontSize: kFontSizeSectionTitle,
     fontWeight: FontWeight.w700,
     letterSpacing: letterSpacing,
-    height: 16 / fontSize,
+    height: 16 / kFontSizeSectionTitle,
   );
 }
 
@@ -40,7 +43,7 @@ class PetCareDashboardSectionHeader extends StatelessWidget {
     super.key,
     required this.title,
     this.titleColor = AppColorTokens.petCareActive,
-    this.maxLines = 2,
+    this.maxLines = 1,
   });
 
   final String title;
@@ -72,6 +75,7 @@ class PetCareDashboardSectionChrome extends StatelessWidget {
     super.key,
     this.title,
     this.titleColor = AppColorTokens.petCareActive,
+    this.titleMaxLines = 1,
     this.linkLabel,
     this.onLinkPressed,
     this.linkKey,
@@ -79,6 +83,7 @@ class PetCareDashboardSectionChrome extends StatelessWidget {
 
   final String? title;
   final Color titleColor;
+  final int titleMaxLines;
   final String? linkLabel;
   final VoidCallback? onLinkPressed;
   final Key? linkKey;
@@ -91,7 +96,11 @@ class PetCareDashboardSectionChrome extends StatelessWidget {
     if (!showTitle && !showLink) return const SizedBox.shrink();
 
     final titleWidget = showTitle
-        ? PetCareDashboardSectionHeader(title: title!, titleColor: titleColor)
+        ? PetCareDashboardSectionHeader(
+            title: title!,
+            titleColor: titleColor,
+            maxLines: titleMaxLines,
+          )
         : const SizedBox.shrink();
     final linkWidget = showLink
         ? PetCareDashboardSectionLink(

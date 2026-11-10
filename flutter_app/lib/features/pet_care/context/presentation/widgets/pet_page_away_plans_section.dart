@@ -40,6 +40,7 @@ class PetPageAwayPlansSection extends ConsumerWidget {
             children: [
               PetCareDashboardSectionChrome(
                 title: l.careContextPetPageAwaySectionTitle,
+                titleMaxLines: 2,
                 linkLabel: hasMore ? l.careContextPetPageAllAbsences : null,
                 linkKey: const Key('pet_page_all_absences_link'),
                 onLinkPressed: hasMore ? () => context.push('/pc/away') : null,

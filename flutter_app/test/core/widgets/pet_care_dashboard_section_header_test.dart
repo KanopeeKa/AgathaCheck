@@ -36,9 +36,27 @@ void main() {
 
       final text = tester.widget<Text>(find.text('CARE ACTIONS'));
       expect(text.style?.fontWeight, FontWeight.w700);
+      expect(text.style?.fontSize, kFontSizeSectionTitle);
       expect(text.style?.letterSpacing, greaterThan(0.5));
-      expect(text.maxLines, 2);
+      expect(text.maxLines, 1);
     });
+
+    testWidgets(
+      'sentence-case title uses section title size without tracking',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: PetCareDashboardSectionHeader(title: 'People around Miso'),
+            ),
+          ),
+        );
+
+        final text = tester.widget<Text>(find.text('People around Miso'));
+        expect(text.style?.fontSize, kFontSizeSectionTitle);
+        expect(text.style?.letterSpacing, 0);
+      },
+    );
   });
 
   group('PetCareDashboardSectionChrome', () {

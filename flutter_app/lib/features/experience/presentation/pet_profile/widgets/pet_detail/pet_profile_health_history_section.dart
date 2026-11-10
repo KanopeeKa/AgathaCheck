@@ -37,7 +37,10 @@ class PetProfileHealthHistorySection extends ConsumerWidget {
         key: const Key('pet_profile_health_history'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          PetCareDashboardSectionChrome(title: l.petHealthAndHistoryTitle),
+          PetCareDashboardSectionChrome(
+            title: l.petHealthAndHistoryTitle,
+            titleMaxLines: 2,
+          ),
           const SizedBox(height: kPetDetailSectionTitleGap),
           PetProfileWeightInsightSection(
             petId: petId,

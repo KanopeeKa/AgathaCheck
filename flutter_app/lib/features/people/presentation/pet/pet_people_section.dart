@@ -43,6 +43,7 @@ class PetPeopleSection extends ConsumerWidget {
           ),
           child: PetCareDashboardSectionChrome(
             title: l.peopleAroundPetTitle(petName),
+            titleMaxLines: 2,
             linkLabel: canManage && async.valueOrNull?.scope == 'full'
                 ? l.peoplePetEmergencyManage
                 : null,
