@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-09
+last_updated: 2026-11-10
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -95,6 +95,7 @@ There are 30 decisions. D1, D4, D7 and D10 were revised after an external review
 | PEOPLE-CARE-TEAM-D-039 | **People hub frame:** routes under `/pc/people` sit inside one experience shell from `PeopleHubLayout` at every width; screen width chooses layout (list-only, detail-only, or master–detail), not whether a frame is drawn; child routes must not nest a second `ExperienceShellScaffold` (no duplicate bottom nav); on compact widths the hub shell owns title, back (preserving roster `q` / filter query), and primary actions such as Edit for contacts | Implements PEOPLE-CARE-TEAM-R-039; closes double chrome on phones after hub `ShellRoute` remodel | Live | 2026-11-09 | people hub single frame |
 | PEOPLE-CARE-TEAM-D-040 | **People around {pet} layout:** one white box; group order Vets → Emergency contact → At home → Trusted carers → Other professionals; one row per contact with slot pills; record owner first in At home; only Primary vet empty slot shown when empty; removes separate Emergency card and owner subtitle | Removes duplicate slot vets, prioritises primary vet, matches pet profile surfaces | Live | 2026-11-09 | people-around-pet-release |
 | PEOPLE-CARE-TEAM-D-041 | **Grouping uses contact roles:** `GET /pets/:petId/people` adds `contact.roles`; professional vs carer classification follows `ROLE_GROUP` / `ContactGroup`; vets via `vet` or `vet_nurse` roles or vet slots | Individual vets and groomers land in the correct group | Live | 2026-11-09 | people-around-pet-release |
+| PEOPLE-CARE-TEAM-D-042 | **People primary loads (design system § 6.10):** person detail/edit, households list/detail, and the legacy vet ID resolver use shared `AsyncErrorState` with Retry inside the existing shell; confirmed-missing records offer Back to contacts or Back to households; household pet inclusion waits on `petListProvider` and must not claim another member owns a pet while that lookup is loading or failed (`SupplementalStateCaption`) | ui-async-states-3f9b phase 4; C-7.1–C-11.1 | Live | 2026-11-10 | #2205 |
 
 ## Where we start
 
@@ -438,6 +439,17 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 **Acceptance criteria**
 
 - *Given* a phone-width viewport, *when* the user opens `/pc/people/:id` for a roster contact, *then* exactly one bottom navigation bar and one shell title matching the person name are shown (PEOPLE-CARE-TEAM-R-039; test: `flutter_app/test/features/people/presentation/hub/people_hub_layout_test.dart#compact person detail uses one experience shell frame`).
+
+| ID | Requirement | Status |
+| --- | --- | --- |
+| PEOPLE-CARE-TEAM-R-052 | **Recoverable primary loads:** roster, contact detail, contact edit, households list, household detail, and legacy vet resolver failures show localized `AsyncErrorState` with a working Retry (per provider level); missing person or household after a successful load shows unavailable copy plus Back to contacts or Back to households; while personal pets are unresolved on household detail, known household pet names stay visible without an "owned by another member" subtitle | Live |
+
+**Acceptance criteria**
+
+- *Given* a failed households list load, *when* the user taps Retry, *then* the list loads without leaving the screen (PEOPLE-CARE-TEAM-R-052; test: `people_async_state_test.dart#households list error shows Retry then loads`).
+- *Given* household detail with a failed personal-pet query, *when* the pets section renders, *then* household pet names remain visible and "Owned by another household member" does not appear solely because the lookup failed (PEOPLE-CARE-TEAM-R-052; test: `people_async_state_test.dart#household detail hides other-owner label while pets fail`).
+- *Given* a failed legacy vet mapping, *when* the resolver errors, *then* the spinner is replaced by error plus Retry (PEOPLE-CARE-TEAM-R-052; test: `people_async_state_test.dart#legacy vet mapping error shows Retry not endless spinner`).
+- *Given* a failed roster on person detail, *when* the user taps Retry, *then* detail can load (PEOPLE-CARE-TEAM-R-052; test: `people_async_state_test.dart#person detail roster error shows Retry`).
 
 ### Placement
 

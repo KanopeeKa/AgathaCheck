@@ -170,7 +170,8 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
           title: Text(l.peopleEditPerson),
           body: AsyncErrorState(
             title: l.peopleListLoadError,
-            onRetry: () => ref.invalidate(personDetailProvider(widget.contactId)),
+            onRetry: () =>
+                ref.invalidate(personDetailProvider(widget.contactId)),
             retryKey: const Key('person_edit_contact_detail_retry'),
           ),
         ),

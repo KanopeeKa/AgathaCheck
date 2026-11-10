@@ -107,8 +107,9 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
 
   void _snack(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   List<HouseholdInvite> _pendingInvites() {

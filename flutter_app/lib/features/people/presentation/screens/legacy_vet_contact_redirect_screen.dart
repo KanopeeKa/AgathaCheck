@@ -40,9 +40,8 @@ class LegacyVetContactRedirectScreen extends ConsumerWidget {
     });
 
     return mappingAsync.when(
-      loading: () => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
       error: (_, __) {
         final l = AppLocalizations.of(context)!;
         return Scaffold(
@@ -51,7 +50,8 @@ class LegacyVetContactRedirectScreen extends ConsumerWidget {
             children: [
               AsyncErrorState(
                 title: l.peopleListLoadError,
-                onRetry: () => ref.invalidate(legacyVetContactIdProvider(vetId)),
+                onRetry: () =>
+                    ref.invalidate(legacyVetContactIdProvider(vetId)),
                 retryKey: const Key('legacy_vet_redirect_retry'),
               ),
               TextButton(
@@ -63,9 +63,8 @@ class LegacyVetContactRedirectScreen extends ConsumerWidget {
           ),
         );
       },
-      data: (_) => const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      ),
+      data: (_) =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
     );
   }
 }
