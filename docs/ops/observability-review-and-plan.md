@@ -134,6 +134,7 @@ Vendor facts in this section are from the owner's check of each vendor's officia
 | PostHog layout | Pay-as-you-go plan, separate operations project, spending limit of zero on every product | Keeps the monthly free allowances; a card is on file. Confirm the per-product limit exists when setting up; if it does not, set a billing alert at the lowest amount. |
 | Browser errors | Both paths: full detail for users who accepted analytics, scrubbed for everyone else | See consequence 3. |
 | Backups | None exist today. To be built soon, after the first steps of this plan, under [prod-backup-restore-plan.md](./prod-backup-restore-plan.md) | Must be running before launch. This plan only monitors backup age and the restore check. |
+| Audit pseudonym | HMAC-SHA-256 everywhere, keyed by a dedicated `AUDIT_PSEUDONYM_SALT` | The retention job stops using `md5`; no fallback to `JWT_SECRET` or a default, and production refuses to start without the salt. Delivered in step 8. |
 | Not adopted | Sentry, Grafana Cloud, Better Stack, GlitchTip, any self-hosted stack, distributed tracing | Revisit only if a chosen service fails its proof. |
 
 Consequences the steps below must respect:
@@ -162,11 +163,7 @@ Consequences the steps below must respect:
    is acceptable because checks carry no personal data: probe URLs and pulse payloads must contain no user
    IDs, emails or tokens. Record it in the processing register all the same.
 
-### Still open
-
-| # | Decision | Recommendation |
-|---|----------|----------------|
-| Q6 | Audit pseudonym scheme | HMAC-SHA-256 with a dedicated `AUDIT_PSEUDONYM_SALT` (no fallback to `JWT_SECRET` in production); change the retention job to match. |
+No decision is open. Every step can proceed in order.
 
 ### Proof on UAT before committing to the vendors
 
@@ -199,7 +196,7 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 
 Legend: ⬜ not started · 🟡 in progress · ✅ done (link PR)
 
-Order: 1–3 first (no dependencies). 4–7 need no further decision; 8 after Q6. The backup plan should start once step 4 is in (it reuses the cron wrapper and pulse checks) and must finish before launch. 8–9 before launch. 10–14 can run in parallel after 5.
+Order: 1–3 first (no dependencies). The backup plan should start once step 4 is in (it reuses the cron wrapper and pulse checks) and must finish before launch. 8–9 before launch. 10–14 can run in parallel after 5.
 
 ## Steps
 
@@ -262,13 +259,13 @@ Order: 1–3 first (no dependencies). 4–7 need no further decision; 8 after Q6
 
 ### Phase C — security, audit and workflows (before launch)
 
-**Step 8 — Audit coverage and consistency** (needs Q6)
+**Step 8 — Audit coverage and consistency**
 
 - One registry of actions (`domain.verb_past`), with a test that rejects unknown actions; rename the outliers.
 - Cover the missing mutations, sharing first: invite create/accept/decline/revoke, role change, access removal, unfollow; then households, people, care context, health issues, vets.
 - Record sensitive reads: health-file download, share-link open, data export (present), org member viewing a person.
 - Write the audit row inside the transaction for account, permission, sharing and deletion actions; keep fire-and-forget for the rest, with an `audit.write_failed` event that alerts.
-- Apply Q6. Add a target hash to `auth.login_failed`. A coverage test lists mutating routes with no audit call against an allow-list.
+- One pseudonym scheme (Decisions): the retention job computes the same HMAC as `pseudonymizeActor()`; startup fails in production without `AUDIT_PSEUDONYM_SALT`; a test proves both produce the same value for one user. Correct the `md5` line in `observability.md`. Add a target hash to `auth.login_failed`. A coverage test lists mutating routes with no audit call against an allow-list.
 - Closes the "extend `audit_events`" debt row.
 - **Done when:** the coverage test passes with an empty unexplained list.
 
