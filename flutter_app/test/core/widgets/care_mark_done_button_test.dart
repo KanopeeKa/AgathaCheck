@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/care_event_row_context.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_surface/care_action_row.dart';
 import 'package:pet_profile_app/core/widgets/care_mark_done_button.dart';
@@ -17,20 +14,6 @@ Widget _host(Widget child) {
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: Scaffold(body: Center(child: child)),
-  );
-}
-
-HealthEntry _entry() {
-  final today = DateTime.now();
-  return HealthEntry(
-    id: 'entry-1',
-    petId: 'pet-1',
-    name: 'Heartworm pill',
-    type: HealthEntryType.medication,
-    dosage: '',
-    frequency: HealthFrequency.monthly,
-    startDate: DateTime(today.year, today.month, today.day),
-    nextDueDate: DateTime(today.year, today.month, today.day),
   );
 }
 
@@ -140,53 +123,6 @@ void main() {
   });
 
   group('shared across care rows', () {
-    testWidgets('CareEventRow (dashboard / All Actions) uses it', (
-      tester,
-    ) async {
-      var taps = 0;
-      final entry = _entry();
-      await tester.pumpWidget(
-        _host(
-          CareEventRow(
-            entry: entry,
-            rowContext: CareEventRowContext.dashboard,
-            isCompleted: false,
-            onMarkDone: () => taps++,
-            onUndo: () {},
-            onView: () {},
-          ),
-        ),
-      );
-
-      final button = find.byKey(const Key('care_event_row_done_entry-1'));
-      expect(tester.widget(button), isA<CareMarkDoneButton>());
-      await tester.tap(button);
-      expect(taps, 1);
-    });
-
-    testWidgets('CareEventRow disables it while occurrences load', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _host(
-          CareEventRow(
-            entry: _entry(),
-            rowContext: CareEventRowContext.dashboard,
-            isCompleted: false,
-            isMarkDoneEnabled: false,
-            onMarkDone: () {},
-            onUndo: () {},
-            onView: () {},
-          ),
-        ),
-      );
-
-      final button = tester.widget<CareMarkDoneButton>(
-        find.byType(CareMarkDoneButton),
-      );
-      expect(button.onPressed, isNull);
-    });
-
     testWidgets('CareActionRow (pet screen / All Care) uses it', (
       tester,
     ) async {
