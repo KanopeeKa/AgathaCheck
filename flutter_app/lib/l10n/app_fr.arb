@@ -3326,6 +3326,7 @@
   },
   "peopleHouseholdInviteAccept": "Accepter l'invitation",
   "peopleHouseholdInviteDecline": "Refuser",
+  "peopleHouseholdInviteLoadFailed": "Impossible de charger cette invitation. Réessayez.",
   "peopleAddPetsEmpty": "Aucun animal à lier pour l'instant.",
   "peopleAddPetLinkKind": "Rôle pour cet animal",
   "peopleAddEmergencyContact": "Contact d'urgence pour cet animal",

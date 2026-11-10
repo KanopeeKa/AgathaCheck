@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/invite_recipient_block.dart';
 import '../../../../l10n/app_localizations.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../../application/people_commands.dart';
 import '../../application/people_providers.dart';
+import '../../data/households_api.dart';
 import '../../domain/entities/household_invite_preview.dart';
 import 'household_tier_labels.dart';
 
@@ -58,6 +61,7 @@ Future<List<String>?> _sharePetsAfterInvite(
   );
 }
 
+/// Landing screen for household invites at `/household-invite/:code`.
 class HouseholdInviteLandingScreen extends ConsumerStatefulWidget {
   const HouseholdInviteLandingScreen({super.key, required this.inviteCode});
 
@@ -72,33 +76,54 @@ class _HouseholdInviteLandingScreenState
     extends ConsumerState<HouseholdInviteLandingScreen> {
   HouseholdInvitePreview? _preview;
   bool _loading = true;
-  bool _notFound = false;
+  String? _errorKey;
   bool _busy = false;
 
   @override
   void initState() {
     super.initState();
-    _load();
+    _loadPreview();
   }
 
-  Future<void> _load() async {
+  Future<void> _loadPreview() async {
+    if (!mounted) return;
+    setState(() {
+      _loading = true;
+      _errorKey = null;
+      _preview = null;
+    });
     try {
       final preview = await ref
           .read(householdsRepositoryProvider)
           .fetchHouseholdInvitePreview(widget.inviteCode);
+      if (!mounted) return;
       setState(() {
         _preview = preview;
         _loading = false;
       });
-    } catch (_) {
+    } on HouseholdInvitePreviewExpiredException {
+      if (!mounted) return;
       setState(() {
-        _notFound = true;
+        _errorKey = 'expired';
+        _loading = false;
+      });
+    } on HouseholdInvitePreviewNotFoundException {
+      if (!mounted) return;
+      setState(() {
+        _errorKey = 'not_found';
+        _loading = false;
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _errorKey = 'load_failed';
         _loading = false;
       });
     }
   }
 
   Future<void> _accept() async {
+    if (!ref.read(authProvider).isLoggedIn) return;
     setState(() => _busy = true);
     try {
       final preview = _preview!;
@@ -139,6 +164,7 @@ class _HouseholdInviteLandingScreenState
   }
 
   Future<void> _decline() async {
+    if (!ref.read(authProvider).isLoggedIn) return;
     setState(() => _busy = true);
     try {
       await ref
@@ -158,53 +184,141 @@ class _HouseholdInviteLandingScreenState
     }
   }
 
+  String _inviterDisplay(AppLocalizations l, HouseholdInvitePreview preview) {
+    final raw = preview.inviterName;
+    if (raw.trim().isNotEmpty) return raw.trim();
+    return l.sharedPetLinkIdentityUnavailable;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
+    final isLoggedIn = ref.watch(authProvider).isLoggedIn;
+    final invitePath = '/household-invite/${widget.inviteCode}';
+
     if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        appBar: AppBar(title: AppLogoTitle(title: l.householdsTitle)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
-    if (_notFound || _preview == null) {
-      return Scaffold(body: Center(child: Text(l.shareInviteNotFound)));
+
+    if (_errorKey != null || _preview == null) {
+      if (_errorKey == 'load_failed') {
+        return Scaffold(
+          appBar: AppBar(title: AppLogoTitle(title: l.householdsTitle)),
+          body: AsyncErrorState(
+            title: l.peopleHouseholdInviteLoadFailed,
+            onRetry: _loadPreview,
+          ),
+        );
+      }
+      final errorMessage = switch (_errorKey) {
+        'expired' => l.shareInviteExpired,
+        _ => l.shareInviteNotFound,
+      };
+      return Scaffold(
+        appBar: AppBar(title: AppLogoTitle(title: l.householdsTitle)),
+        body: Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.mark_email_unread,
+                  size: 64,
+                  color: colorScheme.outline,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  errorMessage,
+                  style: theme.textTheme.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                FilledButton.icon(
+                  onPressed: () => context.go('/'),
+                  icon: const Icon(Icons.home),
+                  label: Text(l.goToPetCare),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
     }
+
     final preview = _preview!;
     final tier = householdTierLabel(
       l,
       preview.accessTier,
       organiser: preview.isOrganiser,
     );
+    final inviter = _inviterDisplay(l, preview);
+
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppLogoTitle(title: l.householdsTitle, showTitle: false),
-              const SizedBox(height: 24),
-              Text(
-                l.peopleHouseholdInviteLandingTitle(preview.householdName),
-                style: Theme.of(context).textTheme.headlineSmall,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                l.peopleHouseholdInviteLandingBody(preview.inviterName, tier),
-              ),
-              const Spacer(),
-              FilledButton(
-                key: const Key('household_invite_accept'),
-                onPressed: _busy ? null : _accept,
-                child: Text(l.peopleHouseholdInviteAccept),
-              ),
-              const SizedBox(height: 8),
-              TextButton(
-                key: const Key('household_invite_decline'),
-                onPressed: _busy ? null : _decline,
-                child: Text(l.peopleHouseholdInviteDecline),
-              ),
-            ],
-          ),
+      appBar: AppBar(
+        title: AppLogoTitle(title: l.householdsTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.home),
+          tooltip: l.goToPetCare,
+          onPressed: () => context.go('/'),
         ),
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          if (isLoggedIn)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l.peopleHouseholdInviteLandingTitle(preview.householdName),
+                      style: theme.textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      l.peopleHouseholdInviteLandingBody(inviter, tier),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            InviteRecipientBlock(
+              invitePath: invitePath,
+              scopeDescription: tier,
+              inviterName: preview.inviterName,
+              householdSummary: preview.householdName,
+            ),
+          if (isLoggedIn) ...[
+            const SizedBox(height: 16),
+            FilledButton(
+              key: const Key('household_invite_accept'),
+              onPressed: _busy ? null : _accept,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+              ),
+              child: Text(l.peopleHouseholdInviteAccept),
+            ),
+            const SizedBox(height: 8),
+            TextButton(
+              key: const Key('household_invite_decline'),
+              onPressed: _busy ? null : _decline,
+              style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+              child: Text(l.peopleHouseholdInviteDecline),
+            ),
+          ],
+        ],
       ),
     );
   }
