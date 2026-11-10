@@ -163,9 +163,7 @@ void main() {
 
   testWidgets('due/overdue filter hides non-due entries', (tester) async {
     await tester.pumpWidget(
-      buildEventsScreen(
-        entries: [_fosterEntry, _ownedEntry],
-      ),
+      buildEventsScreen(entries: [_fosterEntry, _ownedEntry]),
     );
     await tester.pumpAndSettle();
 
@@ -330,10 +328,7 @@ void main() {
 
     expect(find.byIcon(Icons.error_outline), findsOneWidget);
     expect(find.byKey(const Key('global_events_retry')), findsOneWidget);
-    expect(
-      find.byKey(const Key('pet_care_action_entry-owned')),
-      findsNothing,
-    );
+    expect(find.byKey(const Key('pet_care_action_entry-owned')), findsNothing);
     expect(find.text('No entries yet'), findsNothing);
   });
 
@@ -388,7 +383,9 @@ void main() {
     expect(find.text('Heartgard'), findsOneWidget);
   });
 
-  testWidgets('paused and closed care use collapsible sections', (tester) async {
+  testWidgets('paused and closed care use collapsible sections', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       buildEventsScreen(
         entries: [
@@ -440,7 +437,6 @@ void main() {
       find.byKey(const Key('global_events_row_closed-entry')),
       findsNothing,
     );
-
   });
 
   testWidgets('lifecycle rows render at all viewport widths', (tester) async {
@@ -470,6 +466,9 @@ void main() {
     );
 
     expect(find.byKey(const Key('global_events_list')), findsOneWidget);
-    expect(find.bySemanticsIdentifier('global_events_paused_care'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('global_events_paused_care'),
+      findsOneWidget,
+    );
   });
 }

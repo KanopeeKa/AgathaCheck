@@ -2,7 +2,6 @@
 title: All care by care item — delivery plan
 owner: Product / Documentation
 audience: both
-domain: pet_care
 status: in-delivery
 status_since: 2026-11-10
 folds_into: docs/domains/pet_care/features/care-item-evolution.md

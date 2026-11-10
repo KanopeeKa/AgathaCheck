@@ -205,9 +205,7 @@ Widget buildListScreen({
     routes: [
       GoRoute(
         path: '/pc/events',
-        builder: (_, __) => Scaffold(
-          body: GlobalEventsList(shellPets: pets),
-        ),
+        builder: (_, __) => Scaffold(body: GlobalEventsList(shellPets: pets)),
       ),
     ],
   );

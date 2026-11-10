@@ -246,11 +246,7 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
             expanded: _pausedCareExpanded,
             onToggle: () =>
                 setState(() => _pausedCareExpanded = !_pausedCareExpanded),
-            children: _lifecycleRows(
-              l,
-              parts.paused,
-              petMap,
-            ),
+            children: _lifecycleRows(l, parts.paused, petMap),
           ),
           GlobalEventsCollapsibleSection(
             sectionKey: const Key('global_events_closed_section'),
@@ -260,11 +256,7 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
             expanded: _closedCareExpanded,
             onToggle: () =>
                 setState(() => _closedCareExpanded = !_closedCareExpanded),
-            children: _lifecycleRows(
-              l,
-              parts.closed,
-              petMap,
-            ),
+            children: _lifecycleRows(l, parts.closed, petMap),
           ),
         ],
       ),

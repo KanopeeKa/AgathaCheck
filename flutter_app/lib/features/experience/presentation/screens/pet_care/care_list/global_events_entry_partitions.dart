@@ -15,19 +15,19 @@ class GlobalEventsEntryPartitions {
   final List<HealthEntry> paused;
   final List<HealthEntry> closed;
 
-  bool get isEmpty =>
-      planned.isEmpty && paused.isEmpty && closed.isEmpty;
+  bool get isEmpty => planned.isEmpty && paused.isEmpty && closed.isEmpty;
 
   static GlobalEventsEntryPartitions fromVisible(
     List<HealthEntry> visible, {
     required Set<String> agendaEntryIds,
   }) {
-    final planned =
-        visible.where((e) => agendaEntryIds.contains(e.id)).toList();
-    final notPlanned =
-        visible.where((e) => !agendaEntryIds.contains(e.id)).toList();
-    final closed =
-        partitionClosedCareEntries(notPlanned);
+    final planned = visible
+        .where((e) => agendaEntryIds.contains(e.id))
+        .toList();
+    final notPlanned = visible
+        .where((e) => !agendaEntryIds.contains(e.id))
+        .toList();
+    final closed = partitionClosedCareEntries(notPlanned);
     final closedIds = closed.map((e) => e.id).toSet();
     final paused = sortInactiveAllCareEntries(
       notPlanned.where((e) => !closedIds.contains(e.id)).toList(),
