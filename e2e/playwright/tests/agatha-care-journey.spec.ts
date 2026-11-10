@@ -123,7 +123,7 @@ test.describe('Agatha care journey', () => {
       });
       await loginAs(page, testUser, { experience: 'guardian' });
       const dashboard = new GuardianDashboardPage(page);
-      await dashboard.expectLoaded();
+      await dashboard.open();
       const agenda = new CareAgendaPage(page);
       await agenda.expectRowVisible('Bella groom');
       await agenda.expectRowVisible('Max groom');

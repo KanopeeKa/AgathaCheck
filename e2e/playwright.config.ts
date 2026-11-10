@@ -59,8 +59,7 @@ export default defineConfig({
       name: 'ci-canary',
       grep: /@smoke-ci/,
       retries: 0,
-      // GuardianDashboardPage.expectLoaded() allows 60s for route + section locators.
-      timeout: 90_000,
+      timeout: 45_000,
       use: sharedUse,
     },
     {

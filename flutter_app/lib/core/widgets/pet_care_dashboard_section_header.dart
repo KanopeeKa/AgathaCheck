@@ -52,6 +52,7 @@ class PetCareDashboardSectionHeader extends StatelessWidget {
     final theme = Theme.of(context);
     final style = _sectionTitleTextStyle(theme.textTheme, title, titleColor);
     return Semantics(
+      container: true,
       header: true,
       child: Text(
         title,
