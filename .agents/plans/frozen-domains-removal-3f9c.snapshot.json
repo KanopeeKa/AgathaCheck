@@ -3,7 +3,7 @@
   "plan_id": "frozen-domains-removal-3f9c",
   "title": "Remove the frozen Shelter and Fostering code and the dead active widgets",
   "plan_file": ".agents/plans/frozen-domains-removal-3f9c.md",
-  "plan_file_sha256": "add7a32c2b3204f9b188f47f3139b5ff99146ddf250173575e1582b8cb1b6ed4",
+  "plan_file_sha256": "d071f25cd5c702d77fab11adee5b050c2d8a13bbc59c21dfb09a90a9e44e1291",
   "release_branch": "main",
   "integration_branch": "cursor/frozen-domains-removal-3f9c-integration-3f9c",
   "control_issue": 2192,
@@ -228,7 +228,9 @@
         "flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart",
         "flutter_app/lib/features/auth/presentation/controllers/my_details_controller.dart",
         "flutter_app/lib/features/auth/presentation/screens/my_details_screen.dart",
-        "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart"
+        "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart",
+        "flutter_app/test/features/auth/presentation/widgets/landing_audience_section_test.dart",
+        "flutter_app/test/features/auth/presentation/widgets/landing_path_card_test.dart"
       ],
       "forbidden_paths": [
         "flutter_app/lib/features/auth/presentation/screens/landing_screen.dart"
@@ -256,7 +258,9 @@
         "flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart",
         "flutter_app/lib/features/auth/presentation/controllers/my_details_controller.dart",
         "flutter_app/lib/features/auth/presentation/screens/my_details_screen.dart",
-        "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart"
+        "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart",
+        "flutter_app/test/features/auth/presentation/widgets/landing_audience_section_test.dart",
+        "flutter_app/test/features/auth/presentation/widgets/landing_path_card_test.dart"
       ]
     },
     {
@@ -357,5 +361,5 @@
       ]
     }
   ],
-  "approval_hash": "sha256:f46f0c68e3af7880559d299a48e7c2ca530e2bc5b8b07a3bf883c07a0b58a885"
+  "approval_hash": "sha256:d4475add7dad78d4bee8f4545c7fe40742733a799b82ab4ee418ab24279dcb83"
 }

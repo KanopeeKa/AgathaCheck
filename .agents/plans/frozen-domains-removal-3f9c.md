@@ -211,7 +211,9 @@ Out of scope: classes that share a file with live code (phase 6), any file outsi
     "flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart",
     "flutter_app/lib/features/auth/presentation/controllers/my_details_controller.dart",
     "flutter_app/lib/features/auth/presentation/screens/my_details_screen.dart",
-    "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart"
+    "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart",
+    "flutter_app/test/features/auth/presentation/widgets/landing_audience_section_test.dart",
+    "flutter_app/test/features/auth/presentation/widgets/landing_path_card_test.dart"
   ],
   "approved_sensitive_paths": [
     "flutter_app/lib/features/auth/auth.dart",
@@ -222,7 +224,9 @@ Out of scope: classes that share a file with live code (phase 6), any file outsi
     "flutter_app/lib/features/auth/presentation/widgets/landing/landing_logo.dart",
     "flutter_app/lib/features/auth/presentation/controllers/my_details_controller.dart",
     "flutter_app/lib/features/auth/presentation/screens/my_details_screen.dart",
-    "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart"
+    "flutter_app/lib/features/auth/presentation/widgets/my_details/profile_settings_section.dart",
+    "flutter_app/test/features/auth/presentation/widgets/landing_audience_section_test.dart",
+    "flutter_app/test/features/auth/presentation/widgets/landing_path_card_test.dart"
   ],
   "forbidden_paths": ["flutter_app/lib/features/auth/presentation/screens/landing_screen.dart"],
   "allowed_exceptions": ["tests", "docs"],
