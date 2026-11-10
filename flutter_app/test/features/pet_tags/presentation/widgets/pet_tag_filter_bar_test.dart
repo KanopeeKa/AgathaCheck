@@ -46,7 +46,12 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         routerConfig: GoRouter(
-          routes: [GoRoute(path: '/', builder: (_, __) => Scaffold(body: child))],
+          routes: [
+            GoRoute(
+              path: '/',
+              builder: (_, __) => Scaffold(body: child),
+            ),
+          ],
         ),
       ),
     );
@@ -56,10 +61,9 @@ void main() {
     tester,
   ) async {
     await tester.pumpWidget(
-      wrap(
-        const PetTagFilterBar(),
-        [petTagListProvider.overrideWith(() => _TagListErrorNotifier())],
-      ),
+      wrap(const PetTagFilterBar(), [
+        petTagListProvider.overrideWith(() => _TagListErrorNotifier()),
+      ]),
     );
     await tester.pumpAndSettle();
 
@@ -69,13 +73,10 @@ void main() {
 
   testWidgets('keeps filter selection visible while tags load', (tester) async {
     await tester.pumpWidget(
-      wrap(
-        const PetTagFilterBar(),
-        [
-          petTagListProvider.overrideWith(() => _TagListLoadingNotifier()),
-          petTagFilterProvider.overrideWith(() => _PrefilteredTagFilter()),
-        ],
-      ),
+      wrap(const PetTagFilterBar(), [
+        petTagListProvider.overrideWith(() => _TagListLoadingNotifier()),
+        petTagFilterProvider.overrideWith(() => _PrefilteredTagFilter()),
+      ]),
     );
     await tester.pump();
 
@@ -84,10 +85,9 @@ void main() {
 
   testWidgets('hides bar when there are no tags', (tester) async {
     await tester.pumpWidget(
-      wrap(
-        const PetTagFilterBar(),
-        [petTagListProvider.overrideWith(() => _EmptyTagListNotifier())],
-      ),
+      wrap(const PetTagFilterBar(), [
+        petTagListProvider.overrideWith(() => _EmptyTagListNotifier()),
+      ]),
     );
     await tester.pumpAndSettle();
 
@@ -103,6 +103,5 @@ class _EmptyTagListNotifier extends PetTagListNotifier {
 
 class _PrefilteredTagFilter extends PetTagFilterNotifier {
   @override
-  PetTagFilterState build() =>
-      const PetTagFilterState(selectedTagIds: {'t1'});
+  PetTagFilterState build() => const PetTagFilterState(selectedTagIds: {'t1'});
 }

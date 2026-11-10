@@ -56,10 +56,7 @@ class PetEditPermissionGuard extends ConsumerWidget {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            AsyncErrorState(
-              title: l.petNotFound,
-              detail: null,
-            ),
+            AsyncErrorState(title: l.petNotFound, detail: null),
             TextButton(
               key: const Key('pet_edit_guard_back_to_pets'),
               onPressed: () => context.go('/pc/pets'),
