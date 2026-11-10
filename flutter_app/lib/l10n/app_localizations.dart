@@ -4183,6 +4183,18 @@ abstract class AppLocalizations {
   /// **'Mark all as read'**
   String get markAllRead;
 
+  /// No description provided for @notificationsMarkedRead.
+  ///
+  /// In en, this message translates to:
+  /// **'All marked as read'**
+  String get notificationsMarkedRead;
+
+  /// No description provided for @notificationOpenInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Open full inbox'**
+  String get notificationOpenInbox;
+
   /// No description provided for @notificationSettingsTooltip.
   ///
   /// In en, this message translates to:
@@ -11416,7 +11428,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationInboxForYouEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No suggestions right now. Agatha will let you know when something\'s worth a look.'**
+  /// **'No suggestions right now.'**
   String get notificationInboxForYouEmpty;
 
   /// No description provided for @notificationInboxV2Explainer.
