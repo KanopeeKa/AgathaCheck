@@ -127,6 +127,23 @@ Steps 1–3 need no vendor and can start now. These need the owner (new processo
 | Q5 | Legal basis and notice text for error and log processing | Legitimate interest (Art. 6(1)(f)); add the processors to `INTERNAL_GDPR.md`, `DATA_MAP.md` and both privacy notices in the same PR that turns each one on. |
 | Q6 | Audit pseudonym scheme | HMAC-SHA-256 with a dedicated `AUDIT_PSEUDONYM_SALT` (no fallback to `JWT_SECRET` in production); change the retention job to match. |
 
+### Vendor candidates (free tiers, checked 2026-11-10)
+
+Free-tier limits come from public pricing pages and third-party listings on that date. Confirm each on the
+vendor's own page, and confirm the EU region and DPA, before signing up.
+
+| Need | First choice | Why | Alternatives |
+|------|--------------|-----|--------------|
+| Errors (Q1) and logs (Q2) | **PostHog EU, in a separate "operations" project** | Already a processor with an EU region, so no new vendor. Free tier lists 100,000 exceptions and 10 GB of logs a month. A separate project keeps legitimate-interest operational data apart from consent-based analytics. | Errors: Bugsink hosted (EU-owned, EU-hosted, Sentry SDKs, about 15,000 events a month, one user); GlitchTip hosted (German instance, about 1,000 events a month); Sentry EU region (5,000 errors a month, one user, US company). Logs: Grafana Cloud EU stack (50 GB, 14 days); Better Stack (about 3 GB, 3 days). |
+| Heartbeats and uptime (Q3) | **healthchecks.io Hobbyist** | EU company (Latvia), 20 checks free, open source. Covers every cron job, plus an in-host loopback probe of `/health/ready` that pings each minute, which the host WAF cannot block. | Better Stack free (10 monitors and heartbeats combined) for an outside probe with TLS-expiry checks. |
+
+Points to prove on UAT before committing: PostHog captures Flutter web errors with readable stacks; PostHog log
+retention can be held to 30 days; an outside uptime probe is not blocked by the o2switch WAF. If the first fails,
+use Bugsink for errors: it takes the standard Sentry SDKs, so a later move is a DSN change.
+
+Self-hosting (GlitchTip, Uptime Kuma, Loki) is not possible on the shared cPanel host and would need a
+separate server, which is a cost and a second system to keep alive. Not recommended at this size.
+
 ## Status board
 
 One PR per step. Each PR updates `observability.md` and ticks its row here.
