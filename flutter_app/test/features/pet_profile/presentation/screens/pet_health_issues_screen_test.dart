@@ -27,6 +27,13 @@ class _FakeHealthIssueNotifier extends HealthIssueNotifier {
   Future<List<HealthIssue>> build(String arg) async => _issues;
 }
 
+class _FailingHealthIssueNotifier extends HealthIssueNotifier {
+  @override
+  Future<List<HealthIssue>> build(String arg) async {
+    throw Exception('network');
+  }
+}
+
 Future<List<HealthIssueDocument>> _emptyDocuments(ref, String issueId) async =>
     [];
 
@@ -106,6 +113,53 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AlertDialog), findsOneWidget);
+  });
+
+  testWidgets('load error shows retry without exception text', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          experienceEligibilityProvider.overrideWith(
+            (ref) => AsyncValue.data(
+              ExperienceEligibilityRules.compute(
+                pets: const [],
+                orgMembershipCount: 0,
+              ),
+            ),
+          ),
+          combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
+          apiBaseUrlProvider.overrideWithValue('http://test.local'),
+          healthIssueNotifierProvider.overrideWith(
+            _FailingHealthIssueNotifier.new,
+          ),
+          healthIssueDocumentsProvider.overrideWith(_emptyDocuments),
+        ],
+        child: MaterialApp.router(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          routerConfig: GoRouter(
+            initialLocation: '/pet/pet-1/health-issues',
+            routes: [
+              GoRoute(
+                path: '/pet/:petId/health-issues',
+                builder: (context, state) => PetHealthIssuesScreen(
+                  petId: state.pathParameters['petId']!,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.textContaining('Exception'), findsNothing);
+    expect(find.text('We couldn\'t load health issues'), findsOneWidget);
+    expect(find.byKey(const Key('health_issues_load_retry')), findsOneWidget);
   });
 
   testWidgets('expands and collapses an issue card', (tester) async {

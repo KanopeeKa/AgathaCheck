@@ -1,55 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/utils/calendar_date.dart';
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/weight_overview.dart';
 import '../navigation/weight_care_add_navigation.dart';
+import '../providers/weight_providers.dart';
 import '../utils/weight_hub_labels.dart';
 
-class WeightHubRoutinesCard extends StatelessWidget {
+class WeightHubRoutinesCard extends ConsumerWidget {
   const WeightHubRoutinesCard({
     required this.petId,
-    required this.overview,
+    required this.overviewAsync,
     super.key,
   });
 
   final String petId;
-  final WeightOverview? overview;
+  final AsyncValue<WeightOverview> overviewAsync;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final routines = overview?.routines ?? [];
 
-    return Card(
-      key: const Key('weight_hub_routines'),
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: routines.isEmpty
-            ? _NoRoutineBody(
-                l: l,
-                theme: theme,
-                onSetUp: () => context.push(weightMonitoringCareAddPath(petId)),
-              )
-            : Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l.weightRoutinesTitle,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  for (final routine in routines)
-                    _RoutineRow(petId: petId, routine: routine, l: l),
-                ],
-              ),
+    return overviewAsync.when(
+      loading: () => Card(
+        key: const Key('weight_hub_routines'),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SupplementalStateCaption(
+            state: SupplementalState.loading,
+            label: l.weightTargetRoutineLoading,
+          ),
+        ),
       ),
+      error: (_, __) => Card(
+        key: const Key('weight_hub_routines'),
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SupplementalStateCaption(
+            state: SupplementalState.unavailable,
+            label: l.weightTargetRoutineUnavailable,
+            onRetry: () => ref.invalidate(weightOverviewProvider(petId)),
+            retryKey: const Key('weight_hub_routines_overview_retry'),
+          ),
+        ),
+      ),
+      data: (overview) {
+        final routines = overview.routines;
+        return Card(
+          key: const Key('weight_hub_routines'),
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: routines.isEmpty
+                ? _NoRoutineBody(
+                    l: l,
+                    theme: theme,
+                    onSetUp: () =>
+                        context.push(weightMonitoringCareAddPath(petId)),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        l.weightRoutinesTitle,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      for (final routine in routines)
+                        _RoutineRow(petId: petId, routine: routine, l: l),
+                    ],
+                  ),
+          ),
+        );
+      },
     );
   }
 }

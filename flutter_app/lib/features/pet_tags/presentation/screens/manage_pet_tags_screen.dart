@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_error_state.dart';
+import 'package:pet_profile_app/core/widgets/async_state/labelled_progress.dart';
 import '../../domain/entities/pet_tag.dart';
 import '../providers/pet_tag_providers.dart';
 
@@ -20,8 +22,11 @@ class ManagePetTagsScreen extends ConsumerWidget {
       currentLocation: '/account/pet-tags',
       screenTitle: l.petTagsTitle,
       child: tagsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(l.errorWithMessage('$error'))),
+        loading: () => Center(child: LabelledProgress(label: l.loadingLabel)),
+        error: (error, _) => AsyncErrorState(
+          title: l.petTagsLoadError,
+          onRetry: () => ref.read(petTagListProvider.notifier).refresh(),
+        ),
         data: (tags) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -166,7 +171,15 @@ class ManagePetTagsScreen extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
-    await ref.read(petTagListProvider.notifier).deleteTag(tag.id);
+    try {
+      await ref.read(petTagListProvider.notifier).deleteTag(tag.id);
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.petTagDeleteFailed)));
+      }
+    }
   }
 
   Future<String?> _promptForName(

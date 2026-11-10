@@ -28,12 +28,15 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
     final entriesAsync = ref.watch(petHealthEntriesByIdProvider(widget.petId));
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
       child: entriesAsync.when(
         loading: () => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
+            PetCareDashboardSectionChrome(
+              title: l.careForPet(widget.pet.name),
+              titleMaxLines: 2,
+            ),
             const SizedBox(height: 10),
             const SizedBox(
               height: 56,
@@ -44,7 +47,10 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
         error: (error, _) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
+            PetCareDashboardSectionChrome(
+              title: l.careForPet(widget.pet.name),
+              titleMaxLines: 2,
+            ),
             const SizedBox(height: 10),
             Text(
               l.errorLoadingEntries(error.toString()),
@@ -64,7 +70,10 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
           key: const Key('pet_care_section'),
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            PetCareDashboardSectionHeader(title: l.careForPet(widget.pet.name)),
+            PetCareDashboardSectionChrome(
+              title: l.careForPet(widget.pet.name),
+              titleMaxLines: 2,
+            ),
             const SizedBox(height: 10),
             CareAgendaCollection(
               entries: entries,

@@ -17,10 +17,11 @@ bool isHealthEntrySeriesClosedAt(HealthEntry entry, DateTime now) {
   return end.isBefore(today);
 }
 
-/// User-visible closed subtitle (English copy lives in detail layer for l10n).
+/// Legacy helper — prefer [formatHealthEntryClosedStatusLabel] in lifecycle list status.
+@Deprecated('Use formatHealthEntryClosedStatusLabel with AppLocalizations')
 String careItemClosedSubtitleLabel(String? careClosedReason) {
-  final reasonLabel = careClosedReason == kCareClosedReasonStoppedByUser
-      ? 'Stopped by you'
-      : 'Ended';
-  return 'Closed · $reasonLabel';
+  if (careClosedReason == kCareClosedReasonStoppedByUser) {
+    return 'Closed by you';
+  }
+  return 'Ended';
 }

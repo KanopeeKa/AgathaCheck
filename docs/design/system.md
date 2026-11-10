@@ -3,7 +3,7 @@ title: AgathaTrack design system
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-26
+last_updated: 2026-11-10
 tags: [design, tokens, system]
 ---
 
@@ -231,7 +231,8 @@ the master; all PNG/JPG, favicon, PWA, PDF, and email variants are exports.
 | `font-size-sm` | `14px / 20px` | 400 | `0` | secondary body, form help |
 | `font-size-base` | `16px / 24px` | 400 | `0` | default body and inputs |
 | `font-size-lg` | `18px / 26px` | 500 | `-0.01em` | lead body, list emphasis |
-| `font-size-xl` | `20px / 28px` | 600 | `-0.01em` | card and section title |
+| `font-size-xl` | `20px / 28px` | 600 | `-0.01em` | card title and in-card headings |
+| `font-size-section-title` | `12px / 16px` | 700 | `0.08em` when uppercase; else `0` | dashboard and pet detail **section** chrome (shared `PetCareDashboardSectionChrome`) |
 | `font-size-2xl` | `24px / 32px` | 600 | `-0.015em` | page title |
 | `font-size-3xl` | `30px / 38px` | 600 | `-0.02em` | major page / organisation title |
 | `font-size-4xl` | `40px / 46px` | 400 display | `-0.03em` | mobile landing headline |
@@ -259,7 +260,9 @@ the master; all PNG/JPG, favicon, PWA, PDF, and email variants are exports.
 
 - Use sentence case for headings, buttons, labels, and status text.
 - Use uppercase only for compact, non-essential eyebrows or metadata; apply
-  `font-size-xs`, weight 700, and `--letter-spacing-uppercase`.
+  `font-size-xs`, weight 700, and `--letter-spacing-uppercase`. Narrative
+  section titles (for example `People around {pet}`) use `font-size-section-title`
+  weight and colour but keep sentence case from l10n without forced casing.
 - Let page titles wrap to two lines before truncating. Do not reduce text below
   the defined token to force a single line.
 - Support 200% text scaling without clipped labels, fixed-height text blocks,
@@ -664,6 +667,15 @@ Loading controls are disabled rather than repurposed as empty-state actions.
 For example, a pet-dependent action remains unavailable until the pet list has
 resolved; an actually resolved empty list may then show its appropriate
 no-pets guidance.
+
+Shared Flutter widgets for these states live in
+`flutter_app/lib/core/widgets/async_state/` (import `async_state.dart`):
+
+| Widget | Use for |
+|---|---|
+| `AsyncErrorState` | a failed primary load: localized title (defaults to "We couldn't load this") and Retry, with a "check your connection" hint only when Retry is offered (pass your own `detail` otherwise); never pass exception text, log it instead; place it inside the screen shell so title and back stay |
+| `LabelledProgress` | any wait: a progress indicator whose accessible label names what is loading (defaults to "Loading") |
+| `SupplementalStateCaption` | a dependent query that is loading or unavailable next to content that would otherwise read as "none" or "all set" (tag filters, care status, pet names); shows Retry when unavailable |
 
 ---
 

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/async_state/async_error_state.dart';
+import '../../../../core/widgets/async_state/labelled_progress.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/entities/notification_scope.dart';
@@ -49,7 +51,6 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
   @override
   Widget build(BuildContext context) {
     final notificationsAsync = ref.watch(notificationsProvider);
-    final theme = Theme.of(context);
     final l = AppLocalizations.of(context)!;
     final selectedTab = ref.watch(notificationInboxSessionTabProvider);
 
@@ -101,26 +102,10 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
         ],
       ),
       body: notificationsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 48,
-                color: theme.colorScheme.error,
-              ),
-              const SizedBox(height: 16),
-              Text('Failed to load notifications: $error'),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () =>
-                    ref.read(notificationsProvider.notifier).refresh(),
-                child: Text(l.retry),
-              ),
-            ],
-          ),
+        loading: () => Center(child: LabelledProgress(label: l.loadingLabel)),
+        error: (error, _) => AsyncErrorState(
+          title: l.notificationsLoadError,
+          onRetry: () => ref.read(notificationsProvider.notifier).refresh(),
         ),
         data: (allNotifications) {
           final notifications = scoped(allNotifications);

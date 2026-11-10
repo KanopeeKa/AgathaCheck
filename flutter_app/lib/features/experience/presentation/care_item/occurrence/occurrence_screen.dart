@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:pet_profile_app/core/experience/app_experience.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_state.dart';
 import 'package:pet_profile_app/core/providers/analytics_providers.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
@@ -100,7 +101,7 @@ class _OccurrenceScreenState extends ConsumerState<OccurrenceScreen> {
         '/pet/${widget.petId}/events/${widget.entryId}/occurrences/${widget.occurrenceId}';
 
     Widget content = switch (outcome) {
-      null => const Center(child: CircularProgressIndicator()),
+      null => Center(child: LabelledProgress(label: l.loadingLabel)),
       CareFailed(failure: CareNotOpenFailure(gone: true)) => _Message(
         key: const Key('occurrence_gone'),
         text: l.occurrenceGone,

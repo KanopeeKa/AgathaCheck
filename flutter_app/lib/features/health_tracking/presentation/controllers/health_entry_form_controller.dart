@@ -110,10 +110,18 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
 
   Future<bool> loadEntry(String entryId) async {
     _entryId = entryId;
-    state = state.copyWith(isLoading: true, isEdit: true);
+    state = state.copyWith(
+      isLoading: true,
+      isEdit: true,
+      editLoadFailed: false,
+      editNotFound: false,
+    );
     try {
       final entry = await ref.read(healthRepositoryProvider).getEntry(entryId);
-      if (entry == null) return false;
+      if (entry == null) {
+        state = state.copyWith(isLoading: false, editNotFound: true);
+        return false;
+      }
 
       var careBlocks = entry.careBlocks;
       var dosage = entry.dosage;
@@ -180,8 +188,13 @@ class HealthEntryFormController extends HealthEntryFormControllerBase
 
       captureBaseline();
       return true;
+    } catch (_) {
+      state = state.copyWith(isLoading: false, editLoadFailed: true);
+      return false;
     } finally {
-      state = state.copyWith(isLoading: false);
+      if (state.isLoading) {
+        state = state.copyWith(isLoading: false);
+      }
     }
   }
 

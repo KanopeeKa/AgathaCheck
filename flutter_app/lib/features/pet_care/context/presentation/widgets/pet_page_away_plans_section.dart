@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/widgets/pet_care_dashboard_section_header.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../away_plan_copy.dart';
 import '../planned_absence_display.dart';
@@ -27,31 +28,24 @@ class PetPageAwayPlansSection extends ConsumerWidget {
         final l = AppLocalizations.of(context)!;
         final visible = result.items.take(_maxVisible).toList(growable: false);
         final hasMore = result.items.length > _maxVisible;
-        return Semantics(
-          container: true,
-          label: l.careContextPetPageAwaySectionTitle,
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(
+            16,
+            kPetDetailSectionInsetTop,
+            16,
+            0,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      l.careContextPetPageAwaySectionTitle,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                  if (hasMore)
-                    TextButton(
-                      key: const Key('pet_page_all_absences_link'),
-                      onPressed: () => context.push('/pc/away'),
-                      child: Text(l.careContextPetPageAllAbsences),
-                    ),
-                ],
+              PetCareDashboardSectionChrome(
+                title: l.careContextPetPageAwaySectionTitle,
+                titleMaxLines: 2,
+                linkLabel: hasMore ? l.careContextPetPageAllAbsences : null,
+                linkKey: const Key('pet_page_all_absences_link'),
+                onLinkPressed: hasMore ? () => context.push('/pc/away') : null,
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: kPetDetailSectionTitleGap),
               for (final row in visible) ...[
                 _AwayPlanRow(row: row),
                 const SizedBox(height: 8),

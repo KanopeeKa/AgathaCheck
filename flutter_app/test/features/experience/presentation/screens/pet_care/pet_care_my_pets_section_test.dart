@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/theme/app_theme.dart';
@@ -130,6 +131,29 @@ void main() {
     expect(find.text('FamilyDog'), findsOneWidget);
     expect(find.byType(PetCareShellSharedPetCard), findsNothing);
   });
+
+  testWidgets(
+    'preview chrome does not promote My Pets section semantics to header',
+    (tester) async {
+      final pets = [
+        const Pet(id: 'p1', name: 'Buddy', species: 'Dog', breed: 'Mix'),
+      ];
+      await tester.pumpWidget(
+        buildSection(pets: pets, previewPets: pets, previewOverflowCount: 0),
+      );
+      await tester.pumpAndSettle();
+
+      final myPetsSemantics = tester.getSemantics(
+        find.bySemanticsLabel('My Pets').first,
+      );
+      expect(
+        myPetsSemantics.hasFlag(SemanticsFlag.isHeader),
+        isFalse,
+        reason:
+            'PetCareDashboardSectionHeader must not leak header into parent',
+      );
+    },
+  );
 
   testWidgets('compact preview handles zero, one, and exactly four pets', (
     tester,

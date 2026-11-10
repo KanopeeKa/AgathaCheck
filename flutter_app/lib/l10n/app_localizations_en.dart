@@ -322,6 +322,54 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get loadErrorTitle => 'We couldn\'t load this';
+
+  @override
+  String get loadErrorRetryHint => 'Check your connection and try again.';
+
+  @override
+  String get loadErrorYourPets => 'We couldn\'t load your pets';
+
+  @override
+  String get loadErrorHealthIssues => 'We couldn\'t load health issues';
+
+  @override
+  String get loadErrorCareEntries => 'We couldn\'t load care items';
+
+  @override
+  String get loadErrorCareItem => 'We couldn\'t load this care item';
+
+  @override
+  String get loadErrorTimeline => 'We couldn\'t load the timeline';
+
+  @override
+  String get loadErrorWeightEntries => 'We couldn\'t load weight history';
+
+  @override
+  String get weightTargetRoutineLoading => 'Loading target and routine…';
+
+  @override
+  String get weightTargetRoutineUnavailable => 'Target and routine unavailable';
+
+  @override
+  String get historyUnavailable => 'History unavailable';
+
+  @override
+  String get tagFiltersLoading => 'Loading tag filters…';
+
+  @override
+  String get tagFiltersUnavailable => 'Tag filters unavailable';
+
+  @override
+  String get careStatusUnavailable => 'Care status unavailable';
+
+  @override
+  String get backToPets => 'Back to pets';
+
+  @override
+  String get loadingLabel => 'Loading';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -416,6 +464,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allCareInactiveSection => 'Other care';
+
+  @override
+  String get allCareClosedCareTitle => 'Closed care';
+
+  @override
+  String allCareClosedCareLink(int count) {
+    return 'Closed care ($count)';
+  }
+
+  @override
+  String get allCareClosedCareEmpty => 'No closed care yet.';
+
+  @override
+  String get careItemClosedByYou => 'Closed by you';
+
+  @override
+  String get careItemEndedStatus => 'Ended';
 
   @override
   String get eventFilterClosed => 'Closed';
@@ -553,7 +618,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rainbowBridge => 'Rainbow bridge';
 
   @override
-  String get weightTracking => 'Weight Tracking';
+  String get weightTracking => 'Weight tracking';
 
   @override
   String get weightHubSettingsTitle => 'Weight settings';
@@ -1732,6 +1797,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotLoadSharingInfo => 'Could not load sharing info';
 
   @override
+  String get shareAccessUnavailable =>
+      'Sharing access is unavailable right now';
+
+  @override
+  String get shareUpdateFailed =>
+      'We couldn\'t update sharing. Try again in a moment.';
+
+  @override
+  String get shareSessionExpired =>
+      'Your session expired. Sign in again to continue.';
+
+  @override
   String get sessionExpired => 'Session expired. Please log in again.';
 
   @override
@@ -2386,6 +2463,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadPlans => 'Load Plans';
+
+  @override
+  String get subscriptionPlansUnavailable =>
+      'Subscription plans aren\'t available right now. Try again in a moment.';
 
   @override
   String get petReport => 'Pet Report';
@@ -4546,6 +4627,84 @@ class AppLocalizationsEn extends AppLocalizations {
       'You have already accepted this invitation.';
 
   @override
+  String get absenceInviteTitle => 'Absence invitation';
+
+  @override
+  String absenceInviteHeadline(String inviterName) {
+    return '$inviterName invited you to help during an absence';
+  }
+
+  @override
+  String get absenceInviteAccessScope => 'Temporary care during an absence';
+
+  @override
+  String get absenceInviteAccept => 'Accept invitation';
+
+  @override
+  String get absenceInviteAccepting => 'Accepting…';
+
+  @override
+  String get absenceInviteLoadFailed =>
+      'Could not load this invitation. Try again.';
+
+  @override
+  String get absenceInviteAcceptFailed =>
+      'Could not accept this invitation. Try again.';
+
+  @override
+  String get absenceInviteUnavailable => 'Invitation unavailable';
+
+  @override
+  String get inviteContinueWithAccount => 'Sign in or create an account';
+
+  @override
+  String inviteRecipientInvitedBy(String inviterName) {
+    return '$inviterName invited you';
+  }
+
+  @override
+  String inviteRecipientHousehold(String name) {
+    return 'Household: $name';
+  }
+
+  @override
+  String inviteRecipientAccessScope(String scope) {
+    return 'Access: $scope';
+  }
+
+  @override
+  String get sharedPetLinkIdentityUnavailable => 'A pet parent';
+
+  @override
+  String sharedPetAgeMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedPetAgeYearsOne => '1 year';
+
+  @override
+  String sharedPetAgeYearsFormatted(String formattedYears) {
+    return '$formattedYears years';
+  }
+
+  @override
+  String get shareAcceptFailed => 'We couldn\'t accept this share. Try again.';
+
+  @override
+  String get shareInviteDecisionFailed =>
+      'We couldn\'t complete this invitation. Try again.';
+
+  @override
+  String get entryResolutionFailed => 'We couldn\'t load your pets';
+
+  @override
   String get invited => 'Invited';
 
   @override
@@ -6165,6 +6324,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationsLoadError => 'We couldn\'t load your notifications';
+
+  @override
+  String get notificationPreferencesLoadError =>
+      'We couldn\'t load your notification settings';
+
+  @override
+  String get notificationPreferencesSaveFailed =>
+      'Your changes weren\'t saved. Try again.';
+
+  @override
   String get notificationKindAll => 'All';
 
   @override
@@ -7458,6 +7628,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not load this away plan. Try again.';
 
   @override
+  String get awayPlansLoading => 'Loading away plans';
+
+  @override
+  String get awayPlanLoading => 'Loading away plan';
+
+  @override
+  String get awayPetNamesUnavailable => 'Pet names unavailable';
+
+  @override
+  String get awayPetsLoading => 'Loading your pets';
+
+  @override
+  String get awayNoEligiblePets =>
+      'No pets are eligible for this absence. Passed-away pets are not included.';
+
+  @override
+  String get awayPlanPetsLoadError => 'We couldn\'t load pets for this plan';
+
+  @override
   String get careContextAwayPlanCareDuringTitle => 'Care during your absence';
 
   @override
@@ -7889,6 +8078,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'No tags yet. Create one to group pets on your All Pets screen.';
 
   @override
+  String get petTagsLoadError => 'We couldn\'t load your tags';
+
+  @override
+  String get petTagDeleteFailed => 'Couldn\'t delete that tag. Try again.';
+
+  @override
   String get petTagsNameHint => 'Tag name';
 
   @override
@@ -8015,6 +8210,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleListLoadError => 'Could not load contacts. Try again.';
+
+  @override
+  String get peopleBackToContacts => 'Back to contacts';
+
+  @override
+  String get peopleBackToHouseholds => 'Back to households';
+
+  @override
+  String get householdPetsUnavailable => 'Your pets could not be loaded';
 
   @override
   String get accountPeopleRow => 'Contacts';
@@ -8662,6 +8866,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleHouseholdInviteDecline => 'Decline';
+
+  @override
+  String get peopleHouseholdInviteLoadFailed =>
+      'Could not load this invitation. Try again.';
 
   @override
   String get peopleAddPetsEmpty => 'No pets to link yet.';

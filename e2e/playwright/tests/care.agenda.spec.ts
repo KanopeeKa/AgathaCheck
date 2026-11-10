@@ -189,7 +189,7 @@ test.describe('Care agenda', () => {
       });
       const row = page.locator(`[flt-semantics-identifier="closed_care_row_${entry.id}"]`);
       await expect(row).toBeVisible();
-      await expect(row).toContainText(/Closed · Stopped by you|Fermé · Arrêté par vous/i);
+      await expect(row).toContainText(/Closed by you|Fermé par vous/i);
       await expect(row).not.toContainText(/Jun|juin|2026-06/i);
       // Row tap → detail is covered in widget tests; go_router hash is flaky from the
       // Material Closed care list overlay — open detail the same way as other agenda specs.

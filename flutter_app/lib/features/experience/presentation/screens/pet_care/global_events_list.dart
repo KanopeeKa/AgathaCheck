@@ -153,7 +153,7 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
                 l10n: l,
                 colorScheme: Theme.of(context).colorScheme,
                 isEstablished: false,
-                statusLineOverride: petMap[entry.petId]?.name,
+                subtitlePetNamePrefix: petMap[entry.petId]?.name,
                 onTap: () => _viewEntry(entry),
               ).build(),
             ),

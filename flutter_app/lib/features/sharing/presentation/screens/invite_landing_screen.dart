@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/invite_recipient_block.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/auth/auth.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
@@ -36,24 +37,34 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
   }
 
   Future<void> _loadPreview() async {
+    if (!mounted) return;
+    setState(() {
+      _loading = true;
+      _errorKey = null;
+      _preview = null;
+    });
     try {
       final repo = ref.read(sharingRepositoryProvider);
       final preview = await repo.getInvitePreview(widget.inviteCode);
+      if (!mounted) return;
       setState(() {
         _preview = preview;
         _loading = false;
       });
     } on InvitePreviewExpiredException {
+      if (!mounted) return;
       setState(() {
         _errorKey = 'expired';
         _loading = false;
       });
     } on InvitePreviewNotFoundException {
+      if (!mounted) return;
       setState(() {
         _errorKey = 'not_found';
         _loading = false;
       });
     } catch (_) {
+      if (!mounted) return;
       setState(() {
         _errorKey = 'load_failed';
         _loading = false;
@@ -66,15 +77,24 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
+    final isLoggedIn = ref.watch(authProvider).isLoggedIn;
 
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_errorKey != null || _preview == null) {
+      if (_errorKey == 'load_failed') {
+        return Scaffold(
+          appBar: AppBar(title: AppLogoTitle(title: l.shareInviteTitle)),
+          body: AsyncErrorState(
+            title: l.sharedPetLoadFailed,
+            onRetry: _loadPreview,
+          ),
+        );
+      }
       final errorMessage = switch (_errorKey) {
         'expired' => l.shareInviteExpired,
-        'load_failed' => l.sharedPetLoadFailed,
         _ => l.shareInviteNotFound,
       };
       return Scaffold(
@@ -107,6 +127,7 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
         ? l.coParent
         : l.shareInviteRoleCarer;
     final petNames = preview.petNamesDisplay;
+    final invitePath = '/invite/${widget.inviteCode}';
 
     return Scaffold(
       appBar: AppBar(
@@ -120,33 +141,41 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l.shareInviteLandingHeadline(preview.inviterName),
-                    style: theme.textTheme.titleLarge,
-                  ),
-                  const SizedBox(height: 8),
-                  if (petNames.isNotEmpty)
+          if (isLoggedIn)
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      l.shareInviteLandingPets(petNames),
-                      style: theme.textTheme.bodyLarge,
+                      l.shareInviteLandingHeadline(preview.inviterName),
+                      style: theme.textTheme.titleLarge,
                     ),
-                  const SizedBox(height: 8),
-                  Text(
-                    l.shareInviteLandingRole(roleLabel),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                    const SizedBox(height: 8),
+                    if (petNames.isNotEmpty)
+                      Text(
+                        l.shareInviteLandingPets(petNames),
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l.shareInviteLandingRole(roleLabel),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+            )
+          else
+            InviteRecipientBlock(
+              invitePath: invitePath,
+              scopeDescription: roleLabel,
+              inviterName: preview.inviterName,
+              petsSummary: petNames.isEmpty ? null : petNames,
             ),
-          ),
           const SizedBox(height: 16),
           if (preview.isAccepted)
             Card(
@@ -162,9 +191,9 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
                 ),
               ),
             )
-          else ...[
+          else if (isLoggedIn) ...[
             SharedPetAcceptSection(
-              isLoggedIn: ref.watch(authProvider).isLoggedIn,
+              isLoggedIn: true,
               accepting: _accepting,
               onAccept: _accept,
               theme: theme,
@@ -173,18 +202,17 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
               buttonText: _accepting ? l.sharedPetAdding : l.shareInviteAccept,
             ),
             const SizedBox(height: 12),
-            if (ref.watch(authProvider).isLoggedIn)
-              OutlinedButton.icon(
-                onPressed: _declining ? null : _decline,
-                icon: _declining
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.close),
-                label: Text(l.shareInviteDecline),
-              ),
+            OutlinedButton.icon(
+              onPressed: _declining ? null : _decline,
+              icon: _declining
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.close),
+              label: Text(l.shareInviteDecline),
+            ),
           ],
         ],
       ),
@@ -196,7 +224,13 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
     final l = AppLocalizations.of(context)!;
     try {
       final token = await ref.read(authProvider.notifier).getValidAccessToken();
-      if (token == null) return;
+      if (token == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
+        return;
+      }
       final repo = ref.read(sharingRepositoryProvider);
       await repo.acceptInviteByCode(widget.inviteCode, token);
       ref.invalidate(allPetsIncludingOrgProvider);
@@ -206,11 +240,11 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text(l.shareInviteAccepted)));
       context.go('/');
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
     } finally {
       if (mounted) setState(() => _accepting = false);
     }
@@ -223,7 +257,13 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
     final l = AppLocalizations.of(context)!;
     try {
       final token = await ref.read(authProvider.notifier).getValidAccessToken();
-      if (token == null) return;
+      if (token == null) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
+        return;
+      }
       final repo = ref.read(sharingRepositoryProvider);
       await repo.declineInvite(preview.inviteId, token);
       if (!mounted) return;
@@ -231,11 +271,11 @@ class _InviteLandingScreenState extends ConsumerState<InviteLandingScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text(l.shareInviteDeclined)));
       context.go('/');
-    } catch (e) {
+    } catch (_) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.shareInviteDecisionFailed)));
     } finally {
       if (mounted) setState(() => _declining = false);
     }

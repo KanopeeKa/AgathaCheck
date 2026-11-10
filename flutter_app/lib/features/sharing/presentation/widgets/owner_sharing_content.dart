@@ -4,11 +4,13 @@ import '../../../../core/widgets/form/app_form_labeled_field.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/supplemental_state_caption.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_link.dart';
 import '../providers/sharing_providers.dart';
+import '../sharing_error_messages.dart';
 import 'access_tile.dart';
 import 'who_has_access_section.dart';
 import 'share_link_created_dialog.dart';
@@ -19,14 +21,20 @@ class OwnerSharingContent extends ConsumerWidget {
     required this.petId,
     required this.pet,
     required this.accessList,
-    required this.shareLinks,
+    this.accessResolved = true,
+    this.shareLinks,
     this.canTransferOwnership = true,
   });
 
   final String petId;
   final Pet pet;
   final List<PetAccess> accessList;
-  final List<ShareLink> shareLinks;
+
+  /// When false, direct access must not be shown as authoritatively empty.
+  final bool accessResolved;
+
+  /// When set (e.g. modal panel), links are already loaded by the caller.
+  final List<ShareLink>? shareLinks;
   final bool canTransferOwnership;
 
   @override
@@ -34,17 +42,71 @@ class OwnerSharingContent extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final overviewAsync = ref.watch(petAccessOverviewProvider(petId));
+    final linksAsync = shareLinks == null
+        ? ref.watch(petShareLinksNotifierProvider(petId))
+        : null;
+
+    final linksResolved =
+        shareLinks != null ||
+        (linksAsync != null && !linksAsync.isLoading && !linksAsync.hasError);
+    final resolvedLinks =
+        shareLinks ?? linksAsync?.valueOrNull ?? const <ShareLink>[];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         overviewAsync.when(
-          loading: () => const SizedBox.shrink(),
-          error: (_, __) => const SizedBox.shrink(),
-          data: (overview) =>
-              WhoHasAccessSection(householdAccess: overview.householdAccess),
+          loading: () => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SupplementalStateCaption(
+              state: SupplementalState.loading,
+              label: l.shareAccessUnavailable,
+            ),
+          ),
+          error: (_, __) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SupplementalStateCaption(
+              state: SupplementalState.unavailable,
+              label: l.shareAccessUnavailable,
+              onRetry: () => ref.invalidate(petAccessOverviewProvider(petId)),
+              retryKey: const Key('share_pet_household_access_retry'),
+            ),
+          ),
+          data: (overview) => overview.householdAccess.isEmpty
+              ? const SizedBox.shrink()
+              : Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: WhoHasAccessSection(
+                    householdAccess: overview.householdAccess,
+                  ),
+                ),
         ),
-        if (shareLinks.isEmpty && accessList.isEmpty)
+        if (shareLinks == null && linksAsync != null)
+          linksAsync.when(
+            loading: () => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: SupplementalStateCaption(
+                state: SupplementalState.loading,
+                label: l.couldNotLoadSharingInfo,
+              ),
+            ),
+            error: (_, __) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: SupplementalStateCaption(
+                state: SupplementalState.unavailable,
+                label: l.couldNotLoadSharingInfo,
+                onRetry: () => ref
+                    .read(petShareLinksNotifierProvider(petId).notifier)
+                    .refresh(),
+                retryKey: const Key('share_pet_links_retry'),
+              ),
+            ),
+            data: (_) => const SizedBox.shrink(),
+          ),
+        if (accessResolved &&
+            linksResolved &&
+            resolvedLinks.isEmpty &&
+            accessList.isEmpty)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: Text(
@@ -54,20 +116,22 @@ class OwnerSharingContent extends ConsumerWidget {
               ),
             ),
           ),
-        if (shareLinks.isNotEmpty) ...[
-          ...shareLinks.map(
+        if (linksResolved && resolvedLinks.isNotEmpty) ...[
+          ...resolvedLinks.map(
             (link) => ShareLinkTile(petId: petId, pet: pet, link: link),
           ),
           const SizedBox(height: 8),
         ],
-        ...accessList
-            .where(
-              (access) => !shareLinks.any(
-                (link) => link.isActive && link.claimedBy == access.userId,
-              ),
-            )
-            .map((access) => AccessTile(petId: petId, access: access)),
-        if (accessList.isNotEmpty) const SizedBox(height: 8),
+        if (accessResolved) ...[
+          ...accessList
+              .where(
+                (access) => !resolvedLinks.any(
+                  (link) => link.isActive && link.claimedBy == access.userId,
+                ),
+              )
+              .map((access) => AccessTile(petId: petId, access: access)),
+          if (accessList.isNotEmpty) const SizedBox(height: 8),
+        ],
         SizedBox(
           width: double.infinity,
           child: OutlinedButton.icon(
@@ -105,6 +169,7 @@ class OwnerSharingContent extends ConsumerWidget {
   }
 
   Future<void> _generateShareLink(BuildContext context, WidgetRef ref) async {
+    final l = AppLocalizations.of(context)!;
     try {
       final code = await ref
           .read(petShareLinksNotifierProvider(petId).notifier)
@@ -118,9 +183,9 @@ class OwnerSharingContent extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(sharingMutationErrorMessage(l, e))),
+        );
       }
     }
   }
@@ -146,9 +211,9 @@ class OwnerSharingContent extends ConsumerWidget {
                 if (context.mounted) context.go('/');
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(sharingMutationErrorMessage(l, e))),
+                  );
                 }
               }
             },
@@ -259,10 +324,9 @@ class OwnerSharingContent extends ConsumerWidget {
       }
     } catch (e) {
       if (context.mounted) {
-        final msg = e.toString().replaceFirst('Exception: ', '');
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(msg)));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(sharingMutationErrorMessage(l, e))),
+        );
       }
     } finally {
       emailController.dispose();

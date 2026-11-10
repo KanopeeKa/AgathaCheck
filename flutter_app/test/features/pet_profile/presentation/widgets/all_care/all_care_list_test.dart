@@ -104,6 +104,8 @@ void main() {
         find.byKey(const Key('pet_care_action_paused-care')),
         findsOneWidget,
       );
+      expect(find.text('Paused'), findsOneWidget);
+      expect(find.byIcon(Icons.pause_circle_outlined), findsOneWidget);
       expect(
         find.byKey(const Key('pet_care_action_one-off-done')),
         findsNothing,

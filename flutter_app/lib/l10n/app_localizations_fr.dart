@@ -328,6 +328,59 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retry => 'Réessayer';
 
   @override
+  String get loadErrorTitle => 'Impossible de charger ce contenu';
+
+  @override
+  String get loadErrorRetryHint => 'Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get loadErrorYourPets => 'Impossible de charger vos animaux';
+
+  @override
+  String get loadErrorHealthIssues =>
+      'Impossible de charger les problèmes de santé';
+
+  @override
+  String get loadErrorCareEntries =>
+      'Impossible de charger les éléments de soins';
+
+  @override
+  String get loadErrorCareItem => 'Impossible de charger cet élément de soins';
+
+  @override
+  String get loadErrorTimeline => 'Impossible de charger la chronologie';
+
+  @override
+  String get loadErrorWeightEntries =>
+      'Impossible de charger l\'historique de poids';
+
+  @override
+  String get weightTargetRoutineLoading =>
+      'Chargement de l\'objectif et de la routine…';
+
+  @override
+  String get weightTargetRoutineUnavailable =>
+      'Objectif et routine indisponibles';
+
+  @override
+  String get historyUnavailable => 'Historique indisponible';
+
+  @override
+  String get tagFiltersLoading => 'Chargement des étiquettes…';
+
+  @override
+  String get tagFiltersUnavailable => 'Étiquettes indisponibles';
+
+  @override
+  String get careStatusUnavailable => 'État des soins indisponible';
+
+  @override
+  String get backToPets => 'Retour aux animaux';
+
+  @override
+  String get loadingLabel => 'Chargement';
+
+  @override
   String get language => 'Langue';
 
   @override
@@ -424,6 +477,23 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get allCareInactiveSection => 'Autres soins';
+
+  @override
+  String get allCareClosedCareTitle => 'Soins fermés';
+
+  @override
+  String allCareClosedCareLink(int count) {
+    return 'Soins fermés ($count)';
+  }
+
+  @override
+  String get allCareClosedCareEmpty => 'Aucun soin fermé pour le moment.';
+
+  @override
+  String get careItemClosedByYou => 'Fermé par vous';
+
+  @override
+  String get careItemEndedStatus => 'Terminé';
 
   @override
   String get eventFilterClosed => 'Fermé';
@@ -1751,6 +1821,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de charger les informations de partage';
 
   @override
+  String get shareAccessUnavailable =>
+      'Les accès de partage ne sont pas disponibles pour le moment';
+
+  @override
+  String get shareUpdateFailed =>
+      'Impossible de mettre à jour le partage. Réessayez dans un instant.';
+
+  @override
+  String get shareSessionExpired =>
+      'Votre session a expiré. Reconnectez-vous pour continuer.';
+
+  @override
   String get sessionExpired => 'Session expirée. Veuillez vous reconnecter.';
 
   @override
@@ -2411,6 +2493,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get loadPlans => 'Charger les forfaits';
+
+  @override
+  String get subscriptionPlansUnavailable =>
+      'Les forfaits ne sont pas disponibles pour le moment. Réessayez dans un instant.';
 
   @override
   String get petReport => 'Rapport de l\'animal';
@@ -4618,6 +4704,86 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous avez déjà accepté cette invitation.';
 
   @override
+  String get absenceInviteTitle => 'Invitation d\'absence';
+
+  @override
+  String absenceInviteHeadline(String inviterName) {
+    return '$inviterName vous a invité(e) à aider pendant une absence';
+  }
+
+  @override
+  String get absenceInviteAccessScope =>
+      'Soins temporaires pendant une absence';
+
+  @override
+  String get absenceInviteAccept => 'Accepter l\'invitation';
+
+  @override
+  String get absenceInviteAccepting => 'Acceptation…';
+
+  @override
+  String get absenceInviteLoadFailed =>
+      'Impossible de charger cette invitation. Réessayez.';
+
+  @override
+  String get absenceInviteAcceptFailed =>
+      'Impossible d\'accepter cette invitation. Réessayez.';
+
+  @override
+  String get absenceInviteUnavailable => 'Invitation indisponible';
+
+  @override
+  String get inviteContinueWithAccount => 'Se connecter ou créer un compte';
+
+  @override
+  String inviteRecipientInvitedBy(String inviterName) {
+    return '$inviterName vous a invité(e)';
+  }
+
+  @override
+  String inviteRecipientHousehold(String name) {
+    return 'Foyer : $name';
+  }
+
+  @override
+  String inviteRecipientAccessScope(String scope) {
+    return 'Accès : $scope';
+  }
+
+  @override
+  String get sharedPetLinkIdentityUnavailable => 'Un parent d\'animal';
+
+  @override
+  String sharedPetAgeMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mois',
+      one: '1 mois',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedPetAgeYearsOne => '1 an';
+
+  @override
+  String sharedPetAgeYearsFormatted(String formattedYears) {
+    return '$formattedYears ans';
+  }
+
+  @override
+  String get shareAcceptFailed =>
+      'Impossible d\'accepter ce partage. Réessayez.';
+
+  @override
+  String get shareInviteDecisionFailed =>
+      'Impossible de traiter cette invitation. Réessayez.';
+
+  @override
+  String get entryResolutionFailed => 'Impossible de charger vos animaux';
+
+  @override
   String get invited => 'Invité(e)';
 
   @override
@@ -6258,6 +6424,18 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get notificationsLoadError =>
+      'Impossible de charger vos notifications';
+
+  @override
+  String get notificationPreferencesLoadError =>
+      'Impossible de charger vos paramètres de notification';
+
+  @override
+  String get notificationPreferencesSaveFailed =>
+      'Vos modifications n\'ont pas été enregistrées. Réessayez.';
+
+  @override
   String get notificationKindAll => 'Tout';
 
   @override
@@ -7581,6 +7759,26 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de charger ce plan d\'absence. Réessayez.';
 
   @override
+  String get awayPlansLoading => 'Chargement des plans d\'absence';
+
+  @override
+  String get awayPlanLoading => 'Chargement du plan d\'absence';
+
+  @override
+  String get awayPetNamesUnavailable => 'Noms des animaux indisponibles';
+
+  @override
+  String get awayPetsLoading => 'Chargement de vos animaux';
+
+  @override
+  String get awayNoEligiblePets =>
+      'Aucun animal n\'est admissible pour cette absence. Les animaux décédés ne sont pas inclus.';
+
+  @override
+  String get awayPlanPetsLoadError =>
+      'Impossible de charger les animaux pour ce plan';
+
+  @override
   String get careContextAwayPlanCareDuringTitle =>
       'Soins pendant votre absence';
 
@@ -8017,6 +8215,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune étiquette. Créez-en une pour regrouper vos animaux sur la liste Tous les animaux.';
 
   @override
+  String get petTagsLoadError => 'Impossible de charger vos étiquettes';
+
+  @override
+  String get petTagDeleteFailed =>
+      'Impossible de supprimer cette étiquette. Réessayez.';
+
+  @override
   String get petTagsNameHint => 'Nom de l\'étiquette';
 
   @override
@@ -8144,6 +8349,15 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get peopleListLoadError =>
       'Impossible de charger les contacts. Réessayez.';
+
+  @override
+  String get peopleBackToContacts => 'Retour aux contacts';
+
+  @override
+  String get peopleBackToHouseholds => 'Retour aux foyers';
+
+  @override
+  String get householdPetsUnavailable => 'Impossible de charger vos animaux';
 
   @override
   String get accountPeopleRow => 'Autour de vos animaux';
@@ -8795,6 +9009,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleHouseholdInviteDecline => 'Refuser';
+
+  @override
+  String get peopleHouseholdInviteLoadFailed =>
+      'Impossible de charger cette invitation. Réessayez.';
 
   @override
   String get peopleAddPetsEmpty => 'Aucun animal à lier pour l\'instant.';
