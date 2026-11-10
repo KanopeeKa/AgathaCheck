@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/features/subscription/presentation/widgets/paywall_offer_display.dart';
 import 'package:pet_profile_app/features/subscription/presentation/widgets/paywall_offering_card.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
   testWidgets('PaywallOfferingCard shows price and subscribe', (tester) async {
+    const display = PaywallOfferDisplay(
+      title: 'Monthly',
+      priceString: '\$4.99',
+      recurringCadenceLabel: 'per month',
+      autoRenewLine: 'Auto-renew',
+      cancelLine: 'Cancel guidance',
+    );
+
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -13,9 +22,7 @@ void main() {
           builder: (context) {
             return Scaffold(
               body: PaywallOfferingCard(
-                title: 'Monthly',
-                price: '\$4.99',
-                periodLabel: 'per month',
+                display: display,
                 isPurchasing: false,
                 onPurchase: () {},
                 theme: Theme.of(context),

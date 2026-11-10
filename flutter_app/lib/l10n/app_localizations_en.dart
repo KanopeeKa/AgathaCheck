@@ -2469,6 +2469,150 @@ class AppLocalizationsEn extends AppLocalizations {
       'Subscription plans aren\'t available right now. Try again in a moment.';
 
   @override
+  String get subscriptionPurchaseFailed =>
+      'We couldn\'t complete your purchase. Try again or restore purchases if you were already subscribed.';
+
+  @override
+  String get subscriptionRestoreFailed =>
+      'We couldn\'t restore your purchases. Check your connection and try again.';
+
+  @override
+  String get subscriptionManagementUnavailable =>
+      'We couldn\'t open subscription management. Copy this link and open it in your browser:';
+
+  @override
+  String get subscriptionManagementNoUrl =>
+      'Subscription management isn\'t available from this device. Use your app store account settings to manage billing.';
+
+  @override
+  String get subscriptionStatusActiveSemantic => 'Active subscription';
+
+  @override
+  String get subscriptionStatusFreeSemantic => 'Free plan';
+
+  @override
+  String get subscriptionPlanUnlimitedTitle => 'AgathaTrack Unlimited';
+
+  @override
+  String get subscriptionPlanFreeTitle => 'Free plan';
+
+  @override
+  String get subscriptionPlanUnlimitedBody =>
+      'You have full access to all features.';
+
+  @override
+  String get subscriptionPlanFreeBody => 'Upgrade to unlock all features.';
+
+  @override
+  String subscriptionRenewsOn(String date) {
+    return 'Renews on $date';
+  }
+
+  @override
+  String subscriptionActiveUntil(String date) {
+    return 'Active until $date';
+  }
+
+  @override
+  String get subscriptionBestValue => 'Best value';
+
+  @override
+  String get subscriptionPeriodPerMonth => 'per month';
+
+  @override
+  String get subscriptionPeriodPerYear => 'per year';
+
+  @override
+  String get subscriptionPeriodPerWeek => 'per week';
+
+  @override
+  String get subscriptionPeriodRecurring => 'per billing period';
+
+  @override
+  String subscriptionPeriodEveryMonths(int count) {
+    return 'every $count months';
+  }
+
+  @override
+  String subscriptionPeriodEveryYears(int count) {
+    return 'every $count years';
+  }
+
+  @override
+  String subscriptionAutoRenewDisclosure(String priceString, String cadence) {
+    return '$priceString $cadence. Auto-renews until you cancel.';
+  }
+
+  @override
+  String get subscriptionCancelDisclosure =>
+      'Cancel anytime in your app store subscription settings before the next billing date.';
+
+  @override
+  String subscriptionIntroductoryOffer(
+    String introPrice,
+    String periodDescription,
+    int cycles,
+  ) {
+    return 'Introductory offer: $introPrice for $periodDescription, for $cycles billing period(s), then the standard price applies.';
+  }
+
+  @override
+  String get subscriptionIntroPeriodOneDay => '1 day';
+
+  @override
+  String subscriptionIntroPeriodDays(int count) {
+    return '$count days';
+  }
+
+  @override
+  String get subscriptionIntroPeriodOneWeek => '1 week';
+
+  @override
+  String subscriptionIntroPeriodWeeks(int count) {
+    return '$count weeks';
+  }
+
+  @override
+  String get subscriptionIntroPeriodOneMonth => '1 month';
+
+  @override
+  String subscriptionIntroPeriodMonths(int count) {
+    return '$count months';
+  }
+
+  @override
+  String get subscriptionIntroPeriodOneYear => '1 year';
+
+  @override
+  String subscriptionIntroPeriodYears(int count) {
+    return '$count years';
+  }
+
+  @override
+  String get subscriptionFeatureUnlimitedPets => 'Unlimited pet profiles';
+
+  @override
+  String get subscriptionFeatureHealthTracking => 'Full health tracking';
+
+  @override
+  String get subscriptionFeaturePetSharing => 'Pet sharing with family';
+
+  @override
+  String get subscriptionFeaturePdfReports => 'PDF report generation';
+
+  @override
+  String get subscriptionFeatureReminders => 'Health reminders';
+
+  @override
+  String get subscriptionFeaturePrioritySupport => 'Priority support';
+
+  @override
+  String get subscriptionFallbackTitleMonthly => 'Monthly';
+
+  @override
+  String get subscriptionFallbackTitleYearly => 'Yearly';
+
+  @override
   String get petReport => 'Pet Report';
 
   @override

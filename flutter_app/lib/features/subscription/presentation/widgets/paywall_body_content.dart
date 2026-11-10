@@ -3,10 +3,12 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/async_state/async_error_state.dart';
 import 'package:pet_profile_app/core/widgets/async_state/labelled_progress.dart';
+import 'package:pet_profile_app/core/widgets/async_state/supplemental_state_caption.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'paywall_feature_list_card.dart';
+import 'paywall_offer_display.dart';
 import 'paywall_offering_card.dart';
 
 /// Scrollable paywall content (presentational; no Riverpod).
@@ -22,6 +24,7 @@ class PaywallBodyContent extends StatelessWidget {
     required this.onPurchasePackage,
     required this.onRestorePurchases,
     required this.onReloadOfferings,
+    required this.onManageSubscription,
     required this.formatDate,
   });
 
@@ -34,6 +37,7 @@ class PaywallBodyContent extends StatelessWidget {
   final void Function(Package package) onPurchasePackage;
   final VoidCallback onRestorePurchases;
   final VoidCallback onReloadOfferings;
+  final VoidCallback? onManageSubscription;
   final String Function(DateTime date) formatDate;
 
   @override
@@ -61,14 +65,14 @@ class PaywallBodyContent extends StatelessWidget {
                     ? AppColorTokens.warmAccent
                     : theme.colorScheme.primary,
                 semanticLabel: subscriptionStatus.hasUnlimited
-                    ? 'Active subscription'
-                    : 'Free plan',
+                    ? l.subscriptionStatusActiveSemantic
+                    : l.subscriptionStatusFreeSemantic,
               ),
               const SizedBox(height: 16),
               Text(
                 subscriptionStatus.hasUnlimited
-                    ? 'AgathaTrack Unlimited'
-                    : 'Free Plan',
+                    ? l.subscriptionPlanUnlimitedTitle
+                    : l.subscriptionPlanFreeTitle,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -76,8 +80,8 @@ class PaywallBodyContent extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 subscriptionStatus.hasUnlimited
-                    ? 'You have full access to all features.'
-                    : 'Upgrade to unlock all features.',
+                    ? l.subscriptionPlanUnlimitedBody
+                    : l.subscriptionPlanFreeBody,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -86,7 +90,13 @@ class PaywallBodyContent extends StatelessWidget {
               if (subscriptionStatus.expirationDate != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Renews: ${formatDate(subscriptionStatus.expirationDate!)}',
+                  subscriptionStatus.willRenew
+                      ? l.subscriptionRenewsOn(
+                          formatDate(subscriptionStatus.expirationDate!),
+                        )
+                      : l.subscriptionActiveUntil(
+                          formatDate(subscriptionStatus.expirationDate!),
+                        ),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -111,15 +121,31 @@ class PaywallBodyContent extends StatelessWidget {
                 ),
               ],
               if (subscriptionStatus.hasUnlimited) ...[
-                if (subscriptionStatus.managementUrl != null) ...[
+                if (subscriptionStatus.managementUrl != null &&
+                    onManageSubscription != null) ...[
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
                       key: const Key('manage_subscription_button'),
-                      onPressed: () {},
+                      onPressed: onManageSubscription,
                       icon: const Icon(Icons.settings),
                       label: Text(l.manageSubscription),
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                ] else ...[
+                  SizedBox(
+                    width: double.infinity,
+                    child: FilledButton.icon(
+                      key: const Key('manage_subscription_disabled_button'),
+                      onPressed: null,
+                      icon: const Icon(Icons.settings),
+                      label: Text(l.manageSubscription),
+                    ),
+                  ),
+                  SupplementalStateCaption(
+                    state: SupplementalState.unavailable,
+                    label: l.subscriptionManagementNoUrl,
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -143,36 +169,36 @@ class PaywallBodyContent extends StatelessWidget {
     final widgets = <Widget>[];
 
     for (final offering in offerings) {
-      for (final package in offering.availablePackages) {
+      final packages = offering.availablePackages;
+      final monthly = PaywallOfferDisplay.findMonthlyPackage(packages);
+      final annual = PaywallOfferDisplay.findAnnualPackage(packages);
+      final showBestValue = PaywallOfferDisplay.annualIsBestValue(
+        monthlyPackage: monthly,
+        annualPackage: annual,
+      );
+      final hasMultipleCadences = monthly != null && annual != null;
+
+      for (final package in packages) {
         final product = package.storeProduct;
-        final isMonthly =
-            product.identifier.contains('monthly') ||
-            package.packageType == PackageType.monthly;
-        final isYearly =
-            product.identifier.contains('yearly') ||
-            package.packageType == PackageType.annual;
+        final isAnnual = PaywallOfferDisplay.packageIsAnnual(package);
+        final fallbackTitle = isAnnual
+            ? l.subscriptionFallbackTitleYearly
+            : l.subscriptionFallbackTitleMonthly;
+        final savingsTag =
+            (hasMultipleCadences && showBestValue && isAnnual) ? l.subscriptionBestValue : null;
 
-        String periodLabel;
-        if (isYearly) {
-          periodLabel = 'per year';
-        } else if (isMonthly) {
-          periodLabel = 'per month';
-        } else {
-          periodLabel = '';
-        }
-
-        final savingsTag = isYearly ? 'Best Value' : null;
+        final display = PaywallOfferDisplay.fromStoreProduct(
+          product: product,
+          l: l,
+          fallbackTitle: fallbackTitle,
+          savingsTag: savingsTag,
+        );
 
         widgets.add(
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: PaywallOfferingCard(
-              title: product.title.isNotEmpty
-                  ? product.title
-                  : (isYearly ? 'Yearly' : 'Monthly'),
-              price: product.priceString,
-              periodLabel: periodLabel,
-              savingsTag: savingsTag,
+              display: display,
               isPurchasing: purchasing,
               onPurchase: () => onPurchasePackage(package),
               theme: theme,
