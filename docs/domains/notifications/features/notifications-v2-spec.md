@@ -3,13 +3,15 @@ title: Notifications — Activity, account & Agatha Suggestions
 owner: Product
 audience: both
 status: accepted (rev 2.5.1)
-last_updated: 2026-10-13
+last_updated: 2026-11-10
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
 feature_id: notifications
 ---
 
 # Notifications — Activity, account & Agatha Suggestions
+
+> **UI (2026-11):** Organisation/foster pending sections and settings categories were removed from the app with `frozen-domains-removal-3f9c`. Rows below that describe org/foster inbox or settings behaviour are **historical** for retained data and emitters until the data API track retires them.
 
 > **Status: accepted 2026-10-06, rev 2.5.1.** UAT closeout: resolve-by-type, actionability matrix, suggestion scheduler, FR-FB-2/3. Billing provider: undecided, so PR8 is blocked. Sign-in location: not now (N13). Functional spec only. Implementation follows the rollout in §12, with one atomic PR
 > per outcome. Rev 2+ changes are summarised in §15. The decisions in §0 take effect.
