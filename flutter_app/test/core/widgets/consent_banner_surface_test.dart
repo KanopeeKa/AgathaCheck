@@ -13,10 +13,7 @@ Widget _bannerAtWidth({
     localizationsDelegates: AppLocalizations.localizationsDelegates,
     supportedLocales: AppLocalizations.supportedLocales,
     home: MediaQuery(
-      data: MediaQueryData(
-        size: Size(width, 800),
-        textScaler: textScaler,
-      ),
+      data: MediaQueryData(size: Size(width, 800), textScaler: textScaler),
       child: Builder(
         builder: (context) {
           final l = AppLocalizations.of(context)!;
@@ -95,83 +92,85 @@ void main() {
     });
   }
 
-  testWidgets('French locale at 2.0 text scale shows all actions without overflow',
-      (tester) async {
-    await tester.binding.setSurfaceSize(const Size(360, 2400));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
+  testWidgets(
+    'French locale at 2.0 text scale shows all actions without overflow',
+    (tester) async {
+      await tester.binding.setSurfaceSize(const Size(360, 2400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-    await tester.pumpWidget(
-      MaterialApp(
-        locale: const Locale('fr'),
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        home: MediaQuery(
-          data: const MediaQueryData(
-            size: Size(360, 2400),
-            textScaler: TextScaler.linear(2),
-          ),
-          child: Builder(
-            builder: (context) {
-              final l = AppLocalizations.of(context)!;
-              final theme = Theme.of(context);
-              return Scaffold(
-                body: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ConsentBannerSurface(
-                      l10n: l,
-                      theme: theme,
-                      onManagePreferences: () {},
-                      onRejectOptional: () {},
-                      onAcceptAll: () {},
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('fr'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: MediaQuery(
+            data: const MediaQueryData(
+              size: Size(360, 2400),
+              textScaler: TextScaler.linear(2),
+            ),
+            child: Builder(
+              builder: (context) {
+                final l = AppLocalizations.of(context)!;
+                final theme = Theme.of(context);
+                return Scaffold(
+                  body: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: ConsentBannerSurface(
+                        l10n: l,
+                        theme: theme,
+                        onManagePreferences: () {},
+                        onRejectOptional: () {},
+                        onAcceptAll: () {},
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(tester.takeException(), isNull);
+
+      final l = AppLocalizations.of(
+        tester.element(find.byType(ConsentBannerSurface)),
+      )!;
+      expect(find.text(l.consentAcceptAll), findsOneWidget);
+      expect(find.text(l.consentManagePreferences), findsOneWidget);
+      expect(find.text(l.consentRejectOptional), findsOneWidget);
+    },
+  );
+
+  testWidgets('saving shows labelled progress', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) {
+            final l = AppLocalizations.of(context)!;
+            return Scaffold(
+              body: ConsentBannerSurface(
+                l10n: l,
+                theme: Theme.of(context),
+                saving: true,
+                onManagePreferences: () {},
+                onRejectOptional: () {},
+                onAcceptAll: () {},
+              ),
+            );
+          },
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await tester.pump();
 
-    expect(tester.takeException(), isNull);
-
-    final l = AppLocalizations.of(
-      tester.element(find.byType(ConsentBannerSurface)),
-    )!;
-    expect(find.text(l.consentAcceptAll), findsOneWidget);
-    expect(find.text(l.consentManagePreferences), findsOneWidget);
-    expect(find.text(l.consentRejectOptional), findsOneWidget);
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.text('Accept All'), findsNothing);
   });
-
-  testWidgets('saving shows labelled progress', (tester) async {
-  await tester.pumpWidget(
-    MaterialApp(
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) {
-          final l = AppLocalizations.of(context)!;
-          return Scaffold(
-            body: ConsentBannerSurface(
-              l10n: l,
-              theme: Theme.of(context),
-              saving: true,
-              onManagePreferences: () {},
-              onRejectOptional: () {},
-              onAcceptAll: () {},
-            ),
-          );
-        },
-      ),
-    ),
-  );
-  await tester.pump();
-
-  expect(find.byType(CircularProgressIndicator), findsOneWidget);
-  expect(find.text('Accept All'), findsNothing);
-});
 
   testWidgets('save failure shows retryable error copy', (tester) async {
     late AppLocalizations l;

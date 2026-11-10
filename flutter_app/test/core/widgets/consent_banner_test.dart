@@ -58,7 +58,9 @@ void main() {
     expect(find.text(l.consentBannerTitle), findsNothing);
   });
 
-  testWidgets('reject optional failure keeps banner with error', (tester) async {
+  testWidgets('reject optional failure keeps banner with error', (
+    tester,
+  ) async {
     final prefs = _MemoryPrefs(setBoolHook: (_, __) async => false);
 
     await tester.pumpWidget(
