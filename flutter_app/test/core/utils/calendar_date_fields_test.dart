@@ -4,7 +4,6 @@ import 'package:pet_profile_app/features/health_tracking/data/models/health_entr
 import 'package:pet_profile_app/features/health_tracking/data/models/health_history_model.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_issue_model.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/entry_form_labels.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/weight_tracking/data/models/weight_entry_model.dart';
@@ -305,7 +304,7 @@ void main() {
   group('display formatters', () {
     test('formatEntryDate matches dd/MM/yyyy for UTC-midnight picker', () {
       final normalized = calendarDateOnly(calendarFieldUtcMidnightPicker);
-      expect(formatEntryDate(normalized), calendarFieldDisplay);
+      expect(formatCalendarDateDisplay(normalized), calendarFieldDisplay);
     });
 
     test('formatHealthEntryStatusDate preserves calendar day', () {
