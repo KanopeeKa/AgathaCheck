@@ -3,7 +3,7 @@ title: AgathaTrack design system
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-26
+last_updated: 2026-11-10
 tags: [design, tokens, system]
 ---
 
@@ -664,6 +664,15 @@ Loading controls are disabled rather than repurposed as empty-state actions.
 For example, a pet-dependent action remains unavailable until the pet list has
 resolved; an actually resolved empty list may then show its appropriate
 no-pets guidance.
+
+Shared Flutter widgets for these states live in
+`flutter_app/lib/core/widgets/async_state/` (import `async_state.dart`):
+
+| Widget | Use for |
+|---|---|
+| `AsyncErrorState` | a failed primary load: localized title (defaults to "We couldn't load this"), one-line hint and Retry; never pass exception text, log it instead; place it inside the screen shell so title and back stay |
+| `LabelledProgress` | any wait: a progress indicator whose accessible label names what is loading (defaults to "Loading") |
+| `SupplementalStateCaption` | a dependent query that is loading or unavailable next to content that would otherwise read as "none" or "all set" (tag filters, care status, pet names); shows Retry when unavailable |
 
 ---
 

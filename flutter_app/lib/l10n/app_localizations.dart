@@ -680,6 +680,24 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// Default title of the shared load-error state when a screen has no more specific subject (AsyncErrorState).
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load this'**
+  String get loadErrorTitle;
+
+  /// Default one-line hint under a load-error title (AsyncErrorState).
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get loadErrorRetryHint;
+
+  /// Default accessible label of the shared progress indicator (LabelledProgress).
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loadingLabel;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:

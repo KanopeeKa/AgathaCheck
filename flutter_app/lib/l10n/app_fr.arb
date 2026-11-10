@@ -101,6 +101,9 @@
   "edit": "Modifier",
   "close": "Fermer",
   "retry": "Réessayer",
+  "loadErrorTitle": "Impossible de charger ce contenu",
+  "loadErrorRetryHint": "Vérifiez votre connexion et réessayez.",
+  "loadingLabel": "Chargement",
 
   "language": "Langue",
   "english": "English",
