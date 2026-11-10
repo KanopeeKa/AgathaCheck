@@ -328,6 +328,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retry => 'Réessayer';
 
   @override
+  String get loadErrorTitle => 'Impossible de charger ce contenu';
+
+  @override
+  String get loadErrorRetryHint => 'Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get loadingLabel => 'Chargement';
+
+  @override
   String get language => 'Langue';
 
   @override

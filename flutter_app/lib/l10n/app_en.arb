@@ -104,6 +104,12 @@
   "edit": "Edit",
   "close": "Close",
   "retry": "Retry",
+  "loadErrorTitle": "We couldn't load this",
+  "@loadErrorTitle": {"description": "Default title of the shared load-error state when a screen has no more specific subject (AsyncErrorState)."},
+  "loadErrorRetryHint": "Check your connection and try again.",
+  "@loadErrorRetryHint": {"description": "Default one-line hint under a load-error title (AsyncErrorState)."},
+  "loadingLabel": "Loading",
+  "@loadingLabel": {"description": "Default accessible label of the shared progress indicator (LabelledProgress)."},
 
   "language": "Language",
   "english": "English",

@@ -322,6 +322,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get loadErrorTitle => 'We couldn\'t load this';
+
+  @override
+  String get loadErrorRetryHint => 'Check your connection and try again.';
+
+  @override
+  String get loadingLabel => 'Loading';
+
+  @override
   String get language => 'Language';
 
   @override
