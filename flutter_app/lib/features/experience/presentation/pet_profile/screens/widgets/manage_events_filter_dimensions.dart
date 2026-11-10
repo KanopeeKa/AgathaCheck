@@ -226,11 +226,11 @@ List<CollectionFilterDimension> _globalGuardianEventsFilterDimensions(
   AppLocalizations l,
 ) {
   return [
-  ..._manageEventsCoreDimensions(l).where(
-    (dimension) =>
-        dimension.id != ManageEventsCollectionFilterIds.status &&
-        dimension.id != ManageEventsCollectionFilterIds.skipped,
-  ),
+    ..._manageEventsCoreDimensions(l).where(
+      (dimension) =>
+          dimension.id != ManageEventsCollectionFilterIds.status &&
+          dimension.id != ManageEventsCollectionFilterIds.skipped,
+    ),
     CollectionFilterDimension(
       id: ManageEventsCollectionFilterIds.cohort,
       label: l.eventFilterCohortLabel,

@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 
-import '../../features/experience/presentation/screens/pet_care/care_list/global_events_pet_query.dart';
 import 'shell_return_navigation.dart';
 
 /// Redirect legacy recurring-care URLs to the unified All care destination.
@@ -25,7 +24,7 @@ String redirectPetScopedAllCareTarget({
   required Uri uri,
 }) {
   final params = Map<String, String>.from(uri.queryParameters);
-  params.remove(GlobalEventsPetQuery.queryParam);
+  params.remove(globalAllCarePetQueryParam);
   final returnTo = parseShellReturnTo(uri.queryParameters['returnTo']);
   params.remove('returnTo');
   return globalAllCareLocation(

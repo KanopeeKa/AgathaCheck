@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:pet_profile_app/features/experience/presentation/screens/pet_care/care_list/global_events_pet_query.dart';
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 
 void main() {
   group('globalAllCareLocation', () {
