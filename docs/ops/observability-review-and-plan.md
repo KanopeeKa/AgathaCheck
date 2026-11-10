@@ -16,7 +16,9 @@ ticked here. When every step is done, delete this file.
 **How to resume:** find the first step not marked ✅ in the [status board](#status-board) and tell the
 agent: *"Let's do step N of `docs/ops/observability-review-and-plan.md`."*
 
-Figures below were measured on `main` at `2a5f3ac` (2026-11-10), runtime code only (tests excluded).
+Figures below were measured on `main` at `2a5f3ac` (2026-11-10), runtime code only (tests excluded). They are a
+baseline for this review and are not kept up to date: once a step lands, its lint rule and tests are the
+source of truth, not a recount.
 
 ## Summary
 
@@ -179,13 +181,16 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 
 | Step | Title | Areas | PR | Status |
 |------|-------|-------|----|--------|
-| 1 | Log every server error | 2, 3 | | ⬜ |
+| 1a | Log every server error: helper, lint ratchet, pilot folders | 2, 3 | | ⬜ |
+| 1b | Log every server error: organizations and the rest | 2, 3 | | ⬜ |
 | 2 | Logger foundation: context, redaction, process safety | 1, 2 | | ⬜ |
 | 3 | Real health checks and process metrics | 1, 4 | | ⬜ |
 | 4 | External uptime and job pulse checks | 1, 8, 12 | | ⬜ |
 | 5 | Log shipping and retention | 2 | | ⬜ |
 | 6 | Error tracking: API | 3 | | ⬜ |
-| 7 | Error tracking and RUM: Flutter web | 3, 5 | | ⬜ |
+| 7a | Flutter web: global error handlers, source maps, request ID, consented path | 3, 5 | | ⬜ |
+| 7b | Flutter web: scrubbed path for everyone else, with assessment and notice | 3, 5 | | ⬜ |
+| 7c | Flutter web: silent-catch triage and timings | 3, 5 | | ⬜ |
 | 8 | Audit coverage and consistency | 7 | | ⬜ |
 | 9 | Security events and detection rules | 6 | | ⬜ |
 | 10 | Job runs, email and integration outcomes | 8, 9 | | ⬜ |
@@ -196,26 +201,52 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 
 Legend: ⬜ not started · 🟡 in progress · ✅ done (link PR)
 
-Order: 1–3 first (no dependencies). The backup plan should start once step 4 is in (it reuses the cron wrapper and pulse checks) and must finish before launch. 8–9 before launch. 10–14 can run in parallel after 5.
+Order and priority:
+
+| When | Steps | Why |
+|------|-------|-----|
+| Now, no vendor | 1a → 1b → 2 → 3 | Makes failures diagnosable and removes the crash paths |
+| Before meaningful UAT traffic | 4 → 5 → 6 | Someone is emailed when the site or a job fails |
+| Alongside 5–6 | 7a, 7c | 7b must not merge before its assessment and privacy-notice line: a hard gate |
+| Before launch | 8 → 9, then 10 | Sharing audit, brute-force detection, failed invite and reset emails |
+| After launch | 11–14 | Performance budgets, integrity checks, analytics catalogue, governance |
+
+The backup plan starts once step 4 is in (it reuses the cron wrapper and pulse checks) and must finish before
+launch.
+
+Sub-steps (1a/1b, 7a–7c) are separate PRs with one outcome each. Fourteen ordered steps suit `/light-plan` or
+`/execute-plan` on an integration branch better than one-off prompts; the resume line above still works for a
+single step.
 
 ## Steps
 
 ### Phase A — make failures visible in the code (no vendor)
 
-**Step 1 — Log every server error**
+**Step 1 — Log every server error** (two PRs)
 
-- Add `sendServerError(req, res, err, publicMessage?)` in `server/lib/http/` that logs `{ event: 'http.error', err, requestId, route }` and answers `500` with `request_id`. This also closes the open `publicError` debt row.
-- Replace the 192 silent handlers. Where a route already uses `asyncHandler`, drop the `try/catch` and let the error middleware handle it.
-- ESLint rule for `server/routes/**`: no `res.status(500)` outside the helper. Add to the baseline so it cannot regress.
-- **Done when:** a forced failure in any route produces one error log line with a stack and the same `request_id` the client received; lint blocks a new silent handler.
+Where the 192 handlers are: `routes/organizations/` 101, top-level `routes/*.js` 44, households 14, people 8,
+care intelligence 7, pets 5, care progression 4, timeline 4, health issues 3, auth 1, notifications 1.
+`asyncHandler` is used in pets, auth, sharing, care context, health entries and weight entries, and nowhere in
+organizations, so two mechanics are needed and each PR uses only one per file.
+
+- **Mechanic A (file already uses `asyncHandler`):** delete the `try/catch` and let the error middleware log and answer.
+- **Mechanic B (everything else):** keep the handler shape and replace the body of the `catch` with `return sendServerError(req, res, err, publicMessage)`. No conversion to `asyncHandler` in this step: it changes control flow in 100-plus handlers and belongs to a later refactor. Done by a codemod script committed under `server/scripts/`, with the few hand-edited exceptions listed in the PR body.
+- `sendServerError(req, res, err, publicMessage?)` lives in `server/lib/http/`, logs `{ event: 'http.error', err, requestId, route }` and answers `500` with the same body shape as today plus `request_id`. This also closes the open `publicError` debt row.
+
+**1a** — helper and its tests; ESLint rule for `server/routes/**` (no `res.status(500)` outside the helper) entered in `eslint-baseline.json` so it can only shrink; pilot on the small folders (pets, auth, notifications, health issues, timeline, care progression, people, households, care intelligence: 47 handlers).
+
+**1b** — organizations and the top-level route files (145 handlers), by the codemod; baseline reaches zero and the rule becomes blocking.
+
+- Response bodies must not change apart from the added `request_id`; existing route tests are the check.
+- **Done when (1b):** a forced failure in any route produces one error log line with a stack and the same `request_id` the client received; the lint baseline for the rule is empty.
 
 **Step 2 — Logger foundation**
 
 - `logger.js`: base fields `service`, `env`, `release` (git SHA written at deploy); Pino `redact` for `authorization`, `cookie`, `password`, `token`, `code`, `email`, `*.body`; error serialiser.
 - `requestContext.js`: `req.log` child logger; add `userId` once auth has run, the Express route template (`/pets/:id`), response size; level by status (`warn` for 4xx security statuses, `error` for 5xx). Accept an inbound `X-Request-Id` only if it matches a UUID pattern.
-- Replace the 23 runtime `console.*` calls; ESLint `no-console` for `server/{bin,lib,routes,services,config,middleware}`.
+- Replace the 23 runtime `console.*` calls; ESLint `no-console` for `server/{bin,lib,routes,services,config,middleware}`. `server/scripts/**` is exempt: command-line scripts keep `console` for output a person reads, and scheduled ones also print one JSON summary line (as the care tick does) that step 10 records.
 - `createPool.js`: `pool.on('error')`. `start.js`: `unhandledRejection` and `uncaughtException` handlers that log `fatal` and exit cleanly; structured startup and shutdown lines.
-- Fix finding 5. Write the event-name catalogue into `observability.md`.
+- Fix finding 5. Write the event-name catalogue into `observability.md` and bring that file up to date (it was last revised 2026-08-21).
 - **Done when:** a test proves a request carrying a password and bearer token logs neither; killing the DB connection logs an error and the process survives.
 
 **Step 3 — Health checks and process metrics**
@@ -239,6 +270,7 @@ Order: 1–3 first (no dependencies). The backup plan should start once step 4 i
 - Ship selectively: `warn` and above, plus the named events alerts depend on (`http.error`, `email.failed`, `job.*`, `authz.denied`, `process.stats`). The full access log stays in a rotated file on the host, outside the deploy folder, kept 14 days.
 - Retention 14 days in both places; correct the 30-day line in `INTERNAL_GDPR.md` and the privacy notices in this PR.
 - Saved searches: errors by route, by release, one request by ID. Usage alert well below the 10 GB allowance.
+- **If PostHog logs fail on UAT** (ingestion from the host, search, or retention control): no replacement vendor. Keep the rotated host file as the only log store, read over SSH; errors still reach the error tracker in step 6, and every alert that would have matched a log line is driven instead from the error tracker or from the scheduled database checks in steps 9, 10 and 12. Revisit a log vendor only if that proves too thin.
 - **Done when:** a UAT request can be found by its `request_id` within a minute, nothing older than 14 days exists, and a test proves no redacted field leaves the host.
 
 **Step 6 — Error tracking: API** (PostHog)
@@ -247,15 +279,29 @@ Order: 1–3 first (no dependencies). The backup plan should start once step 4 i
 - Release created by the deploy workflows. Email alert on a new error group and on a regression after deploy. Record the retention PostHog applies to exception events.
 - **Done when:** a deliberate UAT error appears grouped, with the right release, and notifies.
 
-**Step 7 — Error tracking and RUM: Flutter web** (PostHog)
+**Step 7 — Error tracking and RUM: Flutter web** (PostHog; three PRs)
 
-- Global handlers in `main.dart` (`FlutterError.onError`, `PlatformDispatcher.instance.onError`, guarded zone). Upload source maps in the web build.
-- HTTP client: send a generated `X-Request-Id`, record failures and latency by endpoint template, keep the returned `request_id`.
-- Show a short reference code in the shared failed-load widgets so a user can quote it to support.
-- Triage the 97 silent `catch` blocks: report, or comment why ignoring is correct.
-- Timings: app start to first usable screen, route change duration.
-- No session replay, no screen content, sensitive screens excluded as in `analytics_service.dart`. Two capture paths by consent state (Decisions, consequence 3): PostHog SDK for consenting users; `POST /api/client-errors` for the rest, rate-limited, size-capped and schema-validated, with unknown fields dropped. A test proves each error takes exactly one path and that the scrubbed payload carries none of the excluded fields. The written legitimate-interest assessment and the privacy-notice line ship in the same PR.
-- **Done when:** UAT proof 3 passes on both paths (readable stack in each) and the error links to the API error by ID.
+Capture paths are set in Decisions, consequence 3. No session replay, no screen content, sensitive screens
+excluded as in `analytics_service.dart`.
+
+**7a — handlers and the consented path**
+
+- Global handlers in `main.dart` (`FlutterError.onError`, `PlatformDispatcher.instance.onError`, guarded zone) feeding one reporter that picks the path from the consent state. Until 7b lands, the reporter drops errors from users who have not accepted analytics.
+- Upload source maps in the web build.
+- HTTP client: send a generated `X-Request-Id`, keep the returned `request_id`. Show a short reference code in the shared failed-load widgets so a user can quote it to support.
+- **Done when:** UAT proof 3 passes for a consenting user and the error links to the API error by ID.
+
+**7b — scrubbed path for everyone else** (hard gate: assessment and notice in the same PR)
+
+- `POST /api/client-errors`: rate-limited, size-capped, schema-validated, unknown fields dropped; logs and forwards server-side.
+- A test proves each error takes exactly one path and that the scrubbed payload carries none of the excluded fields.
+- Written legitimate-interest assessment under `regulatory/`; privacy-notice line in every language; processing-register row.
+- **Done when:** UAT proof 3 passes for a user who declined analytics, with a readable stack and no user identifier in the stored event.
+
+**7c — silent catches and timings**
+
+- Triage the 97 silent `catch` blocks: report, or comment why ignoring is correct. A lint rule for empty `catch` keeps the count from growing.
+- Timings: app start to first usable screen, route change duration, API failure rate and latency by endpoint template.
 
 ### Phase C — security, audit and workflows (before launch)
 
@@ -272,7 +318,7 @@ Order: 1–3 first (no dependencies). The backup plan should start once step 4 i
 **Step 9 — Security events and detection rules**
 
 - Emit `authz.denied` (403), `auth.rejected` (401) and `ratelimit.hit` (429, via the limiter `handler`) with user, IP, route template and reason. Audit E2E-bypass use.
-- Implement the taxonomy thresholds as one scheduled check (`server/scripts/ops/security-check.js`) reading `audit_events` and the log store: failed-login bursts per account and per IP, reset storms, export volume, permission grants, mass deletion. Output is an email alert and a failed pulse check.
+- Each detection rule names the one store it reads. **`audit_events`** (scheduled check `server/scripts/ops/security-check.js`): anything about an account or a resource, and anything that may need looking at after 14 days. **Log store** (PostHog alert, window of 24 hours or less): rate signals only, namely 401/403/429 spikes per IP and 5xx per route. A denial that matters beyond 14 days is audited, not only logged. Rules on `audit_events`: failed-login bursts per account and per IP, reset storms, export volume, permission grants, mass deletion. Output is an email alert and a failed pulse check.
 - Move the taxonomy from `docs/engineering/pet-care-hardening/` to `docs/ops/` as the live rule list.
 - **Done when:** scripted brute force on UAT raises a P1 within the documented window.
 

@@ -3,7 +3,7 @@ title: Production backup, restore and deploy safeguards — rollout plan
 owner: Documentation Team
 audience: both
 status: draft
-last_updated: 2026-09-29
+last_updated: 2026-11-10
 tags: [ops, deployment, backup, database]
 ---
 # Production backup, restore and deploy safeguards — rollout plan
@@ -56,7 +56,7 @@ driven by `.github/workflows/deploy-prod.yml` and `deploy-uat.yml`.
 |---|----------|----------------|-------------|
 | D1 | Off-site storage provider (S3-compatible, EU) | Scaleway Object Storage (Paris) or Hetzner Object Storage — both support object lock | |
 | D2 | Encryption tool | `age` (static binary in `~/bin`, public-key only on server); fallback `gpg` if the binary can't run on CloudLinux | |
-| D3 | Alerting service (dead man's switch + uptime) | healthchecks.io (EU-hosted) for jobs + Better Stack or UptimeRobot for `/backend/health` | |
+| D3 | Alerting service (dead man's switch + uptime) | Decided in [observability-review-and-plan.md](./observability-review-and-plan.md) §Decisions, which owns the alerting vendor: updown.io for both the external check and job pulse checks (fallback healthchecks.io). Where the steps below say healthchecks.io, read "the pulse service" | updown.io (2026-11-10) |
 | D4 | Retention | 7 daily · 4 weekly · 6 monthly (and update privacy notice to say so) | |
 | D5 | Where the private decryption key lives | Password manager + one offline copy (printed / USB in a safe) | |
 | D6 | Full automated restore test in CI? | **No** at launch (would copy health data through GitHub, a US processor). Monthly human drill instead; revisit later | |
