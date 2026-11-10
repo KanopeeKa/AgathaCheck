@@ -40,9 +40,8 @@ class PetManageEventsScreen extends ConsumerWidget {
     }
 
     return petsAsync.when(
-      loading: () => routeShell(
-        child: const Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          routeShell(child: const Center(child: CircularProgressIndicator())),
       error: (_, __) => routeShell(
         child: AsyncErrorState(
           title: l.loadErrorYourPets,
@@ -53,9 +52,7 @@ class PetManageEventsScreen extends ConsumerWidget {
       data: (pets) {
         final pet = pets.where((p) => p.id == petId).firstOrNull;
         if (pet == null) {
-          return routeShell(
-            child: AsyncErrorState(title: l.petNotFound),
-          );
+          return routeShell(child: AsyncErrorState(title: l.petNotFound));
         }
 
         return routeShell(
