@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/core/care/care_item_observation_section.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_state.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
@@ -26,7 +27,8 @@ class CareItemDetailBody extends ConsumerWidget {
     required this.petId,
     required this.entry,
     required this.pet,
-    required this.history,
+    required this.historyAsync,
+    required this.entryId,
     required this.isClosed,
     required this.isEstablished,
     required this.onSeeHistory,
@@ -37,7 +39,8 @@ class CareItemDetailBody extends ConsumerWidget {
   final String petId;
   final HealthEntry entry;
   final Pet pet;
-  final List<HealthHistoryEntry> history;
+  final AsyncValue<List<HealthHistoryEntry>> historyAsync;
+  final String entryId;
   final bool isClosed;
   final bool isEstablished;
   final VoidCallback onSeeHistory;
@@ -87,7 +90,11 @@ class CareItemDetailBody extends ConsumerWidget {
                   muted: muted,
                 )
               : CareItemDatesSection(entry: entry, muted: muted))
-        : _ClosedNeedsAttentionModule(history: history, muted: muted);
+        : _ClosedNeedsAttentionModule(
+            historyAsync: historyAsync,
+            entryId: entryId,
+            muted: muted,
+          );
     final absenceSection = CareItemAbsenceSection(entry: entry, muted: muted);
     final scheduleSection = CareItemScheduleSection(
       entry: entry,
@@ -298,21 +305,22 @@ class _DetailsModule extends StatelessWidget {
   }
 }
 
-class _ClosedNeedsAttentionModule extends StatelessWidget {
+class _ClosedNeedsAttentionModule extends ConsumerWidget {
   const _ClosedNeedsAttentionModule({
-    required this.history,
+    required this.historyAsync,
+    required this.entryId,
     required this.muted,
   });
 
-  final List<HealthHistoryEntry> history;
+  final AsyncValue<List<HealthHistoryEntry>> historyAsync;
+  final String entryId;
   final bool muted;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final last = sortedHistoryDesc(history).firstOrNull;
 
     return CareItemModule(
       key: const Key('care_item_needs_attention_section'),
@@ -325,24 +333,36 @@ class _ClosedNeedsAttentionModule extends StatelessWidget {
             icon: Icons.flag_outlined,
           ),
           const SizedBox(height: 12),
-          if (last == null)
-            Text(
-              l.noHistoryYet,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
-            )
-          else
-            Text(
-              last.isSkipped
-                  ? l.occurrenceSkipped
-                  : last.completedOn != null
-                  ? l.doneOn(DateFormat.yMMMd().format(last.completedOn!))
-                  : l.notSet,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurfaceVariant,
-              ),
+          historyAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (_, __) => SupplementalStateCaption(
+              state: SupplementalState.unavailable,
+              label: l.historyUnavailable,
+              onRetry: () => ref.invalidate(entryHistoryProvider(entryId)),
+              retryKey: const Key('care_item_history_load_retry'),
             ),
+            data: (history) {
+              final last = sortedHistoryDesc(history).firstOrNull;
+              if (last == null) {
+                return Text(
+                  l.noHistoryYet,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                );
+              }
+              return Text(
+                last.isSkipped
+                    ? l.occurrenceSkipped
+                    : last.completedOn != null
+                    ? l.doneOn(DateFormat.yMMMd().format(last.completedOn!))
+                    : l.notSet,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              );
+            },
+          ),
         ],
       ),
     );

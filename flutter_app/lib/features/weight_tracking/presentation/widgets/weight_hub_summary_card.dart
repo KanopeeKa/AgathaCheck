@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/weight/weight_unit.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/weight_entry.dart';
 import '../../domain/entities/weight_overview.dart';
@@ -13,13 +14,15 @@ import '../utils/weight_hub_labels.dart';
 
 class WeightHubSummaryCard extends ConsumerWidget {
   const WeightHubSummaryCard({
+    required this.petId,
     required this.entries,
-    required this.overview,
+    required this.overviewAsync,
     super.key,
   });
 
+  final String petId;
   final List<WeightEntry> entries;
-  final WeightOverview? overview;
+  final AsyncValue<WeightOverview> overviewAsync;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,6 +50,7 @@ class WeightHubSummaryCard extends ConsumerWidget {
       }
     }
 
+    final overview = overviewAsync.valueOrNull;
     String? targetLine;
     final refData = overview?.reference;
     if (refData != null) {
@@ -56,6 +60,19 @@ class WeightHubSummaryCard extends ConsumerWidget {
         weightAuthorityLabel(l, refData.authority),
       );
     }
+
+    final overviewCaption = overviewAsync.whenOrNull(
+      loading: () => SupplementalStateCaption(
+        state: SupplementalState.loading,
+        label: l.weightTargetRoutineLoading,
+      ),
+      error: (_, __) => SupplementalStateCaption(
+        state: SupplementalState.unavailable,
+        label: l.weightTargetRoutineUnavailable,
+        onRetry: () => ref.invalidate(weightOverviewProvider(petId)),
+        retryKey: const Key('weight_hub_overview_retry'),
+      ),
+    );
 
     return Card(
       key: const Key('weight_hub_summary'),
@@ -96,6 +113,10 @@ class WeightHubSummaryCard extends ConsumerWidget {
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
+                      ],
+                      if (overviewCaption != null) ...[
+                        const SizedBox(height: 8),
+                        overviewCaption,
                       ],
                     ],
                   ),

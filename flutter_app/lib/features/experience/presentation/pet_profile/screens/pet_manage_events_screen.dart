@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_state.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
@@ -21,22 +22,44 @@ class PetManageEventsScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
     final experience = AppExperience.petCare;
+    final location = GoRouterState.of(context).uri.path;
+
+    Widget routeShell({
+      required Widget child,
+      String? screenTitle,
+      List<Widget> contextualActions = const [],
+    }) {
+      return ExperienceShellScaffold(
+        experience: experience,
+        currentLocation: location,
+        screenTitle: screenTitle ?? l.allCareTitle(''),
+        backPath: petDetailBackPath(context, petId),
+        contextualActions: contextualActions,
+        child: child,
+      );
+    }
 
     return petsAsync.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (error, _) => Scaffold(body: Center(child: Text('$error'))),
+      loading: () => routeShell(
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (_, __) => routeShell(
+        child: AsyncErrorState(
+          title: l.loadErrorYourPets,
+          onRetry: () => ref.invalidate(allPetsIncludingOrgProvider),
+          retryKey: const Key('manage_events_pets_load_retry'),
+        ),
+      ),
       data: (pets) {
         final pet = pets.where((p) => p.id == petId).firstOrNull;
         if (pet == null) {
-          return Scaffold(body: Center(child: Text(l.petNotFound)));
+          return routeShell(
+            child: AsyncErrorState(title: l.petNotFound),
+          );
         }
 
-        return ExperienceShellScaffold(
-          experience: experience,
-          currentLocation: GoRouterState.of(context).uri.path,
+        return routeShell(
           screenTitle: l.allCareTitle(pet.name),
-          backPath: petDetailBackPath(context, petId),
           contextualActions: [
             IconButton(
               key: const Key('manage_events_add_app_bar'),

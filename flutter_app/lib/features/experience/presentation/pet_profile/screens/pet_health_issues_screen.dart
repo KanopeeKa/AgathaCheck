@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_state.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
@@ -25,6 +26,11 @@ class PetHealthIssuesScreen extends ConsumerWidget {
 
     void onAddIssue() => controller.showAddIssueDialog(context, petId);
 
+    final canAdd = issuesAsync.maybeWhen(
+      data: (_) => true,
+      orElse: () => false,
+    );
+
     return ExperienceShellScaffold(
       experience: experience,
       currentLocation: GoRouterState.of(context).uri.path,
@@ -35,20 +41,15 @@ class PetHealthIssuesScreen extends ConsumerWidget {
           key: const Key('health_issues_add_app_bar'),
           tooltip: l.addHealthIssue,
           icon: const Icon(Icons.add),
-          onPressed: onAddIssue,
+          onPressed: canAdd ? onAddIssue : null,
         ),
       ],
       child: issuesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Text(
-              l.healthIssuesLoadFailed,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-              textAlign: TextAlign.center,
-            ),
-          ),
+        error: (_, __) => AsyncErrorState(
+          title: l.loadErrorHealthIssues,
+          onRetry: () => ref.invalidate(healthIssueNotifierProvider(petId)),
+          retryKey: const Key('health_issues_load_retry'),
         ),
         data: (issues) {
           if (issues.isEmpty) {

@@ -698,6 +698,54 @@ abstract class AppLocalizations {
   /// **'We couldn\'t load your pets'**
   String get loadErrorYourPets;
 
+  /// Title when the pet health issues list primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load health issues'**
+  String get loadErrorHealthIssues;
+
+  /// Title when All care entries fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load care items'**
+  String get loadErrorCareEntries;
+
+  /// Title when a care item detail primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load this care item'**
+  String get loadErrorCareItem;
+
+  /// Title when pet timeline primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the timeline'**
+  String get loadErrorTimeline;
+
+  /// Title when weight entries primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load weight history'**
+  String get loadErrorWeightEntries;
+
+  /// Supplemental caption while weight overview loads.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading target and routine…'**
+  String get weightTargetRoutineLoading;
+
+  /// Supplemental caption when weight overview fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Target and routine unavailable'**
+  String get weightTargetRoutineUnavailable;
+
+  /// Supplemental caption when care item history fails.
+  ///
+  /// In en, this message translates to:
+  /// **'History unavailable'**
+  String get historyUnavailable;
+
   /// Supplemental caption while pet tags load on All pets.
   ///
   /// In en, this message translates to:

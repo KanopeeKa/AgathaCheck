@@ -337,6 +337,35 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loadErrorYourPets => 'Impossible de charger vos animaux';
 
   @override
+  String get loadErrorHealthIssues =>
+      'Impossible de charger les problèmes de santé';
+
+  @override
+  String get loadErrorCareEntries =>
+      'Impossible de charger les éléments de soins';
+
+  @override
+  String get loadErrorCareItem => 'Impossible de charger cet élément de soins';
+
+  @override
+  String get loadErrorTimeline => 'Impossible de charger la chronologie';
+
+  @override
+  String get loadErrorWeightEntries =>
+      'Impossible de charger l\'historique de poids';
+
+  @override
+  String get weightTargetRoutineLoading =>
+      'Chargement de l\'objectif et de la routine…';
+
+  @override
+  String get weightTargetRoutineUnavailable =>
+      'Objectif et routine indisponibles';
+
+  @override
+  String get historyUnavailable => 'Historique indisponible';
+
+  @override
   String get tagFiltersLoading => 'Chargement des étiquettes…';
 
   @override

@@ -331,6 +331,30 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadErrorYourPets => 'We couldn\'t load your pets';
 
   @override
+  String get loadErrorHealthIssues => 'We couldn\'t load health issues';
+
+  @override
+  String get loadErrorCareEntries => 'We couldn\'t load care items';
+
+  @override
+  String get loadErrorCareItem => 'We couldn\'t load this care item';
+
+  @override
+  String get loadErrorTimeline => 'We couldn\'t load the timeline';
+
+  @override
+  String get loadErrorWeightEntries => 'We couldn\'t load weight history';
+
+  @override
+  String get weightTargetRoutineLoading => 'Loading target and routine…';
+
+  @override
+  String get weightTargetRoutineUnavailable => 'Target and routine unavailable';
+
+  @override
+  String get historyUnavailable => 'History unavailable';
+
+  @override
   String get tagFiltersLoading => 'Loading tag filters…';
 
   @override
