@@ -155,9 +155,12 @@ class _PetCareBulkShareSelectScreenState
                                 onRetry:
                                     careSupplemental ==
                                         SupplementalState.unavailable
-                                    ? () => ref.invalidate(
-                                        healthEntriesNotifierProvider,
-                                      )
+                                    ? () => ref
+                                          .read(
+                                            healthEntriesNotifierProvider
+                                                .notifier,
+                                          )
+                                          .refresh()
                                     : null,
                                 retryKey: const Key(
                                   'bulk_share_care_status_retry',
