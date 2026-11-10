@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../../../core/widgets/invite_recipient_block.dart';
+
 class SharedPetAcceptSection extends StatelessWidget {
   final bool isLoggedIn;
   final bool accepting;
@@ -8,6 +10,12 @@ class SharedPetAcceptSection extends StatelessWidget {
   final ColorScheme colorScheme;
   final String promptText;
   final String buttonText;
+
+  /// When set, signed-out viewers see [InviteRecipientBlock] instead of nothing.
+  final String? invitePath;
+  final String? inviterName;
+  final String? petsSummary;
+  final String? scopeDescription;
 
   const SharedPetAcceptSection({
     super.key,
@@ -18,11 +26,25 @@ class SharedPetAcceptSection extends StatelessWidget {
     required this.colorScheme,
     required this.promptText,
     required this.buttonText,
+    this.invitePath,
+    this.inviterName,
+    this.petsSummary,
+    this.scopeDescription,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (!isLoggedIn) return const SizedBox.shrink();
+    if (!isLoggedIn) {
+      final path = invitePath;
+      final scope = scopeDescription;
+      if (path == null || scope == null) return const SizedBox.shrink();
+      return InviteRecipientBlock(
+        invitePath: path,
+        scopeDescription: scope,
+        inviterName: inviterName,
+        petsSummary: petsSummary,
+      );
+    }
     return Card(
       color: colorScheme.primaryContainer.withAlpha(80),
       child: Padding(

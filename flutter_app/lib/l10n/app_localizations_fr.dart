@@ -4627,6 +4627,86 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous avez déjà accepté cette invitation.';
 
   @override
+  String get absenceInviteTitle => 'Invitation d\'absence';
+
+  @override
+  String absenceInviteHeadline(String inviterName) {
+    return '$inviterName vous a invité(e) à aider pendant une absence';
+  }
+
+  @override
+  String get absenceInviteAccessScope =>
+      'Soins temporaires pendant une absence';
+
+  @override
+  String get absenceInviteAccept => 'Accepter l\'invitation';
+
+  @override
+  String get absenceInviteAccepting => 'Acceptation…';
+
+  @override
+  String get absenceInviteLoadFailed =>
+      'Impossible de charger cette invitation. Réessayez.';
+
+  @override
+  String get absenceInviteAcceptFailed =>
+      'Impossible d\'accepter cette invitation. Réessayez.';
+
+  @override
+  String get absenceInviteUnavailable => 'Invitation indisponible';
+
+  @override
+  String get inviteContinueWithAccount => 'Se connecter ou créer un compte';
+
+  @override
+  String inviteRecipientInvitedBy(String inviterName) {
+    return '$inviterName vous a invité(e)';
+  }
+
+  @override
+  String inviteRecipientHousehold(String name) {
+    return 'Foyer : $name';
+  }
+
+  @override
+  String inviteRecipientAccessScope(String scope) {
+    return 'Accès : $scope';
+  }
+
+  @override
+  String get sharedPetLinkIdentityUnavailable => 'Un parent d\'animal';
+
+  @override
+  String sharedPetAgeMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mois',
+      one: '1 mois',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedPetAgeYearsOne => '1 an';
+
+  @override
+  String sharedPetAgeYearsFormatted(String formattedYears) {
+    return '$formattedYears ans';
+  }
+
+  @override
+  String get shareAcceptFailed =>
+      'Impossible d\'accepter ce partage. Réessayez.';
+
+  @override
+  String get shareInviteDecisionFailed =>
+      'Impossible de traiter cette invitation. Réessayez.';
+
+  @override
+  String get entryResolutionFailed => 'Impossible de charger vos animaux';
+
+  @override
   String get invited => 'Invité(e)';
 
   @override
@@ -8794,6 +8874,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleHouseholdInviteDecline => 'Refuser';
+
+  @override
+  String get peopleHouseholdInviteLoadFailed =>
+      'Impossible de charger cette invitation. Réessayez.';
 
   @override
   String get peopleAddPetsEmpty => 'Aucun animal à lier pour l\'instant.';

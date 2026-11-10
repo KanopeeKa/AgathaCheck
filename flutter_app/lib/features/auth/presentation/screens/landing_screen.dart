@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../providers/auth_providers.dart';
+import '../../../../core/router/invite_return.dart';
 import '../../../../core/web/native_login.dart';
 import '../widgets/landing/landing_auth_forms.dart';
 import '../widgets/landing/landing_operations_desk_page.dart';
@@ -53,6 +54,11 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     super.dispose();
   }
 
+  String _postAuthResolveLocation() {
+    final returnTo = inviteReturnToFromState(GoRouterState.of(context));
+    return appendInviteReturnQuery('/app/resolve', returnTo);
+  }
+
   Future<void> _submitLogin() async {
     if (!_loginFormKey.currentState!.validate()) return;
     ref.read(authProvider.notifier).clearError();
@@ -66,7 +72,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
       TextInput.finishAutofillContext();
-      context.go('/app/resolve');
+      context.go(_postAuthResolveLocation());
     }
   }
 
@@ -82,7 +88,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
     if (auth.isLoggedIn) {
       TextInput.finishAutofillContext();
       _nativeLogin.detach();
-      context.go('/app/resolve');
+      context.go(_postAuthResolveLocation());
     } else {
       _nativeLogin.setBusy(false);
       _nativeLogin.setError(auth.error ?? AppLocalizations.of(context)!.error);
@@ -104,7 +110,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen>
 
     if (mounted && ref.read(authProvider).isLoggedIn) {
       TextInput.finishAutofillContext();
-      context.go('/app/resolve');
+      context.go(_postAuthResolveLocation());
     }
   }
 

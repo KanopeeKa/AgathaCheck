@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pet_profile_app/features/auth/application/auth_providers.dart';
+import 'package:pet_profile_app/features/auth/data/token_store.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/household.dart';
@@ -206,6 +208,33 @@ void main() {
     expect(fake.renamed, isTrue);
   });
 
+  testWidgets('household invite landing signed-out shows account CTA', (
+    tester,
+  ) async {
+    final fake = FakeHouseholdsRepository();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          householdsRepositoryProvider.overrideWithValue(fake),
+          authProvider.overrideWith((ref) => _SignedOutAuthNotifier()),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const HouseholdInviteLandingScreen(inviteCode: 'abc123'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('invite_recipient_continue_account')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('household_invite_accept')), findsNothing);
+    expect(find.byKey(const Key('household_invite_decline')), findsNothing);
+  });
+
   testWidgets('household invite landing accept and decline', (tester) async {
     final fake = FakeHouseholdsRepository();
     final router = GoRouter(
@@ -255,4 +284,11 @@ class _StaticRosterNotifier extends RosterNotifier {
 
   @override
   Future<Roster> build() async => _roster;
+}
+
+class _SignedOutAuthNotifier extends AuthNotifier {
+  _SignedOutAuthNotifier()
+    : super(FakeAuthRepository(), PrefsTokenStore(FakePrefs())) {
+    state = const AuthState();
+  }
 }
