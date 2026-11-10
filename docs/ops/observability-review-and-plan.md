@@ -90,7 +90,7 @@ flowchart LR
     C[Cron: care tick, retention, backup, checks] --> DB
   end
   F -- X-Request-Id --> A
-  F -- errors, subject to Q8 --> E[PostHog errors EU]
+  F -- errors, path by consent --> E[PostHog errors EU]
   A -- errors --> E
   L -- ship --> S[PostHog logs EU, 14 days]
   C -- pulse on success --> H[updown.io]
@@ -131,6 +131,9 @@ Vendor facts in this section are from the owner's check of each vendor's officia
 | Business audit trail | AgathaTrack database (`audit_events`) | Never PostHog. Own retention tiers, set in `observability.md`. |
 | Product analytics | Existing PostHog setup | Consent-based, unchanged. |
 | Alerts | Email from PostHog and updown.io | No paging, no extra alerting tool. |
+| PostHog layout | Pay-as-you-go plan, separate operations project, spending limit of zero on every product | Keeps the monthly free allowances; a card is on file. Confirm the per-product limit exists when setting up; if it does not, set a billing alert at the lowest amount. |
+| Browser errors | Both paths: full detail for users who accepted analytics, scrubbed for everyone else | See consequence 3. |
+| Backups | None exist today. To be built soon, after the first steps of this plan, under [prod-backup-restore-plan.md](./prod-backup-restore-plan.md) | Must be running before launch. This plan only monitors backup age and the restore check. |
 | Not adopted | Sentry, Grafana Cloud, Better Stack, GlitchTip, any self-hosted stack, distributed tracing | Revisit only if a chosen service fails its proof. |
 
 Consequences the steps below must respect:
@@ -144,8 +147,14 @@ Consequences the steps below must respect:
    basis. Server-side errors and logs are always on, carry no cookies, no profile and no identifying fields
    beyond an opaque user ID, and do not depend on the analytics consent switch in either direction: opting out
    of analytics must not turn monitoring off, and monitoring must not collect analytics by another route.
-3. **Client-side error capture waits for its own privacy assessment** (Q8). Until then, browser errors are
-   captured only for users who accepted analytics; API failures are seen server-side for everyone.
+3. **Browser errors take one of two paths, chosen by the analytics consent state, never both.**
+   Users who accepted analytics: the PostHog SDK captures the error with full detail (user ID, screen name,
+   recent navigation). Everyone else: the app posts a scrubbed report to our own API, which logs it and
+   forwards it server-side. The scrubbed report holds the stack trace, release, route name, browser family and
+   request ID only: no user ID, no cookies, no device identifier, no screen content, no IP stored. It is
+   pseudonymous, not anonymous, because the request ID can be matched to server logs for 14 days. The scrubbed
+   path runs on legitimate interest and needs a short written assessment and a privacy-notice line before it
+   ships (step 7). Withdrawing consent moves a user to the scrubbed path at once.
 4. **Two independent checks, neither implies the other.** An external check answers "can a real internet
    client reach the site and get a valid response". A pulse check answers "did the job finish successfully",
    so it pings only after success and reports failure explicitly. A job that starts and dies must alert.
@@ -158,9 +167,6 @@ Consequences the steps below must respect:
 | # | Decision | Recommendation |
 |---|----------|----------------|
 | Q6 | Audit pseudonym scheme | HMAC-SHA-256 with a dedicated `AUDIT_PSEUDONYM_SALT` (no fallback to `JWT_SECRET` in production); change the retention job to match. |
-| Q7 | PostHog project layout | The free plan allows one project. A separate operations project needs the pay-as-you-go plan, which keeps the monthly free allowances but puts a card on file. Recommended: pay-as-you-go with a spending limit of zero on every product, and a separate project. If a card on file is unacceptable: one project, with every operational event marked by a `source: ops` property and excluded from analytics insights. |
-| Q8 | Legal basis and scope for browser error capture | Assess before step 7. Option A: capture through the PostHog SDK, consenting users only. Option B: the app posts a scrubbed error (stack, release, route name, request ID; no cookies, no screen content) to our own API, which logs and forwards it server-side for all users on legitimate interest. B gives full coverage but needs the assessment and a privacy-notice line. |
-| Q9 | Backups | The backup plan says nothing automated runs today. If hosting-provider backups are to be relied on instead, record that in [prod-backup-restore-plan.md](./prod-backup-restore-plan.md) with a periodic restore check; this plan only monitors backup age and the restore check. |
 
 ### Proof on UAT before committing to the vendors
 
@@ -193,7 +199,7 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 
 Legend: ⬜ not started · 🟡 in progress · ✅ done (link PR)
 
-Order: 1–3 first (no dependencies). 4–6 after Q7; 7 after Q8; 8 after Q6. 8–9 before launch. 10–14 can run in parallel after 5.
+Order: 1–3 first (no dependencies). 4–7 need no further decision; 8 after Q6. The backup plan should start once step 4 is in (it reuses the cron wrapper and pulse checks) and must finish before launch. 8–9 before launch. 10–14 can run in parallel after 5.
 
 ## Steps
 
@@ -231,28 +237,28 @@ Order: 1–3 first (no dependencies). 4–6 after Q7; 7 after Q8; 8 after Q6. 8�
 - Email alerts to the owner. Add updown.io to the processing register. Closes the uptime and retention-cron debt rows.
 - **Done when:** UAT proofs 1 and 2 pass, and stopping the UAT app raises an alert while the job pulse stays green (and the reverse).
 
-**Step 5 — Log shipping and retention** (PostHog logs; needs Q7)
+**Step 5 — Log shipping and retention** (PostHog logs)
 
 - Ship selectively: `warn` and above, plus the named events alerts depend on (`http.error`, `email.failed`, `job.*`, `authz.denied`, `process.stats`). The full access log stays in a rotated file on the host, outside the deploy folder, kept 14 days.
 - Retention 14 days in both places; correct the 30-day line in `INTERNAL_GDPR.md` and the privacy notices in this PR.
 - Saved searches: errors by route, by release, one request by ID. Usage alert well below the 10 GB allowance.
 - **Done when:** a UAT request can be found by its `request_id` within a minute, nothing older than 14 days exists, and a test proves no redacted field leaves the host.
 
-**Step 6 — Error tracking: API** (PostHog; needs Q7)
+**Step 6 — Error tracking: API** (PostHog)
 
 - Server-side capture in `start.js`, independent of any browser consent state, fed from `sendServerError`, the error middleware, process handlers and job failures. Tags: release, route, `requestId`. Scrub with the same deny-list as the logger; send no bodies.
 - Release created by the deploy workflows. Email alert on a new error group and on a regression after deploy. Record the retention PostHog applies to exception events.
 - **Done when:** a deliberate UAT error appears grouped, with the right release, and notifies.
 
-**Step 7 — Error tracking and RUM: Flutter web** (PostHog; needs Q8)
+**Step 7 — Error tracking and RUM: Flutter web** (PostHog)
 
 - Global handlers in `main.dart` (`FlutterError.onError`, `PlatformDispatcher.instance.onError`, guarded zone). Upload source maps in the web build.
 - HTTP client: send a generated `X-Request-Id`, record failures and latency by endpoint template, keep the returned `request_id`.
 - Show a short reference code in the shared failed-load widgets so a user can quote it to support.
 - Triage the 97 silent `catch` blocks: report, or comment why ignoring is correct.
 - Timings: app start to first usable screen, route change duration.
-- No session replay, no screen content, sensitive screens excluded as in `analytics_service.dart`. Capture path and coverage follow Q8; it must neither bypass the analytics consent choice nor be switched off by it without that being a recorded decision.
-- **Done when:** UAT proof 3 passes and the error links to the API error by ID.
+- No session replay, no screen content, sensitive screens excluded as in `analytics_service.dart`. Two capture paths by consent state (Decisions, consequence 3): PostHog SDK for consenting users; `POST /api/client-errors` for the rest, rate-limited, size-capped and schema-validated, with unknown fields dropped. A test proves each error takes exactly one path and that the scrubbed payload carries none of the excluded fields. The written legitimate-interest assessment and the privacy-notice line ship in the same PR.
+- **Done when:** UAT proof 3 passes on both paths (readable stack in each) and the error links to the API error by ID.
 
 ### Phase C — security, audit and workflows (before launch)
 
