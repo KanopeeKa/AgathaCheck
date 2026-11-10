@@ -328,6 +328,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadErrorRetryHint => 'Check your connection and try again.';
 
   @override
+  String get loadErrorYourPets => 'We couldn\'t load your pets';
+
+  @override
+  String get loadErrorHealthIssues => 'We couldn\'t load health issues';
+
+  @override
+  String get loadErrorCareEntries => 'We couldn\'t load care items';
+
+  @override
+  String get loadErrorCareItem => 'We couldn\'t load this care item';
+
+  @override
+  String get loadErrorTimeline => 'We couldn\'t load the timeline';
+
+  @override
+  String get loadErrorWeightEntries => 'We couldn\'t load weight history';
+
+  @override
+  String get weightTargetRoutineLoading => 'Loading target and routine…';
+
+  @override
+  String get weightTargetRoutineUnavailable => 'Target and routine unavailable';
+
+  @override
+  String get historyUnavailable => 'History unavailable';
+
+  @override
+  String get tagFiltersLoading => 'Loading tag filters…';
+
+  @override
+  String get tagFiltersUnavailable => 'Tag filters unavailable';
+
+  @override
+  String get careStatusUnavailable => 'Care status unavailable';
+
+  @override
+  String get backToPets => 'Back to pets';
+
+  @override
   String get loadingLabel => 'Loading';
 
   @override
@@ -1758,6 +1797,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotLoadSharingInfo => 'Could not load sharing info';
 
   @override
+  String get shareAccessUnavailable =>
+      'Sharing access is unavailable right now';
+
+  @override
+  String get shareUpdateFailed =>
+      'We couldn\'t update sharing. Try again in a moment.';
+
+  @override
+  String get shareSessionExpired =>
+      'Your session expired. Sign in again to continue.';
+
+  @override
   String get sessionExpired => 'Session expired. Please log in again.';
 
   @override
@@ -2412,6 +2463,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loadPlans => 'Load Plans';
+
+  @override
+  String get subscriptionPlansUnavailable =>
+      'Subscription plans aren\'t available right now. Try again in a moment.';
 
   @override
   String get petReport => 'Pet Report';
@@ -6269,6 +6324,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationsLoadError => 'We couldn\'t load your notifications';
+
+  @override
+  String get notificationPreferencesLoadError =>
+      'We couldn\'t load your notification settings';
+
+  @override
+  String get notificationPreferencesSaveFailed =>
+      'Your changes weren\'t saved. Try again.';
+
+  @override
   String get notificationKindAll => 'All';
 
   @override
@@ -7552,6 +7618,25 @@ class AppLocalizationsEn extends AppLocalizations {
       'Could not load this away plan. Try again.';
 
   @override
+  String get awayPlansLoading => 'Loading away plans';
+
+  @override
+  String get awayPlanLoading => 'Loading away plan';
+
+  @override
+  String get awayPetNamesUnavailable => 'Pet names unavailable';
+
+  @override
+  String get awayPetsLoading => 'Loading your pets';
+
+  @override
+  String get awayNoEligiblePets =>
+      'No pets are eligible for this absence. Passed-away pets are not included.';
+
+  @override
+  String get awayPlanPetsLoadError => 'We couldn\'t load pets for this plan';
+
+  @override
   String get careContextAwayPlanCareDuringTitle => 'Care during your absence';
 
   @override
@@ -7983,6 +8068,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'No tags yet. Create one to group pets on your All Pets screen.';
 
   @override
+  String get petTagsLoadError => 'We couldn\'t load your tags';
+
+  @override
+  String get petTagDeleteFailed => 'Couldn\'t delete that tag. Try again.';
+
+  @override
   String get petTagsNameHint => 'Tag name';
 
   @override
@@ -8109,6 +8200,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleListLoadError => 'Could not load contacts. Try again.';
+
+  @override
+  String get peopleBackToContacts => 'Back to contacts';
+
+  @override
+  String get peopleBackToHouseholds => 'Back to households';
+
+  @override
+  String get householdPetsUnavailable => 'Your pets could not be loaded';
 
   @override
   String get accountPeopleRow => 'Contacts';

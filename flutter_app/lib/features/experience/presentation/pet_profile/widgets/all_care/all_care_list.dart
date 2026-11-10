@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:pet_profile_app/core/widgets/async_state/async_state.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
@@ -43,7 +44,14 @@ class _AllCareListState extends ConsumerState<AllCareList> {
 
     return entriesAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, _) => Center(child: Text(l.errorWithMessage('$error'))),
+      error: (_, __) => AsyncErrorState(
+        title: l.loadErrorCareEntries,
+        onRetry: () {
+          ref.invalidate(petHealthEntriesByIdProvider(widget.petId));
+          ref.read(healthEntriesNotifierProvider.notifier).refresh();
+        },
+        retryKey: const Key('all_care_entries_load_retry'),
+      ),
       data: (entries) {
         if (!_requestedRefresh) {
           _requestedRefresh = true;

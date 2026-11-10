@@ -334,6 +334,50 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loadErrorRetryHint => 'Vérifiez votre connexion et réessayez.';
 
   @override
+  String get loadErrorYourPets => 'Impossible de charger vos animaux';
+
+  @override
+  String get loadErrorHealthIssues =>
+      'Impossible de charger les problèmes de santé';
+
+  @override
+  String get loadErrorCareEntries =>
+      'Impossible de charger les éléments de soins';
+
+  @override
+  String get loadErrorCareItem => 'Impossible de charger cet élément de soins';
+
+  @override
+  String get loadErrorTimeline => 'Impossible de charger la chronologie';
+
+  @override
+  String get loadErrorWeightEntries =>
+      'Impossible de charger l\'historique de poids';
+
+  @override
+  String get weightTargetRoutineLoading =>
+      'Chargement de l\'objectif et de la routine…';
+
+  @override
+  String get weightTargetRoutineUnavailable =>
+      'Objectif et routine indisponibles';
+
+  @override
+  String get historyUnavailable => 'Historique indisponible';
+
+  @override
+  String get tagFiltersLoading => 'Chargement des étiquettes…';
+
+  @override
+  String get tagFiltersUnavailable => 'Étiquettes indisponibles';
+
+  @override
+  String get careStatusUnavailable => 'État des soins indisponible';
+
+  @override
+  String get backToPets => 'Retour aux animaux';
+
+  @override
   String get loadingLabel => 'Chargement';
 
   @override
@@ -1777,6 +1821,18 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de charger les informations de partage';
 
   @override
+  String get shareAccessUnavailable =>
+      'Les accès de partage ne sont pas disponibles pour le moment';
+
+  @override
+  String get shareUpdateFailed =>
+      'Impossible de mettre à jour le partage. Réessayez dans un instant.';
+
+  @override
+  String get shareSessionExpired =>
+      'Votre session a expiré. Reconnectez-vous pour continuer.';
+
+  @override
   String get sessionExpired => 'Session expirée. Veuillez vous reconnecter.';
 
   @override
@@ -2437,6 +2493,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get loadPlans => 'Charger les forfaits';
+
+  @override
+  String get subscriptionPlansUnavailable =>
+      'Les forfaits ne sont pas disponibles pour le moment. Réessayez dans un instant.';
 
   @override
   String get petReport => 'Rapport de l\'animal';
@@ -6364,6 +6424,18 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get notificationsLoadError =>
+      'Impossible de charger vos notifications';
+
+  @override
+  String get notificationPreferencesLoadError =>
+      'Impossible de charger vos paramètres de notification';
+
+  @override
+  String get notificationPreferencesSaveFailed =>
+      'Vos modifications n\'ont pas été enregistrées. Réessayez.';
+
+  @override
   String get notificationKindAll => 'Tout';
 
   @override
@@ -7677,6 +7749,26 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de charger ce plan d\'absence. Réessayez.';
 
   @override
+  String get awayPlansLoading => 'Chargement des plans d\'absence';
+
+  @override
+  String get awayPlanLoading => 'Chargement du plan d\'absence';
+
+  @override
+  String get awayPetNamesUnavailable => 'Noms des animaux indisponibles';
+
+  @override
+  String get awayPetsLoading => 'Chargement de vos animaux';
+
+  @override
+  String get awayNoEligiblePets =>
+      'Aucun animal n\'est admissible pour cette absence. Les animaux décédés ne sont pas inclus.';
+
+  @override
+  String get awayPlanPetsLoadError =>
+      'Impossible de charger les animaux pour ce plan';
+
+  @override
   String get careContextAwayPlanCareDuringTitle =>
       'Soins pendant votre absence';
 
@@ -8113,6 +8205,13 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucune étiquette. Créez-en une pour regrouper vos animaux sur la liste Tous les animaux.';
 
   @override
+  String get petTagsLoadError => 'Impossible de charger vos étiquettes';
+
+  @override
+  String get petTagDeleteFailed =>
+      'Impossible de supprimer cette étiquette. Réessayez.';
+
+  @override
   String get petTagsNameHint => 'Nom de l\'étiquette';
 
   @override
@@ -8240,6 +8339,15 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get peopleListLoadError =>
       'Impossible de charger les contacts. Réessayez.';
+
+  @override
+  String get peopleBackToContacts => 'Retour aux contacts';
+
+  @override
+  String get peopleBackToHouseholds => 'Retour aux foyers';
+
+  @override
+  String get householdPetsUnavailable => 'Impossible de charger vos animaux';
 
   @override
   String get accountPeopleRow => 'Autour de vos animaux';

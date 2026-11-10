@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
 import '../../../../core/weight/weight_unit_preference.dart';
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
@@ -54,15 +55,16 @@ class WeightHubScreen extends ConsumerWidget {
                 padding: EdgeInsets.all(32),
                 child: Center(child: CircularProgressIndicator()),
               ),
-              error: (error, _) => Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text(l.errorLoadingWeightData(error.toString())),
+              error: (_, __) => AsyncErrorState(
+                title: l.loadErrorWeightEntries,
+                onRetry: () =>
+                    ref.invalidate(weightEntriesNotifierProvider(petId)),
+                retryKey: const Key('weight_hub_entries_load_retry'),
               ),
               data: (entries) {
                 final sorted = sortWeightEntriesNewestFirst(entries);
-                final overview = overviewAsync.valueOrNull;
                 final unit = ref.watch(weightUnitPreferenceProvider);
-                final targetKg = overview?.reference?.valueKg;
+                final targetKg = overviewAsync.valueOrNull?.reference?.valueKg;
 
                 return Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -70,7 +72,11 @@ class WeightHubScreen extends ConsumerWidget {
                     if (sorted.isEmpty)
                       const WeightHubEmptyState()
                     else ...[
-                      WeightHubSummaryCard(entries: sorted, overview: overview),
+                      WeightHubSummaryCard(
+                        petId: petId,
+                        entries: sorted,
+                        overviewAsync: overviewAsync,
+                      ),
                       if (sorted.length >= 2)
                         Padding(
                           padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -82,7 +88,10 @@ class WeightHubScreen extends ConsumerWidget {
                         ),
                       WeightHubHistoryList(petId: petId, entries: sorted),
                     ],
-                    WeightHubRoutinesCard(petId: petId, overview: overview),
+                    WeightHubRoutinesCard(
+                      petId: petId,
+                      overviewAsync: overviewAsync,
+                    ),
                     WeightHubAddFooterButton(
                       onPressed: onRecord,
                       label: l.weightRecordAction,

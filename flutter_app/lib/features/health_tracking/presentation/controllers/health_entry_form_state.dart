@@ -82,6 +82,8 @@ class HealthEntryFormState {
     this.repeatEndDate,
     this.isLoading = false,
     this.isEdit = false,
+    this.editLoadFailed = false,
+    this.editNotFound = false,
     this.isUploadingPhoto = false,
     this.photos = const [],
     this.pendingPhotos = const [],
@@ -122,6 +124,8 @@ class HealthEntryFormState {
   final DateTime? repeatEndDate;
   final bool isLoading;
   final bool isEdit;
+  final bool editLoadFailed;
+  final bool editNotFound;
   final bool isUploadingPhoto;
   final List<EventPhoto> photos;
   final List<XFile> pendingPhotos;
@@ -173,6 +177,9 @@ class HealthEntryFormState {
       !isEdit || careFamily != null || careFamilyPickerRevealed;
 
   bool get isRecordMode => carePlanning == CarePlanningMode.unplanned;
+
+  /// Edit saves are blocked until the entry has loaded (review B-10.2).
+  bool get canSubmitEdit => !isEdit || (!editLoadFailed && !editNotFound);
 
   bool get isPlannedMode => carePlanning == CarePlanningMode.planned;
 
@@ -239,6 +246,8 @@ class HealthEntryFormState {
     DateTime? repeatEndDate,
     bool? isLoading,
     bool? isEdit,
+    bool? editLoadFailed,
+    bool? editNotFound,
     bool? isUploadingPhoto,
     List<EventPhoto>? photos,
     List<XFile>? pendingPhotos,
@@ -288,6 +297,8 @@ class HealthEntryFormState {
           : (repeatEndDate ?? this.repeatEndDate),
       isLoading: isLoading ?? this.isLoading,
       isEdit: isEdit ?? this.isEdit,
+      editLoadFailed: editLoadFailed ?? this.editLoadFailed,
+      editNotFound: editNotFound ?? this.editNotFound,
       isUploadingPhoto: isUploadingPhoto ?? this.isUploadingPhoto,
       photos: photos ?? this.photos,
       pendingPhotos: pendingPhotos ?? this.pendingPhotos,

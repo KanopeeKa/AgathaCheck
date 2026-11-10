@@ -23,6 +23,7 @@ void main() {
               petIds: const [],
             ),
             petsById: const {},
+            petNamesState: HubPetNamesState.ready,
           ),
         ),
       ),
@@ -57,6 +58,7 @@ void main() {
                 passedAway: true,
               ),
             },
+            petNamesState: HubPetNamesState.ready,
           ),
         ),
       ),
@@ -70,5 +72,37 @@ void main() {
       findsOneWidget,
     );
     expect(find.text(l.careContextAwayPetsStepBody), findsOneWidget);
+  });
+
+  testWidgets('saved plan with missing pet names does not ask to select pets', (
+    t,
+  ) async {
+    await t.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: PlannedAbsenceHubCard(
+            absence: PlannedAbsence(
+              id: '1',
+              userId: 'u',
+              startsOn: '2026-09-10',
+              endsOn: '2026-09-17',
+              provenance: 'user_declared',
+              status: 'active',
+              petIds: const ['p1'],
+            ),
+            petsById: const {},
+            petNamesState: HubPetNamesState.unavailable,
+          ),
+        ),
+      ),
+    );
+    await t.pumpAndSettle();
+    final l = AppLocalizations.of(
+      t.element(find.byType(PlannedAbsenceHubCard)),
+    )!;
+    expect(find.text(l.careContextAwayPetsRequired), findsNothing);
+    expect(find.text(l.awayPetNamesUnavailable), findsOneWidget);
   });
 }

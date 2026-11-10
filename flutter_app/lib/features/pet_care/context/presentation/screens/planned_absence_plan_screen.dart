@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/widgets/async_state/async_state.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
@@ -27,6 +28,7 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
     final absenceAsync = ref.watch(plannedAbsenceDetailProvider(absenceId));
     final readinessAsync = ref.watch(awayPlanReadinessProvider(absenceId));
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
+    final loadingChild = LabelledProgress(label: l.awayPlanLoading);
 
     Widget shell({required Widget child, List<Widget> actions = const []}) {
       return ExperienceShellScaffold(
@@ -43,35 +45,40 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
       );
     }
 
+    void retryPlanLoad() {
+      ref.invalidate(plannedAbsenceDetailProvider(absenceId));
+      ref.invalidate(awayPlanReadinessProvider(absenceId));
+    }
+
+    void retryPetsLoad() => ref.invalidate(allPetsIncludingOrgProvider);
+
     return absenceAsync.when(
-      loading: () =>
-          shell(child: const Center(child: CircularProgressIndicator())),
+      loading: () => shell(child: loadingChild),
       error: (_, __) => shell(
-        child: _ErrorBody(
-          message: l.careContextAwayPlanLoadError,
-          onRetry: () {
-            ref.invalidate(plannedAbsenceDetailProvider(absenceId));
-            ref.invalidate(awayPlanReadinessProvider(absenceId));
-          },
+        child: AsyncErrorState(
+          title: l.careContextAwayPlanLoadError,
+          onRetry: retryPlanLoad,
+          retryKey: const Key('planned_absence_plan_load_retry'),
         ),
       ),
       data: (absence) => readinessAsync.when(
-        loading: () =>
-            shell(child: const Center(child: CircularProgressIndicator())),
+        loading: () => shell(child: loadingChild),
         error: (_, __) => shell(
-          child: _ErrorBody(
-            message: l.careContextAwayPlanLoadError,
-            onRetry: () {
-              ref.invalidate(plannedAbsenceDetailProvider(absenceId));
-              ref.invalidate(awayPlanReadinessProvider(absenceId));
-            },
+          child: AsyncErrorState(
+            title: l.careContextAwayPlanLoadError,
+            onRetry: retryPlanLoad,
+            retryKey: const Key('planned_absence_plan_load_retry'),
           ),
         ),
         data: (readiness) => petsAsync.when(
-          loading: () =>
-              shell(child: const Center(child: CircularProgressIndicator())),
-          error: (error, _) =>
-              shell(child: Center(child: Text(l.errorWithMessage('$error')))),
+          loading: () => shell(child: loadingChild),
+          error: (_, __) => shell(
+            child: AsyncErrorState(
+              title: l.awayPlanPetsLoadError,
+              onRetry: retryPetsLoad,
+              retryKey: const Key('planned_absence_plan_pets_retry'),
+            ),
+          ),
           data: (pets) {
             final petNamesById = {for (final pet in pets) pet.id: pet.name};
             final orderedPetIds = [...absence.petIds]
@@ -169,31 +176,6 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
               ),
             );
           },
-        ),
-      ),
-    );
-  }
-}
-
-class _ErrorBody extends StatelessWidget {
-  const _ErrorBody({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton(onPressed: onRetry, child: Text(l.retry)),
-          ],
         ),
       ),
     );

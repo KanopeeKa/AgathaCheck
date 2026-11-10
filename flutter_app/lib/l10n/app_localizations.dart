@@ -692,6 +692,84 @@ abstract class AppLocalizations {
   /// **'Check your connection and try again.'**
   String get loadErrorRetryHint;
 
+  /// Title when the pet list primary load fails (Home, pet detail).
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your pets'**
+  String get loadErrorYourPets;
+
+  /// Title when the pet health issues list primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load health issues'**
+  String get loadErrorHealthIssues;
+
+  /// Title when All care entries fail to load.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load care items'**
+  String get loadErrorCareEntries;
+
+  /// Title when a care item detail primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load this care item'**
+  String get loadErrorCareItem;
+
+  /// Title when pet timeline primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the timeline'**
+  String get loadErrorTimeline;
+
+  /// Title when weight entries primary load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load weight history'**
+  String get loadErrorWeightEntries;
+
+  /// Supplemental caption while weight overview loads.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading target and routine…'**
+  String get weightTargetRoutineLoading;
+
+  /// Supplemental caption when weight overview fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Target and routine unavailable'**
+  String get weightTargetRoutineUnavailable;
+
+  /// Supplemental caption when care item history fails.
+  ///
+  /// In en, this message translates to:
+  /// **'History unavailable'**
+  String get historyUnavailable;
+
+  /// Supplemental caption while pet tags load on All pets.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading tag filters…'**
+  String get tagFiltersLoading;
+
+  /// Supplemental caption when pet tags fail on All pets.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag filters unavailable'**
+  String get tagFiltersUnavailable;
+
+  /// Supplemental caption when care entries fail on tile grids.
+  ///
+  /// In en, this message translates to:
+  /// **'Care status unavailable'**
+  String get careStatusUnavailable;
+
+  /// Navigation when a pet record is missing or edit is blocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to pets'**
+  String get backToPets;
+
   /// Default accessible label of the shared progress indicator (LabelledProgress).
   ///
   /// In en, this message translates to:
@@ -3085,6 +3163,24 @@ abstract class AppLocalizations {
   /// **'Could not load sharing info'**
   String get couldNotLoadSharingInfo;
 
+  /// Supplemental caption when direct or household pet access could not be loaded on the share screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing access is unavailable right now'**
+  String get shareAccessUnavailable;
+
+  /// Generic localized message when a sharing mutation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t update sharing. Try again in a moment.'**
+  String get shareUpdateFailed;
+
+  /// Localized message when a sharing action fails because the user is not authenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again to continue.'**
+  String get shareSessionExpired;
+
   /// No description provided for @sessionExpired.
   ///
   /// In en, this message translates to:
@@ -4296,6 +4392,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Load Plans'**
   String get loadPlans;
+
+  /// No description provided for @subscriptionPlansUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription plans aren\'t available right now. Try again in a moment.'**
+  String get subscriptionPlansUnavailable;
 
   /// No description provided for @petReport.
   ///
@@ -11061,6 +11163,24 @@ abstract class AppLocalizations {
   /// **'Failed to load notifications: {error}'**
   String failedToLoadNotifications(String error);
 
+  /// No description provided for @notificationsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your notifications'**
+  String get notificationsLoadError;
+
+  /// No description provided for @notificationPreferencesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your notification settings'**
+  String get notificationPreferencesLoadError;
+
+  /// No description provided for @notificationPreferencesSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes weren\'t saved. Try again.'**
+  String get notificationPreferencesSaveFailed;
+
   /// No description provided for @notificationKindAll.
   ///
   /// In en, this message translates to:
@@ -13237,6 +13357,42 @@ abstract class AppLocalizations {
   /// **'Could not load this away plan. Try again.'**
   String get careContextAwayPlanLoadError;
 
+  /// Accessible label while the away plans hub list loads (LabelledProgress).
+  ///
+  /// In en, this message translates to:
+  /// **'Loading away plans'**
+  String get awayPlansLoading;
+
+  /// Accessible label while an away plan detail screen loads prerequisites.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading away plan'**
+  String get awayPlanLoading;
+
+  /// Supplemental caption when pet names fail on a saved away plan card.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet names unavailable'**
+  String get awayPetNamesUnavailable;
+
+  /// Accessible label while pets load on the new away plan form.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your pets'**
+  String get awayPetsLoading;
+
+  /// When the pet list loaded but none can be selected for a new away plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets are eligible for this absence. Passed-away pets are not included.'**
+  String get awayNoEligiblePets;
+
+  /// Primary error when pets fail to load on the away plan detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load pets for this plan'**
+  String get awayPlanPetsLoadError;
+
   /// No description provided for @careContextAwayPlanCareDuringTitle.
   ///
   /// In en, this message translates to:
@@ -13894,6 +14050,18 @@ abstract class AppLocalizations {
   /// **'No tags yet. Create one to group pets on your All Pets screen.'**
   String get petTagsEmpty;
 
+  /// No description provided for @petTagsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your tags'**
+  String get petTagsLoadError;
+
+  /// No description provided for @petTagDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete that tag. Try again.'**
+  String get petTagDeleteFailed;
+
   /// No description provided for @petTagsNameHint.
   ///
   /// In en, this message translates to:
@@ -14127,6 +14295,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load contacts. Try again.'**
   String get peopleListLoadError;
+
+  /// Exit when a person record is missing or a People sub-route fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to contacts'**
+  String get peopleBackToContacts;
+
+  /// Exit when a household record is missing or detail load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to households'**
+  String get peopleBackToHouseholds;
+
+  /// Supplemental caption when personal pet list is loading or failed on household detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Your pets could not be loaded'**
+  String get householdPetsUnavailable;
 
   /// No description provided for @accountPeopleRow.
   ///

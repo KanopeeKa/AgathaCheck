@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/household.dart';
@@ -20,7 +21,11 @@ class HouseholdsPage extends ConsumerWidget {
 
     final body = asyncHouseholds.when(
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => Center(child: Text(l.peopleListLoadError)),
+      error: (_, __) => AsyncErrorState(
+        title: l.peopleListLoadError,
+        onRetry: () => ref.invalidate(peopleHouseholdsProvider),
+        retryKey: const Key('households_list_retry'),
+      ),
       data: (households) => RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(peopleHouseholdsProvider);

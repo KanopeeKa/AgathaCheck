@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/widgets/async_state/async_state.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/health_tracking.dart';
+import '../../pet_profile/widgets/pet_list/pet_care_pets_tile_grid.dart';
 import '../../widgets/experience_shell_scaffold.dart';
 import '../../../experience.dart';
 import '../../../domain/entities/app_experience.dart';
@@ -74,16 +76,32 @@ class _PetCareBulkShareSelectScreenState
       backPath: '/pc/pets',
       child: petListAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(l.failedToLoadPets('$error'))),
+        error: (error, _) => AsyncErrorState(
+          title: l.loadErrorYourPets,
+          onRetry: () => ref.invalidate(petListProvider),
+          retryKey: const Key('bulk_share_pet_list_retry'),
+        ),
         data: (allPets) {
           final eligible = _eligiblePets(allPets);
+          final careResolution = entriesAsync.when(
+            loading: () => CareSummaryResolution.loading,
+            error: (_, __) => CareSummaryResolution.unavailable,
+            data: (_) => CareSummaryResolution.ready,
+          );
           final careSummary =
-              entriesAsync.hasValue && entriesAsync.valueOrNull != null
+              careResolution == CareSummaryResolution.ready &&
+                  entriesAsync.hasValue &&
+                  entriesAsync.valueOrNull != null
               ? PetCareTodayCareSummary.forPets(
                   entries: entriesAsync.valueOrNull!,
                   pets: eligible,
                 )
               : null;
+          final careSupplemental = switch (careResolution) {
+            CareSummaryResolution.loading => SupplementalState.loading,
+            CareSummaryResolution.unavailable => SupplementalState.unavailable,
+            CareSummaryResolution.ready => null,
+          };
           final allSelected =
               eligible.isNotEmpty &&
               eligible.every((pet) => _selectedPetIds.contains(pet.id));
@@ -124,9 +142,35 @@ class _PetCareBulkShareSelectScreenState
                     : ListView(
                         padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
                         children: [
+                          if (careSupplemental != null)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: SupplementalStateCaption(
+                                state: careSupplemental,
+                                label:
+                                    careSupplemental ==
+                                        SupplementalState.loading
+                                    ? l.loadingLabel
+                                    : l.careStatusUnavailable,
+                                onRetry:
+                                    careSupplemental ==
+                                        SupplementalState.unavailable
+                                    ? () => ref
+                                          .read(
+                                            healthEntriesNotifierProvider
+                                                .notifier,
+                                          )
+                                          .refresh()
+                                    : null,
+                                retryKey: const Key(
+                                  'bulk_share_care_status_retry',
+                                ),
+                              ),
+                            ),
                           PetCarePetsTileGrid(
                             pets: eligible,
                             careSummary: careSummary,
+                            careSummaryResolution: careResolution,
                             selectionMode: true,
                             selectedPetIds: _selectedPetIds,
                             onToggleSelection: (pet) {

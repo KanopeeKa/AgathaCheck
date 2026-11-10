@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_error_state.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 /// Error state when the notification inbox fails to load.
@@ -11,6 +12,7 @@ class NotificationPanelErrorView extends StatelessWidget {
     required this.onRetry,
   });
 
+  /// Retained for call-site compatibility; never shown to the user.
   final Object error;
   final AppLocalizations l;
   final ThemeData theme;
@@ -18,20 +20,6 @@ class NotificationPanelErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-          const SizedBox(height: 12),
-          Text(
-            l.failedToLoadNotifications(error.toString()),
-            style: theme.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 8),
-          ElevatedButton(onPressed: onRetry, child: Text(l.retry)),
-        ],
-      ),
-    );
+    return AsyncErrorState(title: l.notificationsLoadError, onRetry: onRetry);
   }
 }

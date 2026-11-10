@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../../core/router/shell_return_navigation.dart';
+import '../../../../../core/widgets/async_state/async_state.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
 import '../../../../../core/widgets/form/app_form_actions_bar.dart';
 import '../../../../../core/widgets/form/app_form_breakpoints.dart';
@@ -367,9 +368,13 @@ class _PlannedAbsenceEditScreenState
           ),
         ),
         body: _isLoading
-            ? const Center(child: CircularProgressIndicator())
+            ? LabelledProgress(label: l.awayPlanLoading)
             : _loadFailed
-            ? Center(child: Text(l.careContextAwayPlanLoadError))
+            ? AsyncErrorState(
+                title: l.careContextAwayPlanLoadError,
+                onRetry: _loadAbsence,
+                retryKey: const Key('away_plan_edit_load_retry'),
+              )
             : LayoutBuilder(
                 builder: (context, constraints) {
                   final layout = AppFormBreakpoints.layoutForWidth(

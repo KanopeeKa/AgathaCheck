@@ -24,6 +24,12 @@ mixin HealthEntryFormSubmitMixin
     bool markCompleted = false,
     bool skipMarkCompletedCheck = false,
   }) async {
+    if (state.isEdit &&
+        (!state.canSubmitEdit || entryId == null || entryId!.isEmpty)) {
+      return HealthEntrySubmitValidationFailed(
+        HealthEntrySubmitValidation.nameRequired,
+      );
+    }
     if (state.name.trim().isEmpty) {
       return HealthEntrySubmitValidationFailed(
         HealthEntrySubmitValidation.nameRequired,

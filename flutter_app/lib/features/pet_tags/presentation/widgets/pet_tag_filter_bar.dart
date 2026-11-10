@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/collection_filter/collection_filter.dart';
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/pet_tag.dart';
 import '../providers/pet_tag_providers.dart';
@@ -19,8 +20,42 @@ class PetTagFilterBar extends ConsumerWidget {
     final filter = ref.watch(petTagFilterProvider);
 
     return tagsAsync.when(
-      loading: () => const SizedBox.shrink(),
-      error: (_, _) => const SizedBox.shrink(),
+      loading: () {
+        if (filter.selectedTagIds.isEmpty) {
+          return const SizedBox.shrink();
+        }
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: SupplementalStateCaption(
+            state: SupplementalState.loading,
+            label: l.tagFiltersLoading,
+          ),
+        );
+      },
+      error: (_, __) {
+        if (filter.selectedTagIds.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+            child: SupplementalStateCaption(
+              key: const Key('pet_tag_filters_unavailable'),
+              state: SupplementalState.unavailable,
+              label: l.tagFiltersUnavailable,
+              onRetry: () => ref.invalidate(petTagListProvider),
+              retryKey: const Key('pet_tag_filters_retry'),
+            ),
+          );
+        }
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+          child: SupplementalStateCaption(
+            key: const Key('pet_tag_filters_unavailable'),
+            state: SupplementalState.unavailable,
+            label: l.tagFiltersUnavailable,
+            onRetry: () => ref.invalidate(petTagListProvider),
+            retryKey: const Key('pet_tag_filters_retry'),
+          ),
+        );
+      },
       data: (tags) {
         if (tags.isEmpty) return const SizedBox.shrink();
 

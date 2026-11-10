@@ -71,7 +71,10 @@ class _PlannedAbsenceFlowScreenState
   bool get _hasValidDates =>
       PlannedAbsenceDateRules.isValidRange(_startsOn, _endsOn);
 
-  bool get _canSave => _hasValidDates && _selectedPetIds.isNotEmpty;
+  bool _petsReady(AsyncValue<List<Pet>> petsAsync) => petsAsync.hasValue;
+
+  bool _canSave(AsyncValue<List<Pet>> petsAsync) =>
+      _petsReady(petsAsync) && _hasValidDates && _selectedPetIds.isNotEmpty;
 
   bool _validateForSave(AppLocalizations l) {
     var ok = true;
@@ -187,13 +190,23 @@ class _PlannedAbsenceFlowScreenState
     context.pop();
   }
 
+  AwayPlanPetsLoadPhase _petsLoadPhase(AsyncValue<List<Pet>> petsAsync) {
+    return petsAsync.when(
+      loading: () => AwayPlanPetsLoadPhase.loading,
+      error: (_, __) => AwayPlanPetsLoadPhase.error,
+      data: (_) => AwayPlanPetsLoadPhase.ready,
+    );
+  }
+
   Widget _formBody(
     AppLocalizations l, {
+    required AsyncValue<List<Pet>> petsAsync,
     required List<Pet> selectablePets,
     required String? startsOn,
     required String? endsOn,
     required Map<String, String> petNamesById,
     required bool includeActions,
+    required VoidCallback onRetryPetsLoad,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -225,9 +238,12 @@ class _PlannedAbsenceFlowScreenState
         ),
         const SizedBox(height: 16),
         PlannedAbsencePetsStep(
+          loadPhase: _petsLoadPhase(petsAsync),
           pets: selectablePets,
+          accountHasPets: (petsAsync.valueOrNull ?? const []).isNotEmpty,
           selectedPetIds: _selectedPetIds,
           validationMessage: _petsValidationMessage,
+          onRetryPetsLoad: onRetryPetsLoad,
           onSelectionChanged: (next) => setState(() {
             _selectedPetIds = next;
             _petsValidationMessage = null;
@@ -250,7 +266,7 @@ class _PlannedAbsenceFlowScreenState
           const SizedBox(height: 24),
           AppFormActionsBar(
             isLoading: _isSaving,
-            isDirty: _canSave,
+            isDirty: _canSave(petsAsync),
             onSave: () => _saveAbsence(selectablePets),
             onCancel: _handleCancel,
             saveLabel: l.careContextAwaySaveAction,
@@ -276,7 +292,9 @@ class _PlannedAbsenceFlowScreenState
       context,
     ).uri.queryParameters['petId'];
 
-    if (!_hasInitializedPetSelection && selectablePets.isNotEmpty) {
+    if (petsAsync.hasValue &&
+        !_hasInitializedPetSelection &&
+        selectablePets.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted || _hasInitializedPetSelection) return;
         setState(
@@ -287,6 +305,8 @@ class _PlannedAbsenceFlowScreenState
         );
       });
     }
+
+    void retryPetsLoad() => ref.invalidate(petListProvider);
 
     final backPath = GoRouterState.of(context).uri.path == '/pc/away/new'
         ? '/pc/away'
@@ -312,11 +332,13 @@ class _PlannedAbsenceFlowScreenState
                 final includeActions = layout != AppFormLayoutSize.phone;
                 final form = _formBody(
                   l,
+                  petsAsync: petsAsync,
                   selectablePets: selectablePets,
                   startsOn: startsOn,
                   endsOn: endsOn,
                   petNamesById: petNamesById,
                   includeActions: includeActions,
+                  onRetryPetsLoad: retryPetsLoad,
                 );
                 if (layout == AppFormLayoutSize.phone) {
                   return SingleChildScrollView(
@@ -344,7 +366,7 @@ class _PlannedAbsenceFlowScreenState
             AppFormStickyActionsBar(
               stickyKey: const Key('planned_absence_sticky_actions'),
               isLoading: _isSaving,
-              isDirty: _canSave,
+              isDirty: _canSave(petsAsync),
               onSave: () => _saveAbsence(allPets),
               onCancel: _handleCancel,
               saveLabel: l.careContextAwaySaveAction,
