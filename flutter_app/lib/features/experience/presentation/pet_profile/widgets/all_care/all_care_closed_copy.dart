@@ -1,4 +1,4 @@
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_lifecycle_list_status.dart';
+import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 String allCareClosedCareLinkLabel(AppLocalizations l, int count) {
