@@ -2478,6 +2478,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loadPlans => 'Charger les forfaits';
 
   @override
+  String get subscriptionPlansUnavailable =>
+      'Les forfaits ne sont pas disponibles pour le moment. Réessayez dans un instant.';
+
+  @override
   String get petReport => 'Rapport de l\'animal';
 
   @override
@@ -6323,6 +6327,18 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get notificationsLoadError =>
+      'Impossible de charger vos notifications';
+
+  @override
+  String get notificationPreferencesLoadError =>
+      'Impossible de charger vos paramètres de notification';
+
+  @override
+  String get notificationPreferencesSaveFailed =>
+      'Vos modifications n\'ont pas été enregistrées. Réessayez.';
+
+  @override
   String get notificationKindAll => 'Tout';
 
   @override
@@ -8090,6 +8106,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get petTagsEmpty =>
       'Aucune étiquette. Créez-en une pour regrouper vos animaux sur la liste Tous les animaux.';
+
+  @override
+  String get petTagsLoadError => 'Impossible de charger vos étiquettes';
+
+  @override
+  String get petTagDeleteFailed =>
+      'Impossible de supprimer cette étiquette. Réessayez.';
 
   @override
   String get petTagsNameHint => 'Nom de l\'étiquette';

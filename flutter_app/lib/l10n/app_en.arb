@@ -973,6 +973,7 @@
   "manageSubscription": "Manage Subscription",
   "subscribe": "Subscribe",
   "loadPlans": "Load Plans",
+  "subscriptionPlansUnavailable": "Subscription plans aren't available right now. Try again in a moment.",
 
   "petReport": "Pet Report",
   "chooseSections": "Choose which sections to include",
@@ -2384,6 +2385,9 @@
   "sectionDrawerTooltip": "Open menu",
   "failedToLoadNotifications": "Failed to load notifications: {error}",
   "@failedToLoadNotifications": { "placeholders": { "error": { "type": "String" } } },
+  "notificationsLoadError": "We couldn't load your notifications",
+  "notificationPreferencesLoadError": "We couldn't load your notification settings",
+  "notificationPreferencesSaveFailed": "Your changes weren't saved. Try again.",
   "notificationKindAll": "All",
   "notificationKindCare": "Care",
   "notificationKindOrganisation": "Organisation",
@@ -3233,6 +3237,8 @@
     }
   },
   "petTagsEmpty": "No tags yet. Create one to group pets on your All Pets screen.",
+  "petTagsLoadError": "We couldn't load your tags",
+  "petTagDeleteFailed": "Couldn't delete that tag. Try again.",
   "petTagsNameHint": "Tag name",
   "petTagsMyTags": "My tags",
   "petTagsFilterDimension": "Tags",

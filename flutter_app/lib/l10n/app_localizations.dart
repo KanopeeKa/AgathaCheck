@@ -4363,6 +4363,12 @@ abstract class AppLocalizations {
   /// **'Load Plans'**
   String get loadPlans;
 
+  /// No description provided for @subscriptionPlansUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription plans aren\'t available right now. Try again in a moment.'**
+  String get subscriptionPlansUnavailable;
+
   /// No description provided for @petReport.
   ///
   /// In en, this message translates to:
@@ -11013,6 +11019,24 @@ abstract class AppLocalizations {
   /// **'Failed to load notifications: {error}'**
   String failedToLoadNotifications(String error);
 
+  /// No description provided for @notificationsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your notifications'**
+  String get notificationsLoadError;
+
+  /// No description provided for @notificationPreferencesLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your notification settings'**
+  String get notificationPreferencesLoadError;
+
+  /// No description provided for @notificationPreferencesSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your changes weren\'t saved. Try again.'**
+  String get notificationPreferencesSaveFailed;
+
   /// No description provided for @notificationKindAll.
   ///
   /// In en, this message translates to:
@@ -13881,6 +13905,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No tags yet. Create one to group pets on your All Pets screen.'**
   String get petTagsEmpty;
+
+  /// No description provided for @petTagsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your tags'**
+  String get petTagsLoadError;
+
+  /// No description provided for @petTagDeleteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t delete that tag. Try again.'**
+  String get petTagDeleteFailed;
 
   /// No description provided for @petTagsNameHint.
   ///

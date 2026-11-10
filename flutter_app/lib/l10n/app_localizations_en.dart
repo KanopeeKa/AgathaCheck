@@ -2448,6 +2448,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loadPlans => 'Load Plans';
 
   @override
+  String get subscriptionPlansUnavailable =>
+      'Subscription plans aren\'t available right now. Try again in a moment.';
+
+  @override
   String get petReport => 'Pet Report';
 
   @override
@@ -6225,6 +6229,17 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get notificationsLoadError => 'We couldn\'t load your notifications';
+
+  @override
+  String get notificationPreferencesLoadError =>
+      'We couldn\'t load your notification settings';
+
+  @override
+  String get notificationPreferencesSaveFailed =>
+      'Your changes weren\'t saved. Try again.';
+
+  @override
   String get notificationKindAll => 'All';
 
   @override
@@ -7956,6 +7971,12 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get petTagsEmpty =>
       'No tags yet. Create one to group pets on your All Pets screen.';
+
+  @override
+  String get petTagsLoadError => 'We couldn\'t load your tags';
+
+  @override
+  String get petTagDeleteFailed => 'Couldn\'t delete that tag. Try again.';
 
   @override
   String get petTagsNameHint => 'Tag name';
