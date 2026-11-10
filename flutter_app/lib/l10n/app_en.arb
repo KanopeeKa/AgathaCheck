@@ -1727,6 +1727,13 @@
   "@inviteRecipientAccessScope": { "placeholders": { "scope": { "type": "String" } } },
   "sharedPetLinkIdentityUnavailable": "A pet parent",
   "@sharedPetLinkIdentityUnavailable": {"description": "Fallback when a public share preview omits the inviter display name."},
+  "sharedPetAgeMonths": "{count, plural, =1{1 month} other{{count} months}}",
+  "@sharedPetAgeMonths": { "placeholders": { "count": { "type": "int" } } },
+  "sharedPetAgeYearsOne": "1 year",
+  "sharedPetAgeYearsFormatted": "{formattedYears} years",
+  "@sharedPetAgeYearsFormatted": { "placeholders": { "formattedYears": { "type": "String" } } },
+  "shareAcceptFailed": "We couldn't accept this share. Try again.",
+  "shareInviteDecisionFailed": "We couldn't complete this invitation. Try again.",
   "entryResolutionFailed": "We couldn't load your pets",
   "@entryResolutionFailed": {"description": "Title when post-login experience resolution fails to load pets."},
 

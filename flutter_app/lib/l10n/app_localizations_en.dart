@@ -4576,6 +4576,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sharedPetLinkIdentityUnavailable => 'A pet parent';
 
   @override
+  String sharedPetAgeMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get sharedPetAgeYearsOne => '1 year';
+
+  @override
+  String sharedPetAgeYearsFormatted(String formattedYears) {
+    return '$formattedYears years';
+  }
+
+  @override
+  String get shareAcceptFailed => 'We couldn\'t accept this share. Try again.';
+
+  @override
+  String get shareInviteDecisionFailed =>
+      'We couldn\'t complete this invitation. Try again.';
+
+  @override
   String get entryResolutionFailed => 'We couldn\'t load your pets';
 
   @override
