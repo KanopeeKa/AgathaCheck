@@ -384,13 +384,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('People around $longName'),
-      findsOneWidget,
-    );
-    final title = tester.widget<Text>(
-      find.text('People around $longName'),
-    );
+    expect(find.text('People around $longName'), findsOneWidget);
+    final title = tester.widget<Text>(find.text('People around $longName'));
     expect(title.maxLines, 2);
     expect(
       find.byKey(const Key('pet_emergency_manage_button')),

@@ -32,12 +32,7 @@ class PetProfileHealthHistorySection extends ConsumerWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        16,
-        kPetDetailSectionInsetTop,
-        16,
-        0,
-      ),
+      padding: const EdgeInsets.fromLTRB(16, kPetDetailSectionInsetTop, 16, 0),
       child: Column(
         key: const Key('pet_profile_health_history'),
         crossAxisAlignment: CrossAxisAlignment.stretch,
