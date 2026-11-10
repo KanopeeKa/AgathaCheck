@@ -160,7 +160,7 @@ Consequences the steps below must respect:
    request ID only: no user ID, no cookies, no device identifier, no screen content, no IP stored. It is
    pseudonymous, not anonymous, because the request ID can be matched to server logs for 14 days. The scrubbed
    path runs on legitimate interest and needs a short written assessment and a privacy-notice line before it
-   ships (step 7). Withdrawing consent moves a user to the scrubbed path at once.
+   ships (step 7b). Withdrawing consent moves a user to the scrubbed path at once.
 4. **Two independent checks, neither implies the other.** An external check answers "can a real internet
    client reach the site and get a valid response". A pulse check answers "did the job finish successfully",
    so it pings only after success and reports failure explicitly. A job that starts and dies must alert.
@@ -172,7 +172,7 @@ No decision is open. Every step can proceed in order.
 
 ### Proof on UAT before committing to the vendors
 
-Run in step 4 (the first two) and step 7 (the third). A failure switches that capability to its fallback.
+Run in step 4 (the first two) and step 7 (the third: step 7a for a user who accepted analytics, step 7b for one who declined). A failure switches that capability to its fallback.
 
 1. From outside the host, the updown.io check reaches the public endpoint and is not blocked or challenged by the o2switch WAF.
 2. A scheduled job made to fail on purpose raises an email alert; the same job stopped entirely also raises one.
@@ -195,7 +195,8 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 | 7c | Flutter web: silent-catch triage and timings | 3, 5 | | ⬜ |
 | 8 | Audit coverage and consistency | 7 | | ⬜ |
 | 9 | Security events and detection rules | 6 | | ⬜ |
-| 10 | Job runs, email and integration outcomes | 8, 9 | | ⬜ |
+| 10a | Email outcomes: one mail path, `email.sent` / `email.failed` | 8, 9 | | ⬜ |
+| 10b | Job runs, reminder counts and outbound-call outcomes | 8, 9 | | ⬜ |
 | 11 | Endpoint and query performance | 4 | | ⬜ |
 | 12 | Data integrity checks | 11 | | ⬜ |
 | 13 | Product analytics catalogue and funnels | 10 | | ⬜ |
@@ -207,10 +208,10 @@ Order and priority:
 
 | When | Steps | Why |
 |------|-------|-----|
-| Now, no vendor | 1 → 2 → 3, then the email part of 10 | Makes failures diagnosable and removes the crash paths; failed reset and invite emails are launch-critical and need no vendor |
+| Now, no vendor | 1 → 2 → 3, then 10a | Makes failures diagnosable and removes the crash paths; failed reset and invite emails are launch-critical and need no vendor |
 | Before meaningful UAT traffic | 4 → 5 → 6 | Someone is emailed when the site or a job fails |
 | Alongside 5–6 | 7a, 7c | 7b must not merge before its assessment and privacy-notice line: a hard gate |
-| Before launch | 8 → 9, rest of 10 | Sharing audit, brute-force detection, job records |
+| Before launch | 8 → 9, 10b | Sharing audit, brute-force detection, job records |
 | After launch | 11–14 | Performance budgets, integrity checks, analytics catalogue, governance |
 
 The backup plan starts once step 4 is in (it reuses the cron wrapper and pulse checks) and must finish before
@@ -220,11 +221,11 @@ Coordination with plans in flight (approved 2026-11-10):
 
 | Plan | Touches | Effect on this plan |
 |------|---------|---------------------|
-| `frozen-domains-removal-3f9c` ([#2192](https://github.com/KanopeeKa/AgathaCheck/issues/2192)) | Deletes `server/routes/organizations/**`, `fosterPlacements.js`, `custodyTransfers.js`, 14 server modules, the frozen e-mails, two Flutter feature roots and 66 unreachable Flutter files; edits `server/bin/server.js` | No step edits a file that plan deletes. Start step 1 after its phase 2 merges, steps 2–3 likewise (`server.js`), the email part of step 10 after its phase 3, step 7 after its phases 1 and 4. If a step must start earlier, its lint rules exclude the frozen roots listed in `docs/engineering/frozen-domains/manifest.json`. |
+| `frozen-domains-removal-3f9c` ([#2192](https://github.com/KanopeeKa/AgathaCheck/issues/2192)) | Deletes `server/routes/organizations/**`, `fosterPlacements.js`, `custodyTransfers.js`, 14 server modules, the frozen e-mails, two Flutter feature roots and 66 unreachable Flutter files; edits `server/bin/server.js` | No step edits a file that plan deletes. Start step 1 after its phase 2 merges, steps 2–3 likewise (`server.js`), step 10a after its phase 3, step 7 after its phases 1 and 4. If a step must start earlier, its lint rules exclude the frozen roots listed in `docs/engineering/frozen-domains/manifest.json`. |
 | `ui-async-states-3f9b` ([#2191](https://github.com/KanopeeKa/AgathaCheck/issues/2191)) | The shared failed-load widgets and most screens that use them | Step 7a adds the support reference code to those widgets after that plan finishes. |
 | `ui-invite-recipients-3f9a` ([#2190](https://github.com/KanopeeKa/AgathaCheck/issues/2190)) | Invite landing screens | None on the server. Step 8's invite audit rows cover the same flows; run its checks against the new return-to-invite path. |
 
-Sub-steps (7a–7c) are separate PRs with one outcome each. The ordered steps suit `/light-plan` or
+Sub-steps (7a–7c, 10a–10b) are separate PRs with one outcome each. The ordered steps suit `/light-plan` or
 `/execute-plan` on an integration branch better than one-off prompts; the resume line above still works for a
 single step.
 
@@ -234,7 +235,7 @@ single step.
 
 **Step 1 — Log every server error**
 
-Where the 82 handlers are: households 14, `notifications.js` 11, people 8, `healthIssues.js` 7, care
+Where the 82 handlers are (frozen routes already excluded, so there is nothing to re-audit under `organizations/`): households 14, `notifications.js` 11, people 8, `healthIssues.js` 7, care
 intelligence 7, `vets.js` 6, `sharing.js` 6, pets 5, `petTags.js` 4, care progression 4, timeline 4, health
 issues folder 3, and one each in auth, the notifications folder and `healthFiles.js`. One PR.
 
@@ -327,13 +328,21 @@ excluded as in `analytics_service.dart`.
 - Move the taxonomy from `docs/engineering/pet-care-hardening/` to `docs/ops/` as the live rule list.
 - **Done when:** scripted brute force on UAT raises a P1 within the documented window.
 
-**Step 10 — Job runs, email and integration outcomes**
+**Step 10 — Email, job runs and integration outcomes** (two PRs)
+
+**10a — email outcomes (early, after step 3; no vendor, no new table)**
+
+- One mail path: every send goes through `sendTransactionalEmail`, which logs `email.sent` / `email.failed` with template name and a recipient hash. The four `console.error` call sites go.
+- Nothing else from this step: no `job_runs`, no outbound wrapper. Alerts on these events are wired when steps 5–6 land; until then the events are in the host log.
+- **Done when:** a forced SMTP failure in a test and on UAT produces one `email.failed` line with the template name, and no send bypasses the helper (lint or test).
+
+**10b — job runs, reminders and outbound calls (before launch)**
 
 - `job_runs` table (job, started, finished, outcome, counts, redacted error) written by every scheduled script and the cleanup runner; `job.dead` and `job.failed` events alert.
-- One mail path: every send goes through `sendTransactionalEmail`, which logs `email.sent` / `email.failed` with template name and a recipient hash. Alert on failure rate and on any failed password-reset or invite email.
 - Wrapper for outbound calls (PostHog, later calendar or payment webhooks): timeout, duration, outcome.
 - Reminder workflow: record scans run, items due, notifications produced, so "no reminders today" can be told apart from "nothing was due".
-- **Done when:** breaking SMTP on UAT raises an alert and the failed sends are countable.
+- Email alerts on failure rate and on any failed password-reset or invite email.
+- **Done when:** breaking SMTP on UAT raises an alert, the failed sends are countable, and a killed job leaves a `job_runs` row marked failed.
 
 ### Phase D — depth
 
