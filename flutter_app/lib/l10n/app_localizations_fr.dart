@@ -8876,6 +8876,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peopleHouseholdInviteDecline => 'Refuser';
 
   @override
+  String get peopleHouseholdInviteLoadFailed =>
+      'Impossible de charger cette invitation. Réessayez.';
+
+  @override
   String get peopleAddPetsEmpty => 'Aucun animal à lier pour l\'instant.';
 
   @override

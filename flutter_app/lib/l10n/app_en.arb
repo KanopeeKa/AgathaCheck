@@ -3552,6 +3552,7 @@
   },
   "peopleHouseholdInviteAccept": "Accept invitation",
   "peopleHouseholdInviteDecline": "Decline",
+  "peopleHouseholdInviteLoadFailed": "Could not load this invitation. Try again.",
   "peopleAddPetsEmpty": "No pets to link yet.",
   "peopleAddPetLinkKind": "How they help with this pet",
   "peopleAddEmergencyContact": "Emergency contact for this pet",

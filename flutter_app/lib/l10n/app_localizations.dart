@@ -15250,6 +15250,12 @@ abstract class AppLocalizations {
   /// **'Decline'**
   String get peopleHouseholdInviteDecline;
 
+  /// No description provided for @peopleHouseholdInviteLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this invitation. Try again.'**
+  String get peopleHouseholdInviteLoadFailed;
+
   /// No description provided for @peopleAddPetsEmpty.
   ///
   /// In en, this message translates to:
