@@ -16,7 +16,10 @@ ticked here. When every step is done, delete this file.
 **How to resume:** find the first step not marked ✅ in the [status board](#status-board) and tell the
 agent: *"Let's do step N of `docs/ops/observability-review-and-plan.md`."*
 
-Figures below were measured on `main` at `2a5f3ac` (2026-11-10), runtime code only (tests excluded). They are a
+Figures below were measured on `main` at `2a5f3ac` (2026-11-10), runtime code only (tests excluded), and count
+**only code that survives the frozen-domains removal** (execute-plan `frozen-domains-removal-3f9c`,
+[#2192](https://github.com/KanopeeKa/AgathaCheck/issues/2192)): the Shelter and Fostering routes, modules and
+Flutter features it deletes are left out. They are a
 baseline for this review and are not kept up to date: once a step lands, its lint rule and tests are the
 source of truth, not a recount.
 
@@ -30,10 +33,10 @@ More exists than "very little", but almost none of it can be seen or acted on.
 - **The main gap is that nobody is told when something breaks.** Logs go to the cPanel/Passenger error log on
   the host and nowhere else. There is no log search, no error grouping, no uptime check, no alert and no
   on-call route. Every "alert" in the existing docs is a log line that someone would have to go and read.
-- **The most serious code finding:** 192 `catch` blocks across 48 route files answer `500` and log nothing.
+- **The most serious code finding:** 82 `catch` blocks across 26 route files answer `500` and log nothing.
   The access log records that a 500 happened, but the error and stack trace are discarded. These failures
   cannot be diagnosed today.
-- **The browser app reports nothing.** Flutter has no global error handler; 97 of 233 `catch` blocks are
+- **The browser app reports nothing.** Flutter has no global error handler; 90 of 185 `catch` blocks are
   silent. A crash in a user's browser is invisible.
 
 ## Constraints that shape the plan
@@ -54,21 +57,21 @@ Rating: 🔴 missing · 🟠 partial, not usable in an incident · 🟡 works, w
 | # | Area | Now | What exists | Main gaps |
 |---|------|-----|-------------|-----------|
 | 1 | Infrastructure | 🔴 | `/health` and `/backend/health` return a fixed `OK`; startup checks the PG date parser | Health check never touches the database. No uptime monitor (open debt row). No process metrics. No `pool.on('error')` handler, so a dropped idle DB connection can crash the process. No `unhandledRejection` / `uncaughtException` handler. |
-| 2 | Application logging | 🟠 | Pino; access log with `requestId`, method, path, status, duration (`server/middleware/requestContext.js`) | Only 24 logger calls in runtime code, against 23 `console.*` calls. No user ID, route template or release in the access line. No redaction config. Client-supplied `X-Request-Id` is trusted unchecked. Startup and shutdown use `console`. Logs stay on the host: no search, no stated rotation (the GDPR register promises 30 days). |
-| 3 | Error monitoring | 🔴 | Central error middleware logs errors that reach it (`server/lib/http/errorMiddleware.js`) | 192 silent `500` handlers in 48 route files bypass it. No grouping, no release tagging, no notification. Nothing from the client. |
+| 2 | Application logging | 🟠 | Pino; access log with `requestId`, method, path, status, duration (`server/middleware/requestContext.js`) | Only 24 logger calls in runtime code, against 20 `console.*` calls. No user ID, route template or release in the access line. No redaction config. Client-supplied `X-Request-Id` is trusted unchecked. Startup and shutdown use `console`. Logs stay on the host: no search, no stated rotation (the GDPR register promises 30 days). |
+| 3 | Error monitoring | 🔴 | Central error middleware logs errors that reach it (`server/lib/http/errorMiddleware.js`) | 82 silent `500` handlers in 26 route files bypass it. No grouping, no release tagging, no notification. Nothing from the client. |
 | 4 | Performance (APM) | 🟠 | `durationMs` per request; weekly k6 smoke against localhost in CI | Path contains IDs, so latency cannot be grouped by endpoint. No slow-query logging, no `statement_timeout`, no pool wait time. k6 never runs against a deployed host. |
 | 5 | Frontend (RUM) | 🔴 | PostHog screen views for consenting users | No `FlutterError.onError`, `PlatformDispatcher.onError` or guarded zone. No load time, no API failure rate as the user sees it. The `request_id` the API returns in error bodies is not shown to the user or support. |
-| 6 | Security monitoring | 🟠 | Auth rate limits; `auth.login_failed` audited; a written taxonomy with thresholds ([security-event-taxonomy.md](../engineering/pet-care-hardening/security-event-taxonomy.md)) | The taxonomy's alert rules are not implemented anywhere. 71 `403` responses and all `429` responses leave no security event. Share-link and health-file reads are not recorded. E2E bypass use is a `console.warn`. |
-| 7 | Audit logging | 🟡 | `audit_events` with hot/warm/cold tiers; 59 call sites, about 60 actions | Only 17 of 151 route files write audit events. None in sharing (invites, role change, access removal), households, people, care context or health issues. Action names are inconsistent (`pet.updated` next to `update`, `create`, `add_reminder`). Writes are fire-and-forget, so an audit row can be lost without trace. Two pseudonym schemes: `pseudonymizeActor()` uses HMAC-SHA-256, the retention job uses `md5(id ‖ salt)`; `observability.md` documents the second. The retention cron is not installed (open debt row). |
+| 6 | Security monitoring | 🟠 | Auth rate limits; `auth.login_failed` audited; a written taxonomy with thresholds ([security-event-taxonomy.md](../engineering/pet-care-hardening/security-event-taxonomy.md)) | The taxonomy's alert rules are not implemented anywhere. 57 `403` responses and all `429` responses leave no security event. Share-link and health-file reads are not recorded. E2E bypass use is a `console.warn`. |
+| 7 | Audit logging | 🟡 | `audit_events` with hot/warm/cold tiers; 34 call sites, about 40 actions | Only 11 of 121 route files write audit events. None in sharing (invites, role change, access removal), households, people, care context or health issues. Action names are inconsistent (`pet.updated` next to `update`, `create`, `add_reminder`). Writes are fire-and-forget, so an audit row can be lost without trace. Two pseudonym schemes: `pseudonymizeActor()` uses HMAC-SHA-256 (its only caller is in frozen code), the retention job uses `md5(id ‖ salt)`; `observability.md` documents the second. The retention cron is not installed (open debt row). |
 | 8 | Business processes | 🟠 | `cleanup_jobs` with leases, retries and a `dead` state; care tick prints a JSON summary | No heartbeat on any scheduled job (care tick, audit retention, cleanup drain, suggestion generation). A cron that stops is silent. Dead jobs are only a log line. No record of emails sent or failed. |
-| 9 | Integrations | 🔴 | PostHog person-delete has typed outcomes and retries | SMTP failures go to `console.error` in 8 places and are otherwise swallowed. No success/failure counts per provider. RevenueCat (`purchases_flutter`) and PostHog ingestion are unobserved. No outbound timeout or latency logging. |
+| 9 | Integrations | 🔴 | PostHog person-delete has typed outcomes and retries | SMTP failures go to `console.error` in 4 places and are otherwise swallowed. No success/failure counts per provider. RevenueCat (`purchases_flutter`) and PostHog ingestion are unobserved. No outbound timeout or latency logging. |
 | 10 | Product analytics | 🟠 | Consent gate, sensitive-screen exclusion, EU region, 12 custom events | All 12 events are care-done or weight flows. Nothing for signup, first pet, sharing, invites or paywall. No written event catalogue, no funnels or retention definitions. |
 | 11 | Data integrity | 🟠 | One-off scripts: `reconcileHouseholds.js`, `reconcilePeopleVets.js`, `care/repair_occurrences.js --dry-run`; startup PG date check | Nothing scheduled. No invariant list. No check for orphaned files, access rows without a pet, or duplicate occurrences. |
 | 12 | Operational governance | 🟠 | Deploy workflows with smoke and gate scripts; draft [backup plan](./prod-backup-restore-plan.md) (all steps open); weekly dependency and CI KPI jobs | No backups running. No certificate, domain or disk-quota check. No release marker in logs. No alert catalogue, severity routing or incident runbook. |
 
 ### Findings to fix regardless of tooling
 
-1. **Silent 500s** — 192 handlers of the form `catch (err) { res.status(500).json({ error: publicError(err) }) }`.
+1. **Silent 500s** — 82 handlers of the form `catch (err) { res.status(500).json({ error: publicError(err) }) }`.
 2. **Process safety** — no pool error handler, no unhandled-rejection handler.
 3. **Shallow health check** — reports `OK` while the database is down.
 4. **Audit pseudonym mismatch** — code and retention job disagree; decide one scheme before real data exists.
@@ -181,8 +184,7 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 
 | Step | Title | Areas | PR | Status |
 |------|-------|-------|----|--------|
-| 1a | Log every server error: helper, lint ratchet, pilot folders | 2, 3 | | ⬜ |
-| 1b | Log every server error: organizations and the rest | 2, 3 | | ⬜ |
+| 1 | Log every server error | 2, 3 | | ⬜ |
 | 2 | Logger foundation: context, redaction, process safety | 1, 2 | | ⬜ |
 | 3 | Real health checks and process metrics | 1, 4 | | ⬜ |
 | 4 | External uptime and job pulse checks | 1, 8, 12 | | ⬜ |
@@ -205,16 +207,24 @@ Order and priority:
 
 | When | Steps | Why |
 |------|-------|-----|
-| Now, no vendor | 1a → 1b → 2 → 3 | Makes failures diagnosable and removes the crash paths |
+| Now, no vendor | 1 → 2 → 3, then the email part of 10 | Makes failures diagnosable and removes the crash paths; failed reset and invite emails are launch-critical and need no vendor |
 | Before meaningful UAT traffic | 4 → 5 → 6 | Someone is emailed when the site or a job fails |
 | Alongside 5–6 | 7a, 7c | 7b must not merge before its assessment and privacy-notice line: a hard gate |
-| Before launch | 8 → 9, then 10 | Sharing audit, brute-force detection, failed invite and reset emails |
+| Before launch | 8 → 9, rest of 10 | Sharing audit, brute-force detection, job records |
 | After launch | 11–14 | Performance budgets, integrity checks, analytics catalogue, governance |
 
 The backup plan starts once step 4 is in (it reuses the cron wrapper and pulse checks) and must finish before
 launch.
 
-Sub-steps (1a/1b, 7a–7c) are separate PRs with one outcome each. Fourteen ordered steps suit `/light-plan` or
+Coordination with plans in flight (approved 2026-11-10):
+
+| Plan | Touches | Effect on this plan |
+|------|---------|---------------------|
+| `frozen-domains-removal-3f9c` ([#2192](https://github.com/KanopeeKa/AgathaCheck/issues/2192)) | Deletes `server/routes/organizations/**`, `fosterPlacements.js`, `custodyTransfers.js`, 14 server modules, the frozen e-mails, two Flutter feature roots and 66 unreachable Flutter files; edits `server/bin/server.js` | No step edits a file that plan deletes. Start step 1 after its phase 2 merges, steps 2–3 likewise (`server.js`), the email part of step 10 after its phase 3, step 7 after its phases 1 and 4. If a step must start earlier, its lint rules exclude the frozen roots listed in `docs/engineering/frozen-domains/manifest.json`. |
+| `ui-async-states-3f9b` ([#2191](https://github.com/KanopeeKa/AgathaCheck/issues/2191)) | The shared failed-load widgets and most screens that use them | Step 7a adds the support reference code to those widgets after that plan finishes. |
+| `ui-invite-recipients-3f9a` ([#2190](https://github.com/KanopeeKa/AgathaCheck/issues/2190)) | Invite landing screens | None on the server. Step 8's invite audit rows cover the same flows; run its checks against the new return-to-invite path. |
+
+Sub-steps (7a–7c) are separate PRs with one outcome each. The ordered steps suit `/light-plan` or
 `/execute-plan` on an integration branch better than one-off prompts; the resume line above still works for a
 single step.
 
@@ -222,29 +232,24 @@ single step.
 
 ### Phase A — make failures visible in the code (no vendor)
 
-**Step 1 — Log every server error** (two PRs)
+**Step 1 — Log every server error**
 
-Where the 192 handlers are: `routes/organizations/` 101, top-level `routes/*.js` 44, households 14, people 8,
-care intelligence 7, pets 5, care progression 4, timeline 4, health issues 3, auth 1, notifications 1.
-`asyncHandler` is used in pets, auth, sharing, care context, health entries and weight entries, and nowhere in
-organizations, so two mechanics are needed and each PR uses only one per file.
+Where the 82 handlers are: households 14, `notifications.js` 11, people 8, `healthIssues.js` 7, care
+intelligence 7, `vets.js` 6, `sharing.js` 6, pets 5, `petTags.js` 4, care progression 4, timeline 4, health
+issues folder 3, and one each in auth, the notifications folder and `healthFiles.js`. One PR.
 
-- **Mechanic A (file already uses `asyncHandler`):** delete the `try/catch` and let the error middleware log and answer.
-- **Mechanic B (everything else):** keep the handler shape and replace the body of the `catch` with `return sendServerError(req, res, err, publicMessage)`. No conversion to `asyncHandler` in this step: it changes control flow in 100-plus handlers and belongs to a later refactor. Done by a codemod script committed under `server/scripts/`, with the few hand-edited exceptions listed in the PR body.
-- `sendServerError(req, res, err, publicMessage?)` lives in `server/lib/http/`, logs `{ event: 'http.error', err, requestId, route }` and answers `500` with the same body shape as today plus `request_id`. This also closes the open `publicError` debt row.
-
-**1a** — helper and its tests; ESLint rule for `server/routes/**` (no `res.status(500)` outside the helper) entered in `eslint-baseline.json` so it can only shrink; pilot on the small folders (pets, auth, notifications, health issues, timeline, care progression, people, households, care intelligence: 47 handlers).
-
-**1b** — organizations and the top-level route files (145 handlers), by the codemod; baseline reaches zero and the rule becomes blocking.
-
-- Response bodies must not change apart from the added `request_id`; existing route tests are the check.
-- **Done when (1b):** a forced failure in any route produces one error log line with a stack and the same `request_id` the client received; the lint baseline for the rule is empty.
+- `sendServerError(req, res, err, publicMessage?)` in `server/lib/http/`: logs `{ event: 'http.error', err, requestId, route }` and answers `500` with the same body shape as today plus `request_id`. This also closes the open `publicError` debt row.
+- **File already uses `asyncHandler`** (pets, auth): delete the `try/catch` and let the error middleware log and answer.
+- **Everything else:** keep the handler shape and replace the body of the `catch` with `return sendServerError(...)`. No conversion to `asyncHandler` here; that is a separate refactor.
+- ESLint rule for `server/routes/**`: no `res.status(500)` outside the helper, blocking from this PR.
+- Response bodies must not change apart from the added `request_id`; the active route tests are the check.
+- **Done when:** a forced failure in any route produces one error log line with a stack and the same `request_id` the client received; lint blocks a new silent handler.
 
 **Step 2 — Logger foundation**
 
 - `logger.js`: base fields `service`, `env`, `release` (git SHA written at deploy); Pino `redact` for `authorization`, `cookie`, `password`, `token`, `code`, `email`, `*.body`; error serialiser.
 - `requestContext.js`: `req.log` child logger; add `userId` once auth has run, the Express route template (`/pets/:id`), response size; level by status (`warn` for 4xx security statuses, `error` for 5xx). Accept an inbound `X-Request-Id` only if it matches a UUID pattern.
-- Replace the 23 runtime `console.*` calls; ESLint `no-console` for `server/{bin,lib,routes,services,config,middleware}`. `server/scripts/**` is exempt: command-line scripts keep `console` for output a person reads, and scheduled ones also print one JSON summary line (as the care tick does) that step 10 records.
+- Replace the 20 runtime `console.*` calls; ESLint `no-console` for `server/{bin,lib,routes,services,config,middleware}`. `server/scripts/**` is exempt: command-line scripts keep `console` for output a person reads, and scheduled ones also print one JSON summary line (as the care tick does) that step 10 records.
 - `createPool.js`: `pool.on('error')`. `start.js`: `unhandledRejection` and `uncaughtException` handlers that log `fatal` and exit cleanly; structured startup and shutdown lines.
 - Fix finding 5. Write the event-name catalogue into `observability.md` and bring that file up to date (it was last revised 2026-08-21).
 - **Done when:** a test proves a request carrying a password and bearer token logs neither; killing the DB connection logs an error and the process survives.
@@ -270,7 +275,7 @@ organizations, so two mechanics are needed and each PR uses only one per file.
 - Ship selectively: `warn` and above, plus the named events alerts depend on (`http.error`, `email.failed`, `job.*`, `authz.denied`, `process.stats`). The full access log stays in a rotated file on the host, outside the deploy folder, kept 14 days.
 - Retention 14 days in both places; correct the 30-day line in `INTERNAL_GDPR.md` and the privacy notices in this PR.
 - Saved searches: errors by route, by release, one request by ID. Usage alert well below the 10 GB allowance.
-- **If PostHog logs fail on UAT** (ingestion from the host, search, or retention control): no replacement vendor. Keep the rotated host file as the only log store, read over SSH; errors still reach the error tracker in step 6, and every alert that would have matched a log line is driven instead from the error tracker or from the scheduled database checks in steps 9, 10 and 12. Revisit a log vendor only if that proves too thin.
+- **If PostHog logs fail on UAT** (ingestion from the host, search, or retention control): no replacement vendor. Keep the rotated host file as the only log store, read over SSH; errors still reach the error tracker in step 6, and alerts on errors, jobs, email and integrity are driven instead from the error tracker or from the scheduled database checks in steps 9, 10 and 12. **What is lost:** the rate alerts on 401/403/429 per IP, which exist only in logs. In that case step 9 writes those denials to a small `security_events` table instead, so the scheduled check can count them.
 - **Done when:** a UAT request can be found by its `request_id` within a minute, nothing older than 14 days exists, and a test proves no redacted field leaves the host.
 
 **Step 6 — Error tracking: API** (PostHog)
@@ -286,7 +291,7 @@ excluded as in `analytics_service.dart`.
 
 **7a — handlers and the consented path**
 
-- Global handlers in `main.dart` (`FlutterError.onError`, `PlatformDispatcher.instance.onError`, guarded zone) feeding one reporter that picks the path from the consent state. Until 7b lands, the reporter drops errors from users who have not accepted analytics.
+- Global handlers in `main.dart` (`FlutterError.onError`, `PlatformDispatcher.instance.onError`, guarded zone) feeding one reporter that picks the path from the consent state. Until 7b lands, the reporter drops errors from users who have not accepted analytics. **Known gap:** between 7a and 7b, browser crashes for those users stay invisible; only their failed API calls are seen, server-side.
 - Upload source maps in the web build.
 - HTTP client: send a generated `X-Request-Id`, keep the returned `request_id`. Show a short reference code in the shared failed-load widgets so a user can quote it to support.
 - **Done when:** UAT proof 3 passes for a consenting user and the error links to the API error by ID.
@@ -300,7 +305,7 @@ excluded as in `analytics_service.dart`.
 
 **7c — silent catches and timings**
 
-- Triage the 97 silent `catch` blocks: report, or comment why ignoring is correct. A lint rule for empty `catch` keeps the count from growing.
+- Triage the 90 silent `catch` blocks: report, or comment why ignoring is correct. A lint rule for empty `catch` keeps the count from growing.
 - Timings: app start to first usable screen, route change duration, API failure rate and latency by endpoint template.
 
 ### Phase C — security, audit and workflows (before launch)
@@ -309,16 +314,16 @@ excluded as in `analytics_service.dart`.
 
 - One registry of actions (`domain.verb_past`), with a test that rejects unknown actions; rename the outliers.
 - Cover the missing mutations, sharing first: invite create/accept/decline/revoke, role change, access removal, unfollow; then households, people, care context, health issues, vets.
-- Record sensitive reads: health-file download, share-link open, data export (present), org member viewing a person.
+- Record sensitive reads: health-file download, share-link open, data export (present).
 - Write the audit row inside the transaction for account, permission, sharing and deletion actions; keep fire-and-forget for the rest, with an `audit.write_failed` event that alerts.
-- One pseudonym scheme (Decisions): the retention job computes the same HMAC as `pseudonymizeActor()`; startup fails in production without `AUDIT_PSEUDONYM_SALT`; a test proves both produce the same value for one user. Correct the `md5` line in `observability.md`. Add a target hash to `auth.login_failed`. A coverage test lists mutating routes with no audit call against an allow-list.
+- One pseudonym scheme (Decisions): the retention job calls `pseudonymizeActor()` instead of `md5` in SQL; startup fails in production without `AUDIT_PSEUDONYM_SALT`; a test proves a row aged by the job carries the helper's value. Correct the `md5` line in `observability.md`. Add a target hash to `auth.login_failed`. A coverage test lists mutating routes with no audit call against an allow-list.
 - Closes the "extend `audit_events`" debt row.
 - **Done when:** the coverage test passes with an empty unexplained list.
 
 **Step 9 — Security events and detection rules**
 
 - Emit `authz.denied` (403), `auth.rejected` (401) and `ratelimit.hit` (429, via the limiter `handler`) with user, IP, route template and reason. Audit E2E-bypass use.
-- Each detection rule names the one store it reads. **`audit_events`** (scheduled check `server/scripts/ops/security-check.js`): anything about an account or a resource, and anything that may need looking at after 14 days. **Log store** (PostHog alert, window of 24 hours or less): rate signals only, namely 401/403/429 spikes per IP and 5xx per route. A denial that matters beyond 14 days is audited, not only logged. Rules on `audit_events`: failed-login bursts per account and per IP, reset storms, export volume, permission grants, mass deletion. Output is an email alert and a failed pulse check.
+- Each detection rule names the one store it reads. **`audit_events`** (scheduled check `server/scripts/ops/security-check.js`): anything about an account or a resource, and anything that may need looking at after 14 days. **Log store** (PostHog alert, window of 24 hours or less): rate signals only, namely 401/403/429 spikes per IP and 5xx per route. Denials that are audited as well as logged (`outcome: 'denied'`), because they may matter after 14 days: any 403 on sharing, access-role, household-membership, data-export, account-deletion and health-file routes. All other 401/403/429 are logged only. Rules on `audit_events`: failed-login bursts per account and per IP, reset storms, export volume, permission grants, mass deletion. Output is an email alert and a failed pulse check.
 - Move the taxonomy from `docs/engineering/pet-care-hardening/` to `docs/ops/` as the live rule list.
 - **Done when:** scripted brute force on UAT raises a P1 within the documented window.
 
