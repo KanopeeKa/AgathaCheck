@@ -14098,6 +14098,24 @@ abstract class AppLocalizations {
   /// **'Could not load contacts. Try again.'**
   String get peopleListLoadError;
 
+  /// Exit when a person record is missing or a People sub-route fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to contacts'**
+  String get peopleBackToContacts;
+
+  /// Exit when a household record is missing or detail load fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to households'**
+  String get peopleBackToHouseholds;
+
+  /// Supplemental caption when personal pet list is loading or failed on household detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Your pets could not be loaded'**
+  String get householdPetsUnavailable;
+
   /// No description provided for @accountPeopleRow.
   ///
   /// In en, this message translates to:

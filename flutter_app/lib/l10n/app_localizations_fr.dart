@@ -8209,6 +8209,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de charger les contacts. Réessayez.';
 
   @override
+  String get peopleBackToContacts => 'Retour aux contacts';
+
+  @override
+  String get peopleBackToHouseholds => 'Retour aux foyers';
+
+  @override
+  String get householdPetsUnavailable => 'Impossible de charger vos animaux';
+
+  @override
   String get accountPeopleRow => 'Autour de vos animaux';
 
   @override

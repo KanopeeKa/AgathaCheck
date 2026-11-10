@@ -8074,6 +8074,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peopleListLoadError => 'Could not load contacts. Try again.';
 
   @override
+  String get peopleBackToContacts => 'Back to contacts';
+
+  @override
+  String get peopleBackToHouseholds => 'Back to households';
+
+  @override
+  String get householdPetsUnavailable => 'Your pets could not be loaded';
+
+  @override
   String get accountPeopleRow => 'Contacts';
 
   @override

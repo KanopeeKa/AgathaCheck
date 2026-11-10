@@ -3267,6 +3267,18 @@
   "peopleRoleOther": "Other",
   "peopleNameLabel": "Name",
   "peopleListLoadError": "Could not load contacts. Try again.",
+  "peopleBackToContacts": "Back to contacts",
+  "@peopleBackToContacts": {
+    "description": "Exit when a person record is missing or a People sub-route fails."
+  },
+  "peopleBackToHouseholds": "Back to households",
+  "@peopleBackToHouseholds": {
+    "description": "Exit when a household record is missing or detail load fails."
+  },
+  "householdPetsUnavailable": "Your pets could not be loaded",
+  "@householdPetsUnavailable": {
+    "description": "Supplemental caption when personal pet list is loading or failed on household detail."
+  },
   "accountPeopleRow": "Contacts",
   "peopleDeskVetTeam": "Vet team",
   "peopleDetailNotFound": "This contact is no longer in your directory.",
