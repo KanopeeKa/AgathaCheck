@@ -169,6 +169,16 @@
     }
   },
   "allCareInactiveSection": "Other care",
+  "allCareClosedCareTitle": "Closed care",
+  "allCareClosedCareLink": "Closed care ({count})",
+  "@allCareClosedCareLink": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "allCareClosedCareEmpty": "No closed care yet.",
+  "careItemClosedByYou": "Closed by you",
+  "careItemEndedStatus": "Ended",
   "eventFilterClosed": "Closed",
   "eventFilterRecurring": "Recurring",
   "eventFilterOneTime": "One-time",

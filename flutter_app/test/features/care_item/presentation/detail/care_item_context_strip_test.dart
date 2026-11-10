@@ -98,7 +98,7 @@ void main() {
       careClosedReason: 'ended',
     );
 
-    expect(find.text('Closed · Ended'), findsOneWidget);
+    expect(find.text('Ended'), findsOneWidget);
     expect(find.text('Heart tablet'), findsOneWidget);
   });
 

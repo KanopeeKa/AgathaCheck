@@ -427,6 +427,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get allCareInactiveSection => 'Other care';
 
   @override
+  String get allCareClosedCareTitle => 'Closed care';
+
+  @override
+  String allCareClosedCareLink(int count) {
+    return 'Closed care ($count)';
+  }
+
+  @override
+  String get allCareClosedCareEmpty => 'No closed care yet.';
+
+  @override
+  String get careItemClosedByYou => 'Closed by you';
+
+  @override
+  String get careItemEndedStatus => 'Ended';
+
+  @override
   String get eventFilterClosed => 'Closed';
 
   @override

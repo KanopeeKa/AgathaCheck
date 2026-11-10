@@ -2,7 +2,11 @@
 library;
 
 export 'domain/health_entry_series_closed.dart'
-    show careItemClosedSubtitleLabel, isHealthEntrySeriesClosedAt;
+    show
+        careItemClosedSubtitleLabel,
+        isHealthEntrySeriesClosedAt,
+        kCareClosedReasonStoppedByUser;
+export 'presentation/widgets/health_entry_lifecycle_list_status.dart';
 export 'domain/care_temporal_group.dart';
 export 'domain/models/care_temporal_buckets.dart';
 export 'domain/services/care_temporal_grouping_service.dart';
