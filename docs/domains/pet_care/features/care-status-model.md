@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care-status-model
 status: active
-last_updated: 2026-11-10
+last_updated: 2026-11-11
 related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 ---
 
@@ -41,6 +41,7 @@ related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 | CARE-STATUS-MODEL-R-027 | Paused and closed list rows show one neutral grey status pill (same grey as Not recorded, never success or warning colours, no dates): pause-in-circle icon + **Paused**; stop-in-circle icon + **Closed by you** (user-closed) or **Ended** (ended, finished one-off, recorded-only) | Live |
 | CARE-STATUS-MODEL-R-028 | R-026 and R-027 apply identically on the all-pets Care events list, All care › Other care, and the Closed care list | Live |
 | CARE-STATUS-MODEL-R-029 | Closed wording is **Closed by you** / **Ended** everywhere, including the Care details chip, with no `Closed · ` prefix; French: En pause, Fermé par vous, Terminé | Live |
+| CARE-STATUS-MODEL-R-030 | Global **All care** (`/pc/events`): **Paused care** and **Closed care** as collapsible sections (collapsed by default); same row rules as R-026/R-027 | In delivery |
 
 ## Acceptance criteria
 
@@ -54,6 +55,7 @@ related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 ## UX surfaces
 
 - **All care** (`/pet/:petId/events`): agenda, Other care (paused), **Closed care** footer link.
+- **All care** (`/pc/events`, all pets): agenda (interim), collapsible **Paused care** and **Closed care**; pet chips + `?pet=` ([delivery plan](../changes/all-care-by-item-delivery-plan.md)).
 - **Closed care** (pushed list): closed items only; tap → read-only Care details.
 
 ## Decision log

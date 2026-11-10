@@ -203,6 +203,27 @@
     }
   },
   "allCareClosedCareEmpty": "No closed care yet.",
+  "globalEventsPausedCareSection": "Paused care",
+  "globalEventsClosedCareSection": "Closed care",
+  "globalEventsLifecycleSection": "{title} ({count})",
+  "@globalEventsLifecycleSection": {
+    "placeholders": {
+      "title": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "globalEventsShowSection": "Show {title}",
+  "@globalEventsShowSection": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "globalEventsHideSection": "Hide {title}",
+  "@globalEventsHideSection": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
   "careItemClosedByYou": "Closed by you",
   "careItemEndedStatus": "Ended",
   "eventFilterClosed": "Closed",
