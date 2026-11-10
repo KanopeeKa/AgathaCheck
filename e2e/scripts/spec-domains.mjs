@@ -105,7 +105,7 @@ export const AREAS = {
   },
   sharing: {
     paths: ['flutter_app/lib/features/sharing/', 'server/routes/sharing'],
-    specs: ['sharing.spec.ts'],
+    specs: ['sharing.spec.ts', 'invite.recipient.spec.ts'],
   },
   notifications: {
     paths: ['flutter_app/lib/features/notifications/', 'server/routes/notifications'],
