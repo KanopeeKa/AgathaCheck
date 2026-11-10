@@ -87,10 +87,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('manage_subscription_button')), findsNothing);
-    expect(
-      find.byKey(const Key('manage_subscription_disabled_button')),
-      findsOneWidget,
-    );
-    expect(find.text(l.subscriptionManagementNoUrl), findsOneWidget);
+    expect(find.text(l.subscriptionManagementUnavailable), findsOneWidget);
   });
 }

@@ -5,9 +5,9 @@ import 'package:intl/intl.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../../core/theme/app_color_tokens.dart';
-import '../../../../core/widgets/app_logo_title.dart';
-import '../../../../l10n/app_localizations.dart';
+import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
+import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../providers/subscription_providers.dart';
 import '../widgets/paywall_body_content.dart';
 
@@ -116,18 +116,13 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     }
   }
 
-  String _formatDate(DateTime date) {
-    final locale = Localizations.localeOf(context).toString();
-    return DateFormat.yMMMd(locale).format(date);
-  }
-
   Future<void> _manageSubscription() async {
     final url = ref.read(subscriptionStatusProvider).managementUrl;
     if (url == null || url.isEmpty) return;
     final l = AppLocalizations.of(context)!;
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      if (mounted) _showManagementFallback(l, url);
+      _showManagementFallback(url, l);
       return;
     }
     try {
@@ -136,24 +131,24 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         mode: LaunchMode.externalApplication,
       );
       if (!launched && mounted) {
-        _showManagementFallback(l, url);
+        _showManagementFallback(url, l);
       }
     } catch (_) {
-      if (mounted) _showManagementFallback(l, url);
+      if (mounted) _showManagementFallback(url, l);
     }
   }
 
-  Future<void> _showManagementFallback(AppLocalizations l, String url) async {
-    await showDialog<void>(
+  void _showManagementFallback(String url, AppLocalizations l) {
+    showDialog<void>(
       context: context,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: Text(l.manageSubscription),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(l.subscriptionManagementUnavailable),
+              Text(l.subscriptionManagementOpenFailed),
               const SizedBox(height: 12),
               SelectableText(url),
             ],
@@ -162,7 +157,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             TextButton(
               onPressed: () async {
                 await Clipboard.setData(ClipboardData(text: url));
-                if (context.mounted) {
+                if (dialogContext.mounted) {
+                  Navigator.of(dialogContext).pop();
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text(l.peopleCopiedToClipboard)),
                   );
@@ -171,8 +167,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               child: Text(l.copy),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(l.close),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l.ok),
             ),
           ],
         );
@@ -180,11 +176,24 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
 
+  String _formatDate(DateTime date) {
+    final locale = Localizations.localeOf(context).toString();
+    return DateFormat.yMMMd(locale).format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final subscriptionStatus = ref.watch(subscriptionStatusProvider);
     final l = AppLocalizations.of(context)!;
+
+    final managementUrl = subscriptionStatus.managementUrl;
+    final manageCallback =
+        subscriptionStatus.hasUnlimited &&
+            managementUrl != null &&
+            managementUrl.isNotEmpty
+        ? _manageSubscription
+        : null;
 
     return Scaffold(
       appBar: AppBar(
@@ -201,9 +210,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         onPurchasePackage: _purchasePackage,
         onRestorePurchases: _restorePurchases,
         onReloadOfferings: _loadOfferings,
-        onManageSubscription: subscriptionStatus.managementUrl != null
-            ? _manageSubscription
-            : null,
+        onManageSubscription: manageCallback,
         formatDate: _formatDate,
       ),
     );

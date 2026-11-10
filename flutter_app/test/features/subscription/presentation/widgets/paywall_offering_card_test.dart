@@ -5,13 +5,15 @@ import 'package:pet_profile_app/features/subscription/presentation/widgets/paywa
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('PaywallOfferingCard shows price and subscribe', (tester) async {
-    const display = PaywallOfferDisplay(
+  testWidgets('PaywallOfferingCard shows price, disclosure, and subscribe', (
+    tester,
+  ) async {
+    const offer = PaywallOfferDisplay(
       title: 'Monthly',
-      priceString: '\$4.99',
-      recurringCadenceLabel: 'per month',
-      autoRenewLine: 'Auto-renew',
-      cancelLine: 'Cancel guidance',
+      price: '\$4.99',
+      cadenceLabel: 'per month',
+      autoRenewLine: 'Renews automatically.',
+      cancelLine: 'Cancel in store settings.',
     );
 
     await tester.pumpWidget(
@@ -22,7 +24,7 @@ void main() {
           builder: (context) {
             return Scaffold(
               body: PaywallOfferingCard(
-                display: display,
+                offer: offer,
                 isPurchasing: false,
                 onPurchase: () {},
                 theme: Theme.of(context),
@@ -34,7 +36,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    final l = AppLocalizations.of(
+      tester.element(find.byType(PaywallOfferingCard)),
+    )!;
+
     expect(find.text('Monthly'), findsOneWidget);
     expect(find.text('\$4.99'), findsOneWidget);
+    expect(find.text(l.subscribe), findsOneWidget);
+    expect(find.text('Renews automatically.'), findsOneWidget);
   });
 }

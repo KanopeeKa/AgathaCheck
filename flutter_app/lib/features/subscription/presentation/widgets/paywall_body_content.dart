@@ -71,8 +71,8 @@ class PaywallBodyContent extends StatelessWidget {
               const SizedBox(height: 16),
               Text(
                 subscriptionStatus.hasUnlimited
-                    ? l.subscriptionPlanUnlimitedTitle
-                    : l.subscriptionPlanFreeTitle,
+                    ? l.subscriptionProductNameUnlimited
+                    : l.subscriptionProductNameFree,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -80,8 +80,8 @@ class PaywallBodyContent extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 subscriptionStatus.hasUnlimited
-                    ? l.subscriptionPlanUnlimitedBody
-                    : l.subscriptionPlanFreeBody,
+                    ? l.subscriptionBodyUnlimited
+                    : l.subscriptionBodyFree,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -107,7 +107,11 @@ class PaywallBodyContent extends StatelessWidget {
                 PaywallFeatureListCard(theme: theme),
                 const SizedBox(height: 24),
                 if (error != null)
-                  AsyncErrorState(title: error, onRetry: onReloadOfferings)
+                  AsyncErrorState(
+                    title: error,
+                    onRetry: onReloadOfferings,
+                    retryKey: const Key('paywall_reload_offerings'),
+                  )
                 else
                   ..._offeringCards(context, l),
                 const SizedBox(height: 12),
@@ -121,8 +125,7 @@ class PaywallBodyContent extends StatelessWidget {
                 ),
               ],
               if (subscriptionStatus.hasUnlimited) ...[
-                if (subscriptionStatus.managementUrl != null &&
-                    onManageSubscription != null) ...[
+                if (onManageSubscription != null) ...[
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
@@ -134,18 +137,9 @@ class PaywallBodyContent extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                 ] else ...[
-                  SizedBox(
-                    width: double.infinity,
-                    child: FilledButton.icon(
-                      key: const Key('manage_subscription_disabled_button'),
-                      onPressed: null,
-                      icon: const Icon(Icons.settings),
-                      label: Text(l.manageSubscription),
-                    ),
-                  ),
                   SupplementalStateCaption(
                     state: SupplementalState.unavailable,
-                    label: l.subscriptionManagementNoUrl,
+                    label: l.subscriptionManagementUnavailable,
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -167,60 +161,23 @@ class PaywallBodyContent extends StatelessWidget {
 
   List<Widget> _offeringCards(BuildContext context, AppLocalizations l) {
     final widgets = <Widget>[];
-
+    final packages = <Package>[];
     for (final offering in offerings) {
-      final packages = offering.availablePackages;
-      final monthly = PaywallOfferDisplay.findMonthlyPackage(packages);
-      final annual = PaywallOfferDisplay.findAnnualPackage(packages);
-      final showBestValue = PaywallOfferDisplay.annualIsBestValue(
-        monthlyPackage: monthly,
-        annualPackage: annual,
-      );
-      final hasMultipleCadences = monthly != null && annual != null;
-
-      for (final package in packages) {
-        final product = package.storeProduct;
-        final isAnnual = PaywallOfferDisplay.packageIsAnnual(package);
-        final fallbackTitle = isAnnual
-            ? l.subscriptionFallbackTitleYearly
-            : l.subscriptionFallbackTitleMonthly;
-        final savingsTag = (hasMultipleCadences && showBestValue && isAnnual)
-            ? l.subscriptionBestValue
-            : null;
-
-        final display = PaywallOfferDisplay.fromStoreProduct(
-          product: product,
-          l: l,
-          fallbackTitle: fallbackTitle,
-          savingsTag: savingsTag,
-        );
-
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: PaywallOfferingCard(
-              display: display,
-              isPurchasing: purchasing,
-              onPurchase: () => onPurchasePackage(package),
-              theme: theme,
-            ),
-          ),
-        );
-      }
+      packages.addAll(offering.availablePackages);
     }
 
-    if (widgets.isEmpty && error == null) {
+    final displays = PaywallOfferDisplay.displaysForPackages(packages, l);
+    for (var i = 0; i < packages.length; i++) {
+      final package = packages[i];
+      final display = displays[i];
       widgets.add(
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              key: const Key('subscribe_button'),
-              onPressed: loading ? null : onReloadOfferings,
-              icon: const Icon(Icons.refresh),
-              label: Text(l.loadPlans),
-            ),
+          padding: const EdgeInsets.only(bottom: 12),
+          child: PaywallOfferingCard(
+            offer: display,
+            isPurchasing: purchasing,
+            onPurchase: () => onPurchasePackage(package),
+            theme: theme,
           ),
         ),
       );

@@ -9,13 +9,13 @@ import 'paywall_offer_display.dart';
 class PaywallOfferingCard extends StatelessWidget {
   const PaywallOfferingCard({
     super.key,
-    required this.display,
+    required this.offer,
     required this.isPurchasing,
     required this.onPurchase,
     required this.theme,
   });
 
-  final PaywallOfferDisplay display;
+  final PaywallOfferDisplay offer;
   final bool isPurchasing;
   final VoidCallback onPurchase;
   final ThemeData theme;
@@ -40,7 +40,7 @@ class PaywallOfferingCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (display.savingsTag != null)
+              if (offer.savingsTag != null)
                 Align(
                   alignment: Alignment.centerLeft,
                   child: Container(
@@ -50,13 +50,13 @@ class PaywallOfferingCard extends StatelessWidget {
                     ),
                     margin: const EdgeInsets.only(bottom: 8),
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
+                      color: theme.colorScheme.primary,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: Text(
-                      display.savingsTag!,
+                      offer.savingsTag!,
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
+                        color: theme.colorScheme.onPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -69,14 +69,14 @@ class PaywallOfferingCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          display.title,
+                          offer.title,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        if (display.recurringCadenceLabel.isNotEmpty)
+                        if (offer.cadenceLabel.isNotEmpty)
                           Text(
-                            display.recurringCadenceLabel,
+                            offer.cadenceLabel,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -85,7 +85,7 @@ class PaywallOfferingCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    display.priceString,
+                    offer.price,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: theme.colorScheme.primary,
@@ -95,22 +95,22 @@ class PaywallOfferingCard extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               Text(
-                display.autoRenewLine,
+                offer.autoRenewLine,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: 4),
               Text(
-                display.cancelLine,
+                offer.cancelLine,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              if (display.introductoryLine != null) ...[
+              if (offer.trialLine != null) ...[
                 const SizedBox(height: 4),
                 Text(
-                  display.introductoryLine!,
+                  offer.trialLine!,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -119,15 +119,14 @@ class PaywallOfferingCard extends StatelessWidget {
               const SizedBox(height: 8),
               Wrap(
                 spacing: 4,
-                runSpacing: 0,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   TextButton(
                     onPressed: () =>
                         context.push(LegalDocumentId.termsOfUse.routePath),
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       minimumSize: const Size(48, 48),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                     child: Text(l.termsOfService),
                   ),
@@ -141,9 +140,8 @@ class PaywallOfferingCard extends StatelessWidget {
                     onPressed: () =>
                         context.push(LegalDocumentId.privacyNotice.routePath),
                     style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       minimumSize: const Size(48, 48),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                     ),
                     child: Text(l.privacyPolicy),
                   ),
