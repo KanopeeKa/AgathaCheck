@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../application/people_providers.dart';
 import '../../domain/entities/contact_detail.dart';
@@ -44,10 +45,24 @@ class PersonDetailContactView extends ConsumerWidget {
       ),
       body: detailAsync.when(
         loading: () => _loadingBody(context, summary),
-        error: (_, __) => Center(child: Text(l.peopleListLoadError)),
+        error: (_, __) => AsyncErrorState(
+          title: l.peopleListLoadError,
+          onRetry: () => ref.invalidate(personDetailProvider(contactId)),
+          retryKey: const Key('person_detail_contact_retry'),
+        ),
         data: (detail) {
           if (detail == null) {
-            return Center(child: Text(l.peopleDetailNotFound));
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AsyncErrorState(title: l.peopleDetailNotFound, detail: null),
+                TextButton(
+                  key: const Key('person_detail_contact_back_to_contacts'),
+                  onPressed: () => context.go('/pc/people'),
+                  child: Text(l.peopleBackToContacts),
+                ),
+              ],
+            );
           }
           return _loadedBody(context, l, summary, detail);
         },

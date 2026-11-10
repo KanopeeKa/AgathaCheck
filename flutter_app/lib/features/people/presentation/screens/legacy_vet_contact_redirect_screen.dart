@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/async_state.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../application/people_providers.dart';
 
 /// Resolves a legacy `vets` table id via People API, then opens the contact.
-class LegacyVetContactRedirectScreen extends ConsumerStatefulWidget {
+class LegacyVetContactRedirectScreen extends ConsumerWidget {
   const LegacyVetContactRedirectScreen({
     super.key,
     required this.vetId,
@@ -15,37 +17,54 @@ class LegacyVetContactRedirectScreen extends ConsumerStatefulWidget {
   final String vetId;
   final bool edit;
 
-  @override
-  ConsumerState<LegacyVetContactRedirectScreen> createState() =>
-      _LegacyVetContactRedirectScreenState();
-}
-
-class _LegacyVetContactRedirectScreenState
-    extends ConsumerState<LegacyVetContactRedirectScreen> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _redirect());
+  void _goToContact(BuildContext context, String contactId) {
+    final path = edit ? '/pc/people/$contactId/edit' : '/pc/people/$contactId';
+    context.go(path);
   }
 
-  Future<void> _redirect() async {
-    final contactId = await ref.read(
-      legacyVetContactIdProvider(widget.vetId).future,
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mappingAsync = ref.watch(legacyVetContactIdProvider(vetId));
+
+    ref.listen(legacyVetContactIdProvider(vetId), (previous, next) {
+      next.whenOrNull(
+        data: (contactId) {
+          if (!context.mounted) return;
+          if (contactId != null) {
+            _goToContact(context, contactId);
+          } else {
+            context.go('/pc/people?filter=professionals');
+          }
+        },
+      );
+    });
+
+    return mappingAsync.when(
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (_, __) {
+        final l = AppLocalizations.of(context)!;
+        return Scaffold(
+          body: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              AsyncErrorState(
+                title: l.peopleListLoadError,
+                onRetry: () =>
+                    ref.invalidate(legacyVetContactIdProvider(vetId)),
+                retryKey: const Key('legacy_vet_redirect_retry'),
+              ),
+              TextButton(
+                key: const Key('legacy_vet_back_to_contacts'),
+                onPressed: () => context.go('/pc/people'),
+                child: Text(l.peopleBackToContacts),
+              ),
+            ],
+          ),
+        );
+      },
+      data: (_) =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
     );
-    if (!mounted) return;
-    if (contactId != null) {
-      final path = widget.edit
-          ? '/pc/people/$contactId/edit'
-          : '/pc/people/$contactId';
-      context.go(path);
-    } else {
-      context.go('/pc/people?filter=professionals');
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    ref.watch(legacyVetContactIdProvider(widget.vetId));
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/auth.dart';
 import '../../../pet_profile/pet_profile.dart';
@@ -31,13 +32,49 @@ class HouseholdDetailPage extends ConsumerWidget {
     final l = AppLocalizations.of(context)!;
     final detailAsync = ref.watch(householdDetailProvider(householdId));
     final roster = ref.watch(rosterProvider).valueOrNull;
+    Widget pane(Widget child) => embedded
+        ? child
+        : Scaffold(
+            appBar: AppBar(
+              title: Text(l.householdsTitle),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.go('/pc/people/households'),
+              ),
+            ),
+            body: child,
+          );
+
+    void retryDetail() {
+      ref.invalidate(householdDetailProvider(householdId));
+      ref.invalidate(peopleHouseholdsProvider);
+      ref.read(rosterProvider.notifier).refresh();
+    }
 
     return detailAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (_, __) => Center(child: Text(l.peopleListLoadError)),
+      loading: () => pane(const Center(child: CircularProgressIndicator())),
+      error: (_, __) => pane(
+        AsyncErrorState(
+          title: l.peopleListLoadError,
+          onRetry: retryDetail,
+          retryKey: const Key('household_detail_retry'),
+        ),
+      ),
       data: (household) {
         if (household == null) {
-          return Center(child: Text(l.peopleDetailNotFound));
+          return pane(
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AsyncErrorState(title: l.peopleDetailNotFound, detail: null),
+                TextButton(
+                  key: const Key('household_detail_back_to_households'),
+                  onPressed: () => context.go('/pc/people/households'),
+                  child: Text(l.peopleBackToHouseholds),
+                ),
+              ],
+            ),
+          );
         }
         return _HouseholdDetailBody(
           household: household,
@@ -67,6 +104,13 @@ class _HouseholdDetailBody extends ConsumerStatefulWidget {
 
 class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
   bool _busy = false;
+
+  void _snack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
+  }
 
   List<HouseholdInvite> _pendingInvites() {
     final roster = widget.roster;
@@ -113,11 +157,7 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
           .renameHousehold(householdId: widget.household.id, name: name);
       ref.invalidate(householdDetailProvider(widget.household.id));
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
-      }
+      _snack(l.peopleSaveError);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -141,11 +181,7 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
           );
       ref.invalidate(householdDetailProvider(widget.household.id));
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
-      }
+      _snack(l.peopleSaveError);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -162,11 +198,7 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
             inviteId: invite.id,
           );
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
-      }
+      _snack(l.peopleSaveError);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -230,24 +262,10 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
             isOrganiser: organiser,
           );
       ref.invalidate(householdDetailProvider(widget.household.id));
-    } on PeopleApiException catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              e.code == 'last_organiser'
-                  ? l.peopleSaveError
-                  : l.peopleSaveError,
-            ),
-          ),
-        );
-      }
+    } on PeopleApiException catch (_) {
+      _snack(l.peopleSaveError);
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.peopleSaveError)));
-      }
+      _snack(l.peopleSaveError);
     }
   }
 
@@ -265,11 +283,7 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
             memberUserId: member.userId,
           );
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.peopleRemoveError)));
-      }
+      _snack(l.peopleRemoveError);
       return;
     }
     if (!mounted) return;
@@ -302,11 +316,7 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
         ref.invalidate(householdDetailProvider(widget.household.id));
       }
     } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.peopleRemoveError)));
-      }
+      _snack(l.peopleRemoveError);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -321,7 +331,8 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
         .where((m) => m.isYou || m.userId == authUserId)
         .firstOrNull;
     final petsAsync = ref.watch(petListProvider);
-    final myPets = (petsAsync.valueOrNull ?? const <Pet>[]);
+    final myPets = petsAsync.valueOrNull ?? const <Pet>[];
+    final petsReady = petsAsync.hasValue && !petsAsync.hasError;
 
     final content = ListView(
       padding: const EdgeInsets.all(16),
@@ -419,21 +430,41 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
           style: Theme.of(context).textTheme.titleMedium,
         ),
         const SizedBox(height: 8),
-        for (final pet in myPets)
-          CheckboxListTile(
-            key: Key('household_pet_${pet.id}'),
-            value: household.pets.any((p) => p.petId == pet.id),
-            onChanged: _busy ? null : (v) => _togglePet(pet.id, v == true),
-            title: Text(pet.name),
-            subtitle: Text(l.peopleHouseholdPetOwnerYou),
+        if (petsAsync.isLoading || petsAsync.hasError)
+          SupplementalStateCaption(
+            state: petsAsync.isLoading
+                ? SupplementalState.loading
+                : SupplementalState.unavailable,
+            label: l.householdPetsUnavailable,
+            onRetry: petsAsync.hasError
+                ? () => ref.invalidate(petListProvider)
+                : null,
+            retryKey: petsAsync.hasError
+                ? const Key('household_detail_pets_retry')
+                : null,
           ),
-        for (final pet in household.pets.where(
-          (p) => !myPets.any((mine) => mine.id == p.petId),
-        ))
-          ListTile(
-            title: Text(pet.name),
-            subtitle: Text(l.peopleHouseholdPetOtherOwner),
-          ),
+        if (petsReady) ...[
+          for (final pet in myPets)
+            CheckboxListTile(
+              key: Key('household_pet_${pet.id}'),
+              value: household.pets.any((p) => p.petId == pet.id),
+              onChanged: _busy ? null : (v) => _togglePet(pet.id, v == true),
+              title: Text(pet.name),
+              subtitle: Text(l.peopleHouseholdPetOwnerYou),
+            ),
+          for (final pet in household.pets.where(
+            (p) => !myPets.any((mine) => mine.id == p.petId),
+          ))
+            ListTile(
+              title: Text(pet.name),
+              subtitle: Text(l.peopleHouseholdPetOtherOwner),
+            ),
+        ] else if (!petsAsync.isLoading)
+          for (final pet in household.pets)
+            ListTile(
+              key: Key('household_pet_name_${pet.petId}'),
+              title: Text(pet.name),
+            ),
         if (myMember != null) ...[
           const SizedBox(height: 24),
           OutlinedButton(

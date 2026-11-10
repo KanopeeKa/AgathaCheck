@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../core/widgets/form/app_form_actions_bar.dart';
 import '../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../core/widgets/form/app_form_discard_dialog.dart';
@@ -167,14 +168,29 @@ class _PersonEditContactFormState extends ConsumerState<PersonEditContactForm> {
         error: (_, __) => peopleHubPaneScaffold(
           context: context,
           title: Text(l.peopleEditPerson),
-          body: Center(child: Text(l.peopleListLoadError)),
+          body: AsyncErrorState(
+            title: l.peopleListLoadError,
+            onRetry: () =>
+                ref.invalidate(personDetailProvider(widget.contactId)),
+            retryKey: const Key('person_edit_contact_detail_retry'),
+          ),
         ),
         data: (detail) {
           if (detail == null) {
             return peopleHubPaneScaffold(
               context: context,
               title: Text(l.peopleEditPerson),
-              body: Center(child: Text(l.peopleDetailNotFound)),
+              body: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AsyncErrorState(title: l.peopleDetailNotFound, detail: null),
+                  TextButton(
+                    key: const Key('person_edit_contact_back_to_contacts'),
+                    onPressed: () => context.go('/pc/people'),
+                    child: Text(l.peopleBackToContacts),
+                  ),
+                ],
+              ),
             );
           }
           _controller ??= PersonFormController(initial: detail)
