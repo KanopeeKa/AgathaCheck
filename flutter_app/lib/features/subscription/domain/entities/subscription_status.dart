@@ -6,6 +6,7 @@ class SubscriptionStatus {
   final DateTime? expirationDate;
   final String? managementUrl;
   final String? productIdentifier;
+  final bool willRenew;
 
   const SubscriptionStatus({
     this.tier = SubscriptionTier.free,
@@ -13,6 +14,7 @@ class SubscriptionStatus {
     this.expirationDate,
     this.managementUrl,
     this.productIdentifier,
+    this.willRenew = false,
   });
 
   bool get hasUnlimited => tier == SubscriptionTier.unlimited && isActive;
