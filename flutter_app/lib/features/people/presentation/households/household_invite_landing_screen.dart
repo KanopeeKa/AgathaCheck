@@ -282,13 +282,13 @@ class _HouseholdInviteLandingScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      l.peopleHouseholdInviteLandingTitle(preview.householdName),
+                      l.peopleHouseholdInviteLandingTitle(
+                        preview.householdName,
+                      ),
                       style: theme.textTheme.titleLarge,
                     ),
                     const SizedBox(height: 12),
-                    Text(
-                      l.peopleHouseholdInviteLandingBody(inviter, tier),
-                    ),
+                    Text(l.peopleHouseholdInviteLandingBody(inviter, tier)),
                   ],
                 ),
               ),

@@ -229,7 +229,9 @@ class HouseholdsApi {
       throw HouseholdInvitePreviewNotFoundException();
     }
     if (response.statusCode >= 400) {
-      throw HouseholdInvitePreviewLoadException(statusCode: response.statusCode);
+      throw HouseholdInvitePreviewLoadException(
+        statusCode: response.statusCode,
+      );
     }
     final decoded = json.decode(response.body) as Map<String, dynamic>;
     return HouseholdInvitePreview(
