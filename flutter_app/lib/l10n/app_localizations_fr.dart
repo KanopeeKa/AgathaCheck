@@ -4627,6 +4627,35 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vous avez déjà accepté cette invitation.';
 
   @override
+  String get absenceInviteTitle => 'Invitation d\'absence';
+
+  @override
+  String absenceInviteHeadline(String inviterName) {
+    return '$inviterName vous a invité(e) à aider pendant une absence';
+  }
+
+  @override
+  String get absenceInviteAccessScope =>
+      'Soins temporaires pendant une absence';
+
+  @override
+  String get absenceInviteAccept => 'Accepter l\'invitation';
+
+  @override
+  String get absenceInviteAccepting => 'Acceptation…';
+
+  @override
+  String get absenceInviteLoadFailed =>
+      'Impossible de charger cette invitation. Réessayez.';
+
+  @override
+  String get absenceInviteAcceptFailed =>
+      'Impossible d\'accepter cette invitation. Réessayez.';
+
+  @override
+  String get absenceInviteUnavailable => 'Invitation indisponible';
+
+  @override
   String get inviteContinueWithAccount => 'Se connecter ou créer un compte';
 
   @override

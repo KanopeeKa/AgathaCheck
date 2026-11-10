@@ -8145,6 +8145,54 @@ abstract class AppLocalizations {
   /// **'You have already accepted this invitation.'**
   String get shareInviteAlreadyAccepted;
 
+  /// No description provided for @absenceInviteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Absence invitation'**
+  String get absenceInviteTitle;
+
+  /// No description provided for @absenceInviteHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invited you to help during an absence'**
+  String absenceInviteHeadline(String inviterName);
+
+  /// No description provided for @absenceInviteAccessScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Temporary care during an absence'**
+  String get absenceInviteAccessScope;
+
+  /// No description provided for @absenceInviteAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept invitation'**
+  String get absenceInviteAccept;
+
+  /// No description provided for @absenceInviteAccepting.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepting…'**
+  String get absenceInviteAccepting;
+
+  /// No description provided for @absenceInviteLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this invitation. Try again.'**
+  String get absenceInviteLoadFailed;
+
+  /// No description provided for @absenceInviteAcceptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not accept this invitation. Try again.'**
+  String get absenceInviteAcceptFailed;
+
+  /// No description provided for @absenceInviteUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation unavailable'**
+  String get absenceInviteUnavailable;
+
   /// Primary action on signed-out invite recipient previews.
   ///
   /// In en, this message translates to:
