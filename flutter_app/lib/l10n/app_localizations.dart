@@ -4399,6 +4399,238 @@ abstract class AppLocalizations {
   /// **'Subscription plans aren\'t available right now. Try again in a moment.'**
   String get subscriptionPlansUnavailable;
 
+  /// No description provided for @subscriptionPurchaseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete your purchase. Try again or restore purchases if you were already subscribed.'**
+  String get subscriptionPurchaseFailed;
+
+  /// No description provided for @subscriptionRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t restore your purchases. Check your connection and try again.'**
+  String get subscriptionRestoreFailed;
+
+  /// No description provided for @subscriptionManagementUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open subscription management. Copy this link and open it in your browser:'**
+  String get subscriptionManagementUnavailable;
+
+  /// No description provided for @subscriptionManagementNoUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription management isn\'t available from this device. Use your app store account settings to manage billing.'**
+  String get subscriptionManagementNoUrl;
+
+  /// No description provided for @subscriptionStatusActiveSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Active subscription'**
+  String get subscriptionStatusActiveSemantic;
+
+  /// No description provided for @subscriptionStatusFreeSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan'**
+  String get subscriptionStatusFreeSemantic;
+
+  /// No description provided for @subscriptionPlanUnlimitedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AgathaTrack Unlimited'**
+  String get subscriptionPlanUnlimitedTitle;
+
+  /// No description provided for @subscriptionPlanFreeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan'**
+  String get subscriptionPlanFreeTitle;
+
+  /// No description provided for @subscriptionPlanUnlimitedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You have full access to all features.'**
+  String get subscriptionPlanUnlimitedBody;
+
+  /// No description provided for @subscriptionPlanFreeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to unlock all features.'**
+  String get subscriptionPlanFreeBody;
+
+  /// No description provided for @subscriptionRenewsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews on {date}'**
+  String subscriptionRenewsOn(String date);
+
+  /// No description provided for @subscriptionActiveUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until {date}'**
+  String subscriptionActiveUntil(String date);
+
+  /// No description provided for @subscriptionBestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best value'**
+  String get subscriptionBestValue;
+
+  /// No description provided for @subscriptionPeriodPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get subscriptionPeriodPerMonth;
+
+  /// No description provided for @subscriptionPeriodPerYear.
+  ///
+  /// In en, this message translates to:
+  /// **'per year'**
+  String get subscriptionPeriodPerYear;
+
+  /// No description provided for @subscriptionPeriodPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'per week'**
+  String get subscriptionPeriodPerWeek;
+
+  /// No description provided for @subscriptionPeriodRecurring.
+  ///
+  /// In en, this message translates to:
+  /// **'per billing period'**
+  String get subscriptionPeriodRecurring;
+
+  /// No description provided for @subscriptionPeriodEveryMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'every {count} months'**
+  String subscriptionPeriodEveryMonths(int count);
+
+  /// No description provided for @subscriptionPeriodEveryYears.
+  ///
+  /// In en, this message translates to:
+  /// **'every {count} years'**
+  String subscriptionPeriodEveryYears(int count);
+
+  /// No description provided for @subscriptionAutoRenewDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'{priceString} {cadence}. Auto-renews until you cancel.'**
+  String subscriptionAutoRenewDisclosure(String priceString, String cadence);
+
+  /// No description provided for @subscriptionCancelDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel anytime in your app store subscription settings before the next billing date.'**
+  String get subscriptionCancelDisclosure;
+
+  /// No description provided for @subscriptionIntroductoryOffer.
+  ///
+  /// In en, this message translates to:
+  /// **'Introductory offer: {introPrice} for {periodDescription}, for {cycles} billing period(s), then the standard price applies.'**
+  String subscriptionIntroductoryOffer(
+    String introPrice,
+    String periodDescription,
+    int cycles,
+  );
+
+  /// No description provided for @subscriptionIntroPeriodOneDay.
+  ///
+  /// In en, this message translates to:
+  /// **'1 day'**
+  String get subscriptionIntroPeriodOneDay;
+
+  /// No description provided for @subscriptionIntroPeriodDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} days'**
+  String subscriptionIntroPeriodDays(int count);
+
+  /// No description provided for @subscriptionIntroPeriodOneWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'1 week'**
+  String get subscriptionIntroPeriodOneWeek;
+
+  /// No description provided for @subscriptionIntroPeriodWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} weeks'**
+  String subscriptionIntroPeriodWeeks(int count);
+
+  /// No description provided for @subscriptionIntroPeriodOneMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'1 month'**
+  String get subscriptionIntroPeriodOneMonth;
+
+  /// No description provided for @subscriptionIntroPeriodMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} months'**
+  String subscriptionIntroPeriodMonths(int count);
+
+  /// No description provided for @subscriptionIntroPeriodOneYear.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
+  String get subscriptionIntroPeriodOneYear;
+
+  /// No description provided for @subscriptionIntroPeriodYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} years'**
+  String subscriptionIntroPeriodYears(int count);
+
+  /// No description provided for @subscriptionFeatureUnlimitedPets.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited pet profiles'**
+  String get subscriptionFeatureUnlimitedPets;
+
+  /// No description provided for @subscriptionFeatureHealthTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Full health tracking'**
+  String get subscriptionFeatureHealthTracking;
+
+  /// No description provided for @subscriptionFeaturePetSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet sharing with family'**
+  String get subscriptionFeaturePetSharing;
+
+  /// No description provided for @subscriptionFeaturePdfReports.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF report generation'**
+  String get subscriptionFeaturePdfReports;
+
+  /// No description provided for @subscriptionFeatureReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Health reminders'**
+  String get subscriptionFeatureReminders;
+
+  /// No description provided for @subscriptionFeaturePrioritySupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority support'**
+  String get subscriptionFeaturePrioritySupport;
+
+  /// No description provided for @subscriptionFallbackTitleMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get subscriptionFallbackTitleMonthly;
+
+  /// No description provided for @subscriptionFallbackTitleYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get subscriptionFallbackTitleYearly;
+
   /// No description provided for @petReport.
   ///
   /// In en, this message translates to:
