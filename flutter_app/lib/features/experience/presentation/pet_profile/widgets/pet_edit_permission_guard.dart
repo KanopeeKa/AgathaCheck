@@ -21,8 +21,7 @@ class PetEditPermissionGuard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
-    final location =
-        GoRouter.of(context).state.uri.path;
+    final location = GoRouter.of(context).state.uri.path;
     final petsAsync = ref.watch(allPetsIncludingOrgProvider);
 
     Widget shell({required Widget body, String? title}) {
