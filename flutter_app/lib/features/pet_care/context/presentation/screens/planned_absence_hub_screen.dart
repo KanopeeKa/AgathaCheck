@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../../core/widgets/async_state/async_state.dart';
 import '../../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
@@ -15,6 +16,14 @@ import '../widgets/planned_absence_hub_card.dart';
 class PlannedAbsenceHubScreen extends ConsumerWidget {
   const PlannedAbsenceHubScreen({super.key});
 
+  static HubPetNamesState _petNamesState(AsyncValue<List<Pet>> petsAsync) {
+    return petsAsync.when(
+      loading: () => HubPetNamesState.loading,
+      error: (_, __) => HubPetNamesState.unavailable,
+      data: (_) => HubPetNamesState.ready,
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
@@ -23,6 +32,8 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
     final petsById = {
       for (final pet in petsAsync.valueOrNull ?? const <Pet>[]) pet.id: pet,
     };
+    final petNamesState = _petNamesState(petsAsync);
+    void retryPetNames() => ref.invalidate(petListProvider);
 
     return ExperienceShellScaffold(
       experience: AppExperience.petCare,
@@ -45,10 +56,11 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
         orElse: () => null,
       ),
       child: absencesAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => _HubError(
-          message: l.careContextAwayPreviewError,
+        loading: () => LabelledProgress(label: l.awayPlansLoading),
+        error: (_, __) => AsyncErrorState(
+          title: l.careContextAwayPreviewError,
           onRetry: () => ref.invalidate(plannedAbsencesListProvider),
+          retryKey: const Key('planned_absence_hub_retry'),
         ),
         data: (absences) {
           final grouped = PlannedAbsenceHubPartition.partitionByOwnership(
@@ -63,6 +75,8 @@ class PlannedAbsenceHubScreen extends ConsumerWidget {
             yourAbsences: grouped.yourAbsences,
             otherPeoplesAbsences: grouped.otherPeoplesAbsences,
             petsById: petsById,
+            petNamesState: petNamesState,
+            onRetryPetNames: retryPetNames,
           );
         },
       ),
@@ -75,11 +89,15 @@ class _HubList extends StatelessWidget {
     required this.yourAbsences,
     required this.otherPeoplesAbsences,
     required this.petsById,
+    required this.petNamesState,
+    required this.onRetryPetNames,
   });
 
   final List<PlannedAbsence> yourAbsences;
   final List<PlannedAbsence> otherPeoplesAbsences;
   final Map<String, Pet> petsById;
+  final HubPetNamesState petNamesState;
+  final VoidCallback onRetryPetNames;
 
   @override
   Widget build(BuildContext context) {
@@ -137,6 +155,8 @@ class _HubList extends StatelessWidget {
       PlannedAbsenceHubCard(
         absence: absences[i],
         petsById: petsById,
+        petNamesState: petNamesState,
+        onRetryPetNames: onRetryPetNames,
         subdued: subdued,
       ),
     ],
@@ -180,33 +200,6 @@ class _HubEmptyState extends StatelessWidget {
               onPressed: onPlanAbsence,
               icon: const Icon(Icons.add),
               label: Text(l.careContextAwayContinue),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HubError extends StatelessWidget {
-  const _HubError({required this.message, required this.onRetry});
-  final String message;
-  final VoidCallback onRetry;
-  @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context)!;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(message, textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            FilledButton(
-              key: const Key('planned_absence_hub_retry'),
-              onPressed: onRetry,
-              child: Text(l.retry),
             ),
           ],
         ),

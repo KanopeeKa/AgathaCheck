@@ -13171,6 +13171,42 @@ abstract class AppLocalizations {
   /// **'Could not load this away plan. Try again.'**
   String get careContextAwayPlanLoadError;
 
+  /// Accessible label while the away plans hub list loads (LabelledProgress).
+  ///
+  /// In en, this message translates to:
+  /// **'Loading away plans'**
+  String get awayPlansLoading;
+
+  /// Accessible label while an away plan detail screen loads prerequisites.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading away plan'**
+  String get awayPlanLoading;
+
+  /// Supplemental caption when pet names fail on a saved away plan card.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet names unavailable'**
+  String get awayPetNamesUnavailable;
+
+  /// Accessible label while pets load on the new away plan form.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your pets'**
+  String get awayPetsLoading;
+
+  /// When the pet list loaded but none can be selected for a new away plan.
+  ///
+  /// In en, this message translates to:
+  /// **'No pets are eligible for this absence. Passed-away pets are not included.'**
+  String get awayNoEligiblePets;
+
+  /// Primary error when pets fail to load on the away plan detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load pets for this plan'**
+  String get awayPlanPetsLoadError;
+
   /// No description provided for @careContextAwayPlanCareDuringTitle.
   ///
   /// In en, this message translates to:

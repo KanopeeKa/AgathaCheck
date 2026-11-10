@@ -7624,6 +7624,26 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de charger ce plan d\'absence. Réessayez.';
 
   @override
+  String get awayPlansLoading => 'Chargement des plans d\'absence';
+
+  @override
+  String get awayPlanLoading => 'Chargement du plan d\'absence';
+
+  @override
+  String get awayPetNamesUnavailable => 'Noms des animaux indisponibles';
+
+  @override
+  String get awayPetsLoading => 'Chargement de vos animaux';
+
+  @override
+  String get awayNoEligiblePets =>
+      'Aucun animal n\'est admissible pour cette absence. Les animaux décédés ne sont pas inclus.';
+
+  @override
+  String get awayPlanPetsLoadError =>
+      'Impossible de charger les animaux pour ce plan';
+
+  @override
   String get careContextAwayPlanCareDuringTitle =>
       'Soins pendant votre absence';
 

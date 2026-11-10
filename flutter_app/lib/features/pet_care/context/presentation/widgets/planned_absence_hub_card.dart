@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../../core/router/shell_return_navigation.dart';
+import '../../../../../core/widgets/async_state/async_state.dart';
 import '../../../presentation/widgets/away_context_icon_chip.dart';
 import '../../../../../core/utils/calendar_date.dart';
 import '../../../../../l10n/app_localizations.dart';
@@ -7,16 +8,24 @@ import '../../../../pet_profile/pet_profile.dart';
 import '../../domain/entities/planned_absence.dart';
 import '../planned_absence_display.dart';
 
+/// Whether supplemental pet names from [petListProvider] are ready for hub cards.
+enum HubPetNamesState { loading, ready, unavailable }
+
 class PlannedAbsenceHubCard extends StatelessWidget {
   const PlannedAbsenceHubCard({
     super.key,
     required this.absence,
     required this.petsById,
+    required this.petNamesState,
+    this.onRetryPetNames,
     this.subdued = false,
   });
   final PlannedAbsence absence;
   final Map<String, Pet> petsById;
+  final HubPetNamesState petNamesState;
+  final VoidCallback? onRetryPetNames;
   final bool subdued;
+
   static String formatDateRange(AppLocalizations l, PlannedAbsence absence) {
     final startsOn = parseCalendarDate(absence.startsOn);
     final endsOn = parseCalendarDate(absence.endsOn);
@@ -32,13 +41,14 @@ class PlannedAbsenceHubCard extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final dateRange = formatDateRange(l, absence);
     final primary = PlannedAbsenceDisplay.primaryLabel(l, absence);
     final secondaryDates = PlannedAbsenceDisplay.secondaryDateLine(l, absence);
     final travellerLine = absence.isOwnAbsence == false
         ? PlannedAbsenceDisplay.travellerLine(l, absence)
         : null;
-    final petLines = _petLines(l);
+    final petSection = _petSection(context, l);
+    final petLines = _resolvedPetLines(l);
+    final semanticsPets = _semanticsPetSummary(l, petLines);
     final titleStyle = theme.textTheme.titleSmall?.copyWith(
       fontWeight: FontWeight.w700,
       color: subdued ? colorScheme.onSurfaceVariant : null,
@@ -48,7 +58,7 @@ class PlannedAbsenceHubCard extends StatelessWidget {
     );
     return Semantics(
       button: true,
-      label: '$primary. ${petLines.join(', ')}',
+      label: '$primary. $semanticsPets',
       child: Card(
         margin: EdgeInsets.zero,
         color: subdued ? colorScheme.surfaceContainerLow : null,
@@ -81,12 +91,7 @@ class PlannedAbsenceHubCard extends StatelessWidget {
                         Text(secondaryDates, style: bodyStyle),
                       ],
                       const SizedBox(height: 4),
-                      ...petLines.map(
-                        (line) => Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text(line, style: bodyStyle),
-                        ),
-                      ),
+                      petSection,
                     ],
                   ),
                 ),
@@ -99,8 +104,67 @@ class PlannedAbsenceHubCard extends StatelessWidget {
     );
   }
 
-  List<String> _petLines(AppLocalizations l) {
-    if (absence.petIds.isEmpty) return [l.careContextAwayPetsRequired];
+  Widget _petSection(BuildContext context, AppLocalizations l) {
+    if (absence.petIds.isEmpty) {
+      return Text(
+        l.careContextAwayPetsRequired,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      );
+    }
+    if (petNamesState == HubPetNamesState.loading) {
+      return SupplementalStateCaption(
+        state: SupplementalState.loading,
+        label: l.awayPetsLoading,
+      );
+    }
+    if (petNamesState == HubPetNamesState.unavailable) {
+      return SupplementalStateCaption(
+        state: SupplementalState.unavailable,
+        label: l.awayPetNamesUnavailable,
+        onRetry: onRetryPetNames,
+        retryKey: const Key('planned_absence_hub_pet_names_retry'),
+      );
+    }
+    final lines = _resolvedPetLines(l);
+    if (lines.isEmpty) {
+      return SupplementalStateCaption(
+        state: SupplementalState.unavailable,
+        label: l.awayPetNamesUnavailable,
+        onRetry: onRetryPetNames,
+        retryKey: const Key('planned_absence_hub_pet_names_retry'),
+      );
+    }
+    final bodyStyle = Theme.of(context).textTheme.bodySmall?.copyWith(
+      color: Theme.of(context).colorScheme.onSurfaceVariant,
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: lines
+          .map(
+            (line) => Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(line, style: bodyStyle),
+            ),
+          )
+          .toList(growable: false),
+    );
+  }
+
+  String _semanticsPetSummary(AppLocalizations l, List<String> petLines) {
+    if (absence.petIds.isEmpty) return l.careContextAwayPetsRequired;
+    if (petNamesState == HubPetNamesState.loading) return l.awayPetsLoading;
+    if (petNamesState == HubPetNamesState.unavailable || petLines.isEmpty) {
+      return l.awayPetNamesUnavailable;
+    }
+    return petLines.join(', ');
+  }
+
+  List<String> _resolvedPetLines(AppLocalizations l) {
+    if (absence.petIds.isEmpty || petNamesState != HubPetNamesState.ready) {
+      return const [];
+    }
     final lines = <String>[];
     var onlyPassedAway = true;
     for (final petId in absence.petIds) {
@@ -111,7 +175,7 @@ class PlannedAbsenceHubCard extends StatelessWidget {
         '${pet.name}${pet.passedAway ? ' (${l.placementOutcomePassedAway})' : ''}',
       );
     }
-    if (lines.isEmpty) return [l.careContextAwayPetsRequired];
+    if (lines.isEmpty) return const [];
     if (onlyPassedAway) return [l.careContextAwayPetsStepBody, ...lines];
     return lines;
   }
