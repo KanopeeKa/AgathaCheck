@@ -350,7 +350,7 @@ export async function completeOrgToOrgTransfer(db, {
   await clearOrgPetHomeHiddenForPet(db, pet.id);
 }
 
-export async function completeReturnToOrg(db, { pet, toOrgId, actorUserId }) {
+export async function completeReturnToOrg(db, { pet, toOrgId, actorUserId: _actorUserId }) {
   await deleteShadowForPetAndOrg(db, pet.id, toOrgId);
   await setOrgGuardianAndCare(db, pet.id, toOrgId);
   await clearOrgPetHomeHiddenForPet(db, pet.id);

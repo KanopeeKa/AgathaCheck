@@ -63,7 +63,7 @@ export function normaliseAddressVisibility(value) {
 }
 
 /** Role-specific defaults applied on membership create / migrate. */
-export function defaultPrivacyForRole(role) {
+export function defaultPrivacyForRole(_role) {
   return {
     card_visibility: CARD_VISIBILITY_ALL,
     phone_visibility: CONTACT_VISIBILITY_ADMINS_OR_NAMED,
@@ -124,7 +124,7 @@ export function canViewerSeeField({
   viewerRole,
   viewerPermissionKeys = [],
   subjectUserId,
-  subjectRole,
+  subjectRole: _subjectRole,
   settings,
   grants = [],
 }) {
