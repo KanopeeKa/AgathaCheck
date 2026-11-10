@@ -151,9 +151,8 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
         AppFormBreakpoints.layoutForWidth(MediaQuery.sizeOf(context).width) ==
         AppFormLayoutSize.phone;
     final saveBlocked = !form.canSubmitEdit;
-    final showForm = !form.isLoading &&
-        !form.editLoadFailed &&
-        !form.editNotFound;
+    final showForm =
+        !form.isLoading && !form.editLoadFailed && !form.editNotFound;
 
     Widget body;
     if (form.isLoading) {
