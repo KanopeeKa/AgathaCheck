@@ -3,7 +3,6 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_lifecycle_list_status.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 
 /// Builds a [CareActionRow] for one open care item in the profile section.
@@ -52,11 +51,13 @@ class PetCareActionRowBuilder {
 
   CareActionRow build({bool inset = false}) {
     final lifecycleRow = healthEntryUsesLifecycleListRow(entry);
-    final statusLine = statusLineOverride ??
+    final statusLine =
+        statusLineOverride ??
         (lifecycleRow
             ? formatHealthEntryLifecycleStatusLabel(entry, l10n)
             : formatHealthEntryStatusLine(entry, l10n));
-    final statusTreatment = statusTreatmentOverride ??
+    final statusTreatment =
+        statusTreatmentOverride ??
         (lifecycleRow
             ? healthEntryLifecycleStatusTreatment(entry, colorScheme)
             : healthEntryStatusTreatment(entry, colorScheme));
