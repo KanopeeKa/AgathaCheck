@@ -29,6 +29,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.text(l.notificationsLoadError), findsOneWidget);
+    expect(find.textContaining('network'), findsNothing);
+
     await tester.tap(find.text(l.retry));
     expect(retried, isTrue);
   });

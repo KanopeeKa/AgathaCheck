@@ -19,14 +19,26 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   List<Offering> _offerings = [];
   String? _error;
   bool _purchasing = false;
+  bool _offeringsInFlight = false;
+  bool _offeringsRequested = false;
 
   @override
-  void initState() {
-    super.initState();
-    _loadOfferings();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_offeringsRequested) {
+      _offeringsRequested = true;
+      _loadOfferings();
+    }
   }
 
   Future<void> _loadOfferings() async {
+    if (!mounted || _offeringsInFlight) return;
+    _offeringsInFlight = true;
+    final l = AppLocalizations.of(context)!;
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final service = ref.read(revenueCatServiceProvider);
       final offerings = await service.getOfferings();
@@ -34,19 +46,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         setState(() {
           _offerings = offerings;
           _loading = false;
-          if (offerings.isEmpty) {
-            _error =
-                'No subscription plans are available at the moment. Please try again later.';
-          }
+          _error = offerings.isEmpty ? l.subscriptionPlansUnavailable : null;
         });
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
         setState(() {
-          _error = 'Unable to load subscription options. Please try again.';
+          _error = l.subscriptionPlansUnavailable;
           _loading = false;
         });
       }
+    } finally {
+      _offeringsInFlight = false;
     }
   }
 

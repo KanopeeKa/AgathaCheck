@@ -859,6 +859,7 @@
   "manageSubscription": "Gérer l'abonnement",
   "subscribe": "S'abonner",
   "loadPlans": "Charger les forfaits",
+  "subscriptionPlansUnavailable": "Les forfaits ne sont pas disponibles pour le moment. Réessayez dans un instant.",
 
   "petReport": "Rapport de l'animal",
   "chooseSections": "Choisissez les sections à inclure",
@@ -2237,6 +2238,9 @@
   "notificationsBellTooltip": "Ouvrir les notifications",
   "sectionDrawerTooltip": "Ouvrir le menu",
   "failedToLoadNotifications": "Échec du chargement des notifications : {error}",
+  "notificationsLoadError": "Impossible de charger vos notifications",
+  "notificationPreferencesLoadError": "Impossible de charger vos paramètres de notification",
+  "notificationPreferencesSaveFailed": "Vos modifications n'ont pas été enregistrées. Réessayez.",
   "notificationKindAll": "Tout",
   "notificationKindCare": "Soins",
   "notificationKindOrganisation": "Organisation",
@@ -3024,6 +3028,8 @@
     }
   },
   "petTagsEmpty": "Aucune étiquette. Créez-en une pour regrouper vos animaux sur la liste Tous les animaux.",
+  "petTagsLoadError": "Impossible de charger vos étiquettes",
+  "petTagDeleteFailed": "Impossible de supprimer cette étiquette. Réessayez.",
   "petTagsNameHint": "Nom de l'étiquette",
   "petTagsMyTags": "Mes étiquettes",
   "petTagsFilterDimension": "Étiquettes",

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/async_state/async_error_state.dart';
+import '../../../../core/widgets/async_state/labelled_progress.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/notification_preferences.dart';
 import '../../domain/entities/notification_settings_matrix.dart';
@@ -79,8 +81,11 @@ class _NotificationSettingsScreenState
         ),
       ),
       body: prefsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        loading: () => Center(child: LabelledProgress(label: l.loadingLabel)),
+        error: (error, _) => AsyncErrorState(
+          title: l.notificationPreferencesLoadError,
+          onRetry: () => ref.invalidate(notificationPreferencesProvider),
+        ),
         data: (_) => ListView(
           children: [
             const SizedBox(height: 8),
@@ -183,11 +188,12 @@ class _NotificationSettingsScreenState
           context,
         ).showSnackBar(SnackBar(content: Text(l.settingsSaved)));
       }
-    } catch (e) {
+    } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to save: $e')));
+        final saveError = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(saveError.notificationPreferencesSaveFailed)),
+        );
       }
     } finally {
       if (mounted) setState(() => _saving = false);

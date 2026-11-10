@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_error_state.dart';
+import 'package:pet_profile_app/core/widgets/async_state/labelled_progress.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
@@ -39,7 +41,7 @@ class PaywallBodyContent extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
 
     if (loading) {
-      return const Center(child: CircularProgressIndicator());
+      return Center(child: LabelledProgress(label: l.loadingLabel));
     }
 
     return SingleChildScrollView(
@@ -91,37 +93,13 @@ class PaywallBodyContent extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 32),
-              if (error != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Card(
-                    color: theme.colorScheme.errorContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.info_outline,
-                            color: theme.colorScheme.onErrorContainer,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              error!,
-                              style: TextStyle(
-                                color: theme.colorScheme.onErrorContainer,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
               if (!subscriptionStatus.hasUnlimited) ...[
                 PaywallFeatureListCard(theme: theme),
                 const SizedBox(height: 24),
-                ..._offeringCards(context, l),
+                if (error != null)
+                  AsyncErrorState(title: error, onRetry: onReloadOfferings)
+                else
+                  ..._offeringCards(context, l),
                 const SizedBox(height: 12),
                 SizedBox(
                   width: double.infinity,
