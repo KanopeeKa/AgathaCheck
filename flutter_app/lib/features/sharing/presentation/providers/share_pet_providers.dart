@@ -7,8 +7,6 @@ import '../../domain/entities/pet_share_access.dart';
 import '../../domain/entities/share_invite.dart';
 import 'sharing_providers.dart';
 
-import 'package:pet_profile_app/core/router/share_pet_route_args.dart';
-
 class SharePetState {
   const SharePetState({
     required this.petIds,
@@ -85,7 +83,7 @@ class SharePetNotifier extends StateNotifier<SharePetState> {
       final byPet = {for (final row in rows) row.petId: row};
       state = state.copyWith(isLoading: false, accessByPet: byPet);
     } catch (e) {
-      state = state.copyWith(isLoading: false, error: e, accessByPet: {});
+      state = state.copyWith(isLoading: false, error: e);
     }
   }
 

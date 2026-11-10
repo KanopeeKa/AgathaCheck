@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/widgets/async_state/async_error_state.dart';
+import '../../../../core/widgets/async_state/labelled_progress.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
@@ -10,7 +12,6 @@ import '../../domain/entities/pet_access.dart';
 import '../../domain/entities/share_invite.dart';
 import '../pet_sharing_panel.dart';
 import '../providers/share_pet_providers.dart';
-import '../providers/sharing_providers.dart';
 import '../widgets/share_pet_owner_body.dart';
 import '../widgets/share_pet_selector.dart';
 
@@ -73,8 +74,12 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
       screenTitle: l.sharePet,
       backPath: widget.petId != null ? '/pet/${widget.petId}' : '/pc/pets',
       child: petsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(l.errorWithMessage('$error'))),
+        loading: () => Center(child: LabelledProgress(label: l.sharePet)),
+        error: (_, __) => AsyncErrorState(
+          title: l.couldNotLoadSharingInfo,
+          onRetry: () => ref.invalidate(allPetsIncludingOrgProvider),
+          retryKey: const Key('share_pet_pets_retry'),
+        ),
         data: (pets) {
           if (pets.isEmpty) {
             return Center(child: Text(l.petNotFound));
@@ -86,10 +91,9 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
             orElse: () => pets.first,
           );
           final viewerRole = sharePetViewerRole(selectedPet);
-
-          if (viewerRole == PetViewerRole.organization) {
-            return Center(child: Text(l.sharePetOrgNotAvailable));
-          }
+          final accessRow = shareState.accessByPet[selectedId];
+          final accessResolved =
+              !shareState.isLoading && shareState.error == null;
 
           return ListView(
             padding: const EdgeInsets.all(16),
@@ -102,21 +106,6 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
                       .read(sharePetNotifierProvider(_petIds).notifier)
                       .selectPet(id),
                 ),
-              if (shareState.isLoading)
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 24),
-                  child: Center(child: CircularProgressIndicator()),
-                )
-              else if (shareState.error != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
-                  child: Text(
-                    l.couldNotLoadSharingInfo,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                  ),
-                ),
               _SharePetBody(
                 pet: selectedPet,
                 allPetIds: _petIds,
@@ -124,11 +113,13 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
                 shareNotifier: ref.read(
                   sharePetNotifierProvider(_petIds).notifier,
                 ),
-                pendingInvites:
-                    shareState.accessByPet[selectedId]?.pendingInvites ??
-                    const [],
+                pendingInvites: accessResolved
+                    ? (accessRow?.pendingInvites ?? const [])
+                    : const [],
                 accessList:
-                    shareState.accessByPet[selectedId]?.access ?? const [],
+                    accessResolved ? (accessRow?.access ?? const []) : const [],
+                accessLoading: shareState.isLoading,
+                accessFailed: shareState.error != null,
                 prefillEmail: widget.prefillEmail,
                 contactId: widget.contactId,
               ),
@@ -148,6 +139,8 @@ class _SharePetBody extends ConsumerWidget {
     required this.shareNotifier,
     required this.pendingInvites,
     required this.accessList,
+    required this.accessLoading,
+    required this.accessFailed,
     this.prefillEmail,
     this.contactId,
   });
@@ -158,46 +151,35 @@ class _SharePetBody extends ConsumerWidget {
   final SharePetNotifier shareNotifier;
   final List<ShareInvite> pendingInvites;
   final List<PetAccess> accessList;
+  final bool accessLoading;
+  final bool accessFailed;
   final String? prefillEmail;
   final String? contactId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     switch (viewerRole) {
-      case PetViewerRole.fosterCarer:
-        final linksAsync = ref.watch(petShareLinksNotifierProvider(pet.id));
-        return linksAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) =>
-              Text(AppLocalizations.of(context)!.couldNotLoadSharingInfo),
-          data: (links) =>
-              FosterSharingContent(petId: pet.id, pet: pet, shareLinks: links),
-        );
       case PetViewerRole.sharedCarer:
         return FollowerSharingContent(petId: pet.id, pet: pet);
+      case PetViewerRole.fosterCarer:
+      case PetViewerRole.organization:
       case PetViewerRole.guardian:
       case PetViewerRole.coParent:
-        final linksAsync = ref.watch(petShareLinksNotifierProvider(pet.id));
         final canTransfer =
             viewerRole == PetViewerRole.guardian && pet.organizationId == null;
-        return linksAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) =>
-              Text(AppLocalizations.of(context)!.couldNotLoadSharingInfo),
-          data: (links) => SharePetOwnerBody(
-            pet: pet,
-            allPetIds: allPetIds,
-            accessList: accessList,
-            shareLinks: links,
-            pendingInvites: pendingInvites,
-            canTransferOwnership: canTransfer,
-            onInviteSent: () => shareNotifier.refresh(),
-            prefillEmail: prefillEmail,
-            contactId: contactId,
-          ),
+        return SharePetOwnerBody(
+          pet: pet,
+          allPetIds: allPetIds,
+          accessList: accessList,
+          pendingInvites: pendingInvites,
+          accessLoading: accessLoading,
+          accessFailed: accessFailed,
+          canTransferOwnership: canTransfer,
+          onInviteSent: () => shareNotifier.refresh(),
+          onRetryAccess: () => shareNotifier.refresh(),
+          prefillEmail: prefillEmail,
+          contactId: contactId,
         );
-      case PetViewerRole.organization:
-        return const SizedBox.shrink();
     }
   }
 }

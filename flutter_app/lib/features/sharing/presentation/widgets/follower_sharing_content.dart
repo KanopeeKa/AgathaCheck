@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../providers/sharing_providers.dart';
+import '../sharing_error_messages.dart';
 
 class FollowerSharingContent extends ConsumerWidget {
   const FollowerSharingContent({required this.petId, required this.pet});
@@ -75,9 +76,9 @@ class FollowerSharingContent extends ConsumerWidget {
                 if (context.mounted) context.go('/');
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(sharingMutationErrorMessage(l, e))),
+                  );
                 }
               }
             },
@@ -109,9 +110,9 @@ class FollowerSharingContent extends ConsumerWidget {
                 if (context.mounted) context.go('/');
               } catch (e) {
                 if (context.mounted) {
-                  ScaffoldMessenger.of(
-                    context,
-                  ).showSnackBar(SnackBar(content: Text('Error: $e')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(sharingMutationErrorMessage(l, e))),
+                  );
                 }
               }
             },

@@ -1780,6 +1780,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get couldNotLoadSharingInfo => 'Could not load sharing info';
 
   @override
+  String get shareAccessUnavailable =>
+      'Sharing access is unavailable right now';
+
+  @override
+  String get shareUpdateFailed =>
+      'We couldn\'t update sharing. Try again in a moment.';
+
+  @override
+  String get shareSessionExpired =>
+      'Your session expired. Sign in again to continue.';
+
+  @override
   String get sessionExpired => 'Session expired. Please log in again.';
 
   @override

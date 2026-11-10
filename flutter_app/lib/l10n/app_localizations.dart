@@ -3133,6 +3133,24 @@ abstract class AppLocalizations {
   /// **'Could not load sharing info'**
   String get couldNotLoadSharingInfo;
 
+  /// Supplemental caption when direct or household pet access could not be loaded on the share screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing access is unavailable right now'**
+  String get shareAccessUnavailable;
+
+  /// Generic localized message when a sharing mutation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t update sharing. Try again in a moment.'**
+  String get shareUpdateFailed;
+
+  /// Localized message when a sharing action fails because the user is not authenticated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Sign in again to continue.'**
+  String get shareSessionExpired;
+
   /// No description provided for @sessionExpired.
   ///
   /// In en, this message translates to:
