@@ -1,13 +1,10 @@
 const base = require('./jest.config.cjs');
 
-/** Manual frozen-domain lane: adoption visit lib tests retained for migration/journey coverage. */
+/** Manual frozen-domain lane: lib-only tests (HTTP org mounts removed in phase 2). */
 module.exports = {
   ...base,
   testMatch: [
     '<rootDir>/test/adoptionVisits.test.js',
-    '<rootDir>/test/adoptionJourneys.test.js',
-    '<rootDir>/test/fosterPlacements.test.js',
-    '<rootDir>/test/sessionLifecycle.test.js',
     '<rootDir>/test/custodyTransfers.test.js',
   ],
 };
