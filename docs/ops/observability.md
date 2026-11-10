@@ -170,6 +170,7 @@ ORDER BY occurred_at DESC;
 
 ## Related documents
 
+- [observability-review-and-plan.md](./observability-review-and-plan.md) — gap review and phased plan (draft)
 - `regulatory/INTERNAL_GDPR.md` — processing register and retention
 - `regulatory/DATA_MAP.md` — field inventory including audit/analytics
 - `flutter_app/assets/legal/en/privacy-notice.md` — user-facing disclosure
