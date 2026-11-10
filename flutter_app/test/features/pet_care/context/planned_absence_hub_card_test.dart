@@ -74,8 +74,9 @@ void main() {
     expect(find.text(l.careContextAwayPetsStepBody), findsOneWidget);
   });
 
-  testWidgets('saved plan with missing pet names does not ask to select pets',
-      (t) async {
+  testWidgets('saved plan with missing pet names does not ask to select pets', (
+    t,
+  ) async {
     await t.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,

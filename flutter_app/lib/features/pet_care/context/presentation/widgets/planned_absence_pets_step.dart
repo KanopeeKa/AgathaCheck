@@ -46,10 +46,7 @@ class PlannedAbsencePetsStep extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         if (loadPhase == AwayPlanPetsLoadPhase.loading)
-          LabelledProgress(
-            label: l.awayPetsLoading,
-            centered: false,
-          )
+          LabelledProgress(label: l.awayPetsLoading, centered: false)
         else if (loadPhase == AwayPlanPetsLoadPhase.error)
           AsyncErrorState(
             title: l.loadErrorYourPets,
