@@ -5,7 +5,6 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../services/consent_service.dart';
 import 'consent/consent_banner_surface.dart';
 import 'consent/consent_preferences_sheet.dart';
-import 'consent/consent_settings_screen.dart';
 
 export 'consent/consent_settings_screen.dart';
 
