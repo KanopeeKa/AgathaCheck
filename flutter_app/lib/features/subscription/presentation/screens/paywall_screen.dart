@@ -87,9 +87,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       if (mounted) {
         setState(() => _purchasing = false);
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.subscriptionPurchaseFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.subscriptionPurchaseFailed)));
       }
     }
   }
@@ -107,9 +107,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     } catch (_) {
       if (mounted) {
         final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.subscriptionRestoreFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.subscriptionRestoreFailed)));
       }
     } finally {
       if (mounted) setState(() => _loading = false);

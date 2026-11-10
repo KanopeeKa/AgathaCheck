@@ -67,7 +67,9 @@ void main() {
         packageType: PackageType.monthly,
       );
 
-      final displays = PaywallOfferDisplay.displaysForProductFacts([monthly], l);
+      final displays = PaywallOfferDisplay.displaysForProductFacts([
+        monthly,
+      ], l);
 
       expect(displays, hasLength(1));
       expect(displays.single.savingsTag, isNull);
@@ -91,10 +93,10 @@ void main() {
         packageType: PackageType.annual,
       );
 
-      final displays = PaywallOfferDisplay.displaysForProductFacts(
-        [monthly, annual],
-        l,
-      );
+      final displays = PaywallOfferDisplay.displaysForProductFacts([
+        monthly,
+        annual,
+      ], l);
       expect(displays[0].savingsTag, isNull);
       expect(displays[1].savingsTag, l.subscriptionBestValue);
     });

@@ -5,7 +5,9 @@ import 'package:pet_profile_app/features/subscription/presentation/widgets/paywa
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 void main() {
-  testWidgets('shows manage subscription when URL is available', (tester) async {
+  testWidgets('shows manage subscription when URL is available', (
+    tester,
+  ) async {
     var manageTapped = false;
     await tester.pumpWidget(
       MaterialApp(
