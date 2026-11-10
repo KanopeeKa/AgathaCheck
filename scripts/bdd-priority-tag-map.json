@@ -321,6 +321,12 @@
     "Help page content in French": "P2",
     "Navigating back from the Help page": "P2"
   },
+  "invite_recipient_return.feature": {
+    "Share link recipient signs in and returns to the same share code": "P1",
+    "Email share invite recipient signs in and returns to the same invite code": "P1",
+    "Away-plan carer invite recipient signs in and returns to the same invite code": "P1",
+    "Household invite recipient signs in and returns to the same invite code": "P1"
+  },
   "gdpr_data_rights.feature": {
     "Exporting my personal data as JSON": "P2",
     "Deleting my account with password confirmation": "P2"
