@@ -3,7 +3,7 @@ import {
   findMergeSuggestionsByEmail,
   mergeManualFosterIntoUser,
   migrateFosterProfiles,
-} from '../../lib/fosterProfiles.js';
+} from '../lib/fosterProfiles.js';
 
 describe('fosterProfiles', () => {
   describe('migrateFosterProfiles', () => {

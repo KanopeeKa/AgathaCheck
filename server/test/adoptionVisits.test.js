@@ -5,7 +5,7 @@ import {
   VISIT_OUTCOME_NEGATIVE,
   VISIT_OUTCOME_POSITIVE,
   VISIT_STATUS_COMPLETED,
-} from '../lib/adoptionVisits.js';
+} from '../lib/fosterPlacements.js';
 import { startAdoptionJourney } from '../lib/adoptionJourneys.js';
 import {
   SESSION_STATUS_ACTIVE,

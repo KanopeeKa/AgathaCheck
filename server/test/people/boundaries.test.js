@@ -41,7 +41,7 @@ const VETS_READ_ALLOWLIST = new Set([
   'server/routes/vets.js',
   'server/lib/people/vetProjection.js',
   'server/lib/gdprUserExport.js',
-  'server/lib/orgPetShadow.js',
+  'server/lib/custodyTransfers.js',
 ]);
 
 const IMPORT_ALLOWLIST = new Set([

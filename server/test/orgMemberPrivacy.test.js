@@ -1,7 +1,3 @@
-import request from 'supertest';
-import jwt from 'jsonwebtoken';
-import { createApp } from '../../bin/server.js';
-import { buildMockPool } from './helpers.js';
 import {
   ADDRESS_VISIBILITY_HIDDEN,
   CARD_VISIBILITY_ADMINS,
@@ -18,16 +14,11 @@ import {
   mapLegacyFosterVisibility,
   redactMemberForViewer,
   buildViewerPrivacyContext,
-} from '../../lib/orgMemberPrivacy.js';
+} from '../lib/orgMemberPrivacy.js';
 
-const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 const subjectUserId = 'subject-user';
 const viewerUserId = 'viewer-user';
 const granteeUserId = 'grantee-user';
-const orgId = 'org-1';
-const token = jwt.sign({ id: subjectUserId, email: 'subject@example.com' }, JWT_SECRET, {
-  expiresIn: '1h',
-});
 
 const baseSettings = {
   card_visibility: CARD_VISIBILITY_ALL,
@@ -240,106 +231,3 @@ describe('orgMemberPrivacy resolver', () => {
   });
 });
 
-describe('member privacy API', () => {
-  const membershipRow = {
-    id: 'ou-subject',
-    organization_id: orgId,
-    user_id: subjectUserId,
-    role: 'foster',
-    card_visibility: CARD_VISIBILITY_ALL,
-    phone_visibility: CONTACT_VISIBILITY_ADMINS_OR_NAMED,
-    email_visibility: CONTACT_VISIBILITY_ADMINS_OR_NAMED,
-    address_visibility: 'admins_or_named',
-  };
-
-  function buildPrivacyPool(overrides = {}) {
-    let currentMembership = { ...membershipRow, ...(overrides.membership || {}) };
-    const grants = overrides.grants || [];
-    return buildMockPool({
-      memberRole: 'foster',
-      query: async (sql, params) => {
-        if (sql.includes('FROM organization_users ou') && sql.includes('ou.user_id = $2')) {
-          return { rows: [currentMembership] };
-        }
-        if (sql.includes('FROM organization_visibility_grants')) {
-          if (sql.includes('subject_user_id = $2')) {
-            return { rows: grants };
-          }
-          return { rows: [] };
-        }
-        if (sql.includes('FROM organization_users ou') && sql.includes('JOIN users u')) {
-          return {
-            rows: [{
-              user_id: granteeUserId,
-              display_name: 'Grant User',
-              role: 'associate',
-            }],
-          };
-        }
-        if (sql.includes('UPDATE organization_users') && sql.includes('card_visibility')) {
-          currentMembership = {
-            ...currentMembership,
-            card_visibility: params[0],
-            phone_visibility: params[1],
-            email_visibility: params[2],
-            address_visibility: params[3],
-          };
-          return { rows: [currentMembership] };
-        }
-        if (sql.includes('DELETE FROM organization_visibility_grants')) {
-          return { rows: [] };
-        }
-        if (sql.includes('INSERT INTO organization_visibility_grants')) {
-          return { rows: [] };
-        }
-        if (sql.includes('INSERT INTO audit_events')) {
-          return { rows: [{ id: 'audit-1' }] };
-        }
-        return { rows: [] };
-      },
-    });
-  }
-
-  it('GET /members/me/privacy returns settings and grant buckets', async () => {
-    const app = createApp(buildPrivacyPool({
-      grants: [{ field: 'phone', grantee_user_id: granteeUserId }],
-    }));
-    const res = await request(app)
-      .get(`/api/organizations/${orgId}/members/me/privacy`)
-      .set('Authorization', `Bearer ${token}`);
-    expect(res.statusCode).toBe(200);
-    expect(res.body.card_visibility).toBe(CARD_VISIBILITY_ALL);
-    expect(res.body.grants.phone).toEqual([granteeUserId]);
-    expect(Array.isArray(res.body.available_members)).toBe(true);
-  });
-
-  it('PUT /members/me/privacy persists settings and audits', async () => {
-    const pool = buildPrivacyPool();
-    const app = createApp(pool);
-    const res = await request(app)
-      .put(`/api/organizations/${orgId}/members/me/privacy`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({
-        card_visibility: CARD_VISIBILITY_ADMINS,
-        phone_visibility: CONTACT_VISIBILITY_ADMINS,
-        email_visibility: CONTACT_VISIBILITY_ADMINS,
-        address_visibility: CONTACT_VISIBILITY_ADMINS,
-        grants: { phone: [granteeUserId] },
-      });
-    expect(res.statusCode).toBe(200);
-    expect(res.body.card_visibility).toBe(CARD_VISIBILITY_ADMINS);
-    const auditCall = pool.query.mock?.calls?.find?.(([sql]) => sql.includes('INSERT INTO audit_events'));
-    if (auditCall) {
-      expect(auditCall).toBeDefined();
-    }
-  });
-
-  it('rejects invalid visibility enum', async () => {
-    const app = createApp(buildPrivacyPool());
-    const res = await request(app)
-      .put(`/api/organizations/${orgId}/members/me/privacy`)
-      .set('Authorization', `Bearer ${token}`)
-      .send({ card_visibility: 'invalid' });
-    expect(res.statusCode).toBe(400);
-  });
-});

@@ -2,9 +2,10 @@
  * Per-org member privacy (Organisation UX v3 Phase 8).
  * @see docs/domains/shelter/features/org-member-privacy.md
  */
-import { hasEffectivePermission } from './orgPermissions.js';
 import {
+  ORG_ROLE_ADMIN,
   ORG_ROLE_ASSOCIATE,
+  ORG_ROLE_SUPER_ADMIN,
   isOrgAdmin,
   isSuperAdmin,
   normaliseRole,
@@ -109,7 +110,9 @@ export function hasNamedGrant(grants, viewerUserId, field) {
 }
 
 function viewerIsFosterManager(viewerRole, viewerPermissionKeys) {
-  return hasEffectivePermission(viewerRole, viewerPermissionKeys, 'manage_fosters');
+  if (viewerPermissionKeys.includes('manage_fosters')) return true;
+  const role = normaliseRole(viewerRole);
+  return role === ORG_ROLE_SUPER_ADMIN || role === ORG_ROLE_ADMIN;
 }
 
 /**
