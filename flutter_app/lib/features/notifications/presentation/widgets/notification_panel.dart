@@ -158,9 +158,9 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
     await ref.read(notificationsProvider.notifier).markAllAsRead(scope: tab);
     if (mounted) {
       final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.notificationsMarkedRead)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.notificationsMarkedRead)));
     }
   }
 }

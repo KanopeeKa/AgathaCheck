@@ -36,9 +36,7 @@ void main() {
     });
 
     test('activity tab needs unread activity items', () {
-      final allRead = [
-        _n(kind: NotificationKind.relationship, isRead: true),
-      ];
+      final allRead = [_n(kind: NotificationKind.relationship, isRead: true)];
       expect(
         MarkAllReadEligibility.isEligible(
           isLoading: false,

@@ -39,7 +39,7 @@ void main() {
   testWidgets('NotificationPanelHeader disables mark all read when null', (
     tester,
   ) async {
-  late AppLocalizations l;
+    late AppLocalizations l;
 
     await tester.pumpWidget(
       MaterialApp(
