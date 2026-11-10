@@ -338,7 +338,9 @@ class _ClosedNeedsAttentionModule extends ConsumerWidget {
             error: (_, __) => SupplementalStateCaption(
               state: SupplementalState.unavailable,
               label: l.historyUnavailable,
-              onRetry: () => ref.invalidate(entryHistoryProvider(entryId)),
+              onRetry: () => ref
+                  .read(careScheduleControllerProvider)
+                  .invalidateEntryHistory(entryId),
               retryKey: const Key('care_item_history_load_retry'),
             ),
             data: (history) {
