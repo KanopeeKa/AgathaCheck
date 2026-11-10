@@ -117,9 +117,7 @@ test.describe('Care agenda', () => {
       await loginAs(page, testUser, { experience: 'guardian' });
       const dashboard = new GuardianDashboardPage(page);
       await dashboard.open();
-      await flutterGotoUrl(page, `${baseURL}/pc/events`);
-      await refreshFlutterAccessibility(page);
-      await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
+      await waitForFlutterRoute(page, '/pc/events');
       const agenda = new CareAgendaPage(page);
       await agenda.showUpcomingCare();
       await agenda.expectRowVisible('Future Groom');
