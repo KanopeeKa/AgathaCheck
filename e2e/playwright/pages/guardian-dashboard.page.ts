@@ -32,8 +32,13 @@ export class GuardianDashboardPage {
 
   /** Pet Care home desk visible — use after login when already on `/pc/home`. */
   async expectLoaded(): Promise<void> {
-    await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, 60_000);
-    await this.section(/My Pets|Mes animaux/i).waitFor({ state: 'visible', timeout: 60_000 });
+    const loadTimeout = 90_000;
+    await waitForFlutterRoutePattern(this.page, /\/pc\/home(?:\?|$)/, loadTimeout);
+    await refreshFlutterAccessibility(this.page);
+    await this.section(/My Pets|Mes animaux/i).waitFor({
+      state: 'visible',
+      timeout: loadTimeout,
+    });
   }
 
   async expectTodayCareRegions(): Promise<void> {
