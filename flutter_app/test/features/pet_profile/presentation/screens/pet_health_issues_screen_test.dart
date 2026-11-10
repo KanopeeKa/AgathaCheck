@@ -130,12 +130,16 @@ void main() {
               ),
             ),
           ),
-          organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
+          organizationListProvider.overrideWith(
+            FakeOrganizationListNotifier.new,
+          ),
           combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
           guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
           orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
           apiBaseUrlProvider.overrideWithValue('http://test.local'),
-          healthIssueNotifierProvider.overrideWith(_FailingHealthIssueNotifier.new),
+          healthIssueNotifierProvider.overrideWith(
+            _FailingHealthIssueNotifier.new,
+          ),
           healthIssueDocumentsProvider.overrideWith(_emptyDocuments),
         ],
         child: MaterialApp.router(

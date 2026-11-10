@@ -95,8 +95,7 @@ class _FakeHealthDocumentsRepository implements HealthDocumentsRepository {
   Future<List<HealthDocument>> listEntryDocuments(
     String entryId, {
     String? occurrenceId,
-  }) async =>
-      const [];
+  }) async => const [];
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
