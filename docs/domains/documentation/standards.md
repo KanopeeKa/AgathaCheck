@@ -3,7 +3,7 @@ title: Documentation standards
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-10-13
+last_updated: 2026-11-10
 tags: [documentation, standards, policy]
 ---
 
@@ -89,6 +89,7 @@ Standalone `*-decisions.md` under `features/` or `changes/` is **legacy**; do no
 
 - **Procedure:** `.cursor/skills/canonical-docs/SKILL.md` (Mode A `sync` / Mode B `consolidate`).
 - **Local:** `bash scripts/validate_docs.sh` — links, placement/manifest, plus `check_docs_canonical.js` (diff vs `origin/main`; `DOCS_GATE_MODE` defaults to `warn` locally).
+- **Duplicate-phrase heuristic** (same script): fails under `--strict` when a listed toolchain phrase appears on more than 40 lines of `docs/**/*.md`. The pre-push script name is not listed (**DOCUMENTATION-STANDARDS-D-010**); pointing to it is preferred over restating its steps.
 - **CI (blocking):** `.github/workflows/docs-gate.yml` — jobs **Docs declaration** (Gate A) and **Docs canonical** (Gates B–E + trace report). `DOCS_GATE_MODE=block` in that workflow.
 - **Weekly hygiene:** `quality-kpis.yml` job `docs-hygiene` — expired `changes/`, duplicate IDs, closed-issue `none — #n` rows, memory backlog (R-M4); tracking issue marker `<!-- docs-hygiene-weekly -->`.
 - **Legacy baseline:** `scripts/docs-legacy-baseline.json` — shrink-only; untouched paths skip Gate C (**R-L3**). Migrate with `/canonical-docs consolidate`; wave order in `changes/documentation-migration-handover.md`.
@@ -127,6 +128,7 @@ Declare canonical path(s) updated or `N/A — <reason>` (≥10 characters after 
 | DOCUMENTATION-STANDARDS-D-007 | Documentation migration handover supersedes 2025 consolidation plan | Single authoritative migrate plan for agents; integration branch + two-phase gates | Live | 2026-10-07 | #1762 |
 | DOCUMENTATION-STANDARDS-D-008 | Agent instruction files: one shared rulebook (`AGENTS.md`), agent-specific deltas only, budgets and gate A | Restated rules drifted and contradicted across Cursor, Claude Code, Copilot and Replit layers; override layers did not stop wrongful agent stops | Live | 2026-10-13 | — |
 | DOCUMENTATION-STANDARDS-D-009 | **R-T5** and **R-B6** block Live-without-coverage and orphaned change docs | Away programme fold set R-018 Live with `none — #1770` and dropped README link while keeping the spec | Live | 2026-11-06 | away-plans co-parent fix |
+| DOCUMENTATION-STANDARDS-D-010 | `validate_docs.sh` duplicate-phrase check no longer counts the pre-push script name | Owner decision. The count reached its cap of 40, and 29 of those lines were one-line pointers to the script, the pattern docs should follow; the check counts lines in `docs/` only, so it cannot see copied procedures or the root entry files. Blocking it was making agents reword records (UI/UX review, Nov 2026) | Live | 2026-11-10 | — |
 
 ## Still open
 
