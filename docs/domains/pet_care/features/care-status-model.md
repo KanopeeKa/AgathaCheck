@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care-status-model
 status: active
-last_updated: 2026-11-07
+last_updated: 2026-11-10
 related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 ---
 
@@ -37,6 +37,10 @@ related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 | CARE-STATUS-MODEL-R-021 | All care ends with **Closed care** link (count); list rows show Closed · Ended/Stopped by you with no dates | Live |
 | CARE-STATUS-MODEL-R-024 | Other care holds paused only; finished/archived/recorded items appear under Closed care | Live |
 | CARE-STATUS-MODEL-R-025 | Close care does not re-trigger Care Intelligence missing-care suggestions | Live |
+| CARE-STATUS-MODEL-R-026 | Paused and closed list rows use the active-row format: title, then subtitle `category · cadence` (prefixed with the pet name on the all-pets Care events list, where the pill no longer holds the pet name); no tick | Planned |
+| CARE-STATUS-MODEL-R-027 | Paused and closed list rows show one neutral grey status pill (same grey as Not recorded, never success or warning colours, no dates): pause-in-circle icon + **Paused**; stop-in-circle icon + **Closed by you** (user-closed) or **Ended** (ended, finished one-off, recorded-only) | Planned |
+| CARE-STATUS-MODEL-R-028 | R-026 and R-027 apply identically on the all-pets Care events list, All care › Other care, and the Closed care list (replaces the `Closed · …` row label in R-021) | Planned |
+| CARE-STATUS-MODEL-R-029 | Closed wording is **Closed by you** / **Ended** everywhere, including the Care details chip, with no `Closed · ` prefix; French: En pause, Fermé par vous, Terminé (replaces the wording in R-010) | Planned |
 
 ## Acceptance criteria
 
@@ -61,6 +65,11 @@ related_prs: [2083, 2095, 2107, 2108, 2109, 2110, 2111]
 | CARE-STATUS-MODEL-D-020 | R-025: closed recurring care still counts for S1 missing-recurring | Close care must not re-open Care Intelligence parasite-prevention nudge | Live | 2026-11-06 | #2109 |
 | CARE-STATUS-MODEL-D-021 | Ledger NNN SQL runs inside the migrate runner outer transaction | Strip semicolon-only top-level `BEGIN`/`COMMIT` at apply; lint changed files; `txid_current()` guard detects inner commits | Live | 2026-11-06 | #2107 |
 | CARE-STATUS-MODEL-D-022 | R-014: Close care at end of detail page | Under History in the scrolling content; not pinned to the bottom of the screen | Live | 2026-11-07 | — |
+| CARE-STATUS-MODEL-D-023 | R-027: paused and closed pills are neutral grey with their own icon and text | The pill took its icon and colour from stale dates (red overdue on paused, green tick on closed) and held the pet name on the all-pets list; paused and closed are not urgent and not a success | Live | 2026-11-10 | — |
+| CARE-STATUS-MODEL-D-024 | R-027: closed icon is stop-in-circle | Pairs with the pause icon and reads as stopped; padlock suggests a permissions problem, archive box is unclear at pill size, no-entry reads as a warning | Live | 2026-11-10 | — |
+| CARE-STATUS-MODEL-D-025 | R-029: **Closed by you** replaces **Stopped by you**; `Closed · ` prefix dropped | Matches the Close care action and the status word; the grey pill and icon already say closed | Live | 2026-11-10 | — |
+| CARE-STATUS-MODEL-D-026 | R-026: closed rows show cadence | Same format as active rows; cadence is not a date, so D-018 still holds | Live | 2026-11-10 | — |
+| CARE-STATUS-MODEL-D-027 | R-027: paused pill reads **Paused** only, without the resume date | Keeps the pill short; the resume date stays on Care details | Live | 2026-11-10 | — |
 
 ## Still open
 
