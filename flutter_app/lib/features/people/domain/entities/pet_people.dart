@@ -12,6 +12,8 @@ class PetRelationship {
     required this.contactName,
     this.contactPhone,
     this.contactInactiveAt,
+    this.contactRoles = const [],
+    this.sortOrder = 0,
   });
 
   final String id;
@@ -24,6 +26,8 @@ class PetRelationship {
   final String contactName;
   final String? contactPhone;
   final DateTime? contactInactiveAt;
+  final List<String> contactRoles;
+  final int sortOrder;
 
   @override
   bool operator ==(Object other) {
@@ -37,7 +41,9 @@ class PetRelationship {
         other.contactKind == contactKind &&
         other.contactName == contactName &&
         other.contactPhone == contactPhone &&
-        other.contactInactiveAt == contactInactiveAt;
+        other.contactInactiveAt == contactInactiveAt &&
+        _listEq(other.contactRoles, contactRoles) &&
+        other.sortOrder == sortOrder;
   }
 
   @override
@@ -52,6 +58,8 @@ class PetRelationship {
     contactName,
     contactPhone,
     contactInactiveAt,
+    Object.hashAll(contactRoles),
+    sortOrder,
   );
 }
 
@@ -118,6 +126,7 @@ class HouseholdMemberSnapshot {
     required this.firstName,
     required this.tier,
     required this.isOrganiser,
+    this.photoUrl,
   });
 
   final String userId;
@@ -125,6 +134,7 @@ class HouseholdMemberSnapshot {
   final String firstName;
   final String tier;
   final bool isOrganiser;
+  final String? photoUrl;
 
   @override
   bool operator ==(Object other) {
@@ -133,12 +143,13 @@ class HouseholdMemberSnapshot {
         other.displayName == displayName &&
         other.firstName == firstName &&
         other.tier == tier &&
-        other.isOrganiser == isOrganiser;
+        other.isOrganiser == isOrganiser &&
+        other.photoUrl == photoUrl;
   }
 
   @override
   int get hashCode =>
-      Object.hash(userId, displayName, firstName, tier, isOrganiser);
+      Object.hash(userId, displayName, firstName, tier, isOrganiser, photoUrl);
 }
 
 bool _listEq<T>(List<T> a, List<T> b) {

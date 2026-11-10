@@ -6,7 +6,6 @@ import '../../application/people_commands.dart';
 import '../../domain/entities/pet_people.dart';
 import '../../domain/enums/relationship_kind.dart';
 import '../../domain/services/pet_people_slots.dart';
-import '../labels/people_labels.dart';
 import 'slot_picker_row.dart';
 
 Future<void> showPetEmergencyManageSheet({

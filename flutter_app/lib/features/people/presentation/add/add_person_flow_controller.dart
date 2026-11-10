@@ -8,12 +8,16 @@ import 'add_person_entry.dart';
 import 'add_person_pet_selection.dart';
 
 class AddPersonFlowController extends ChangeNotifier {
-  AddPersonFlowController({AddPersonEntry? initialEntry})
-    : _entry = initialEntry,
-      _form = PersonFormController.forNewContact(
-        kind: initialEntry?.contactKind ?? ContactKind.person,
-      );
+  AddPersonFlowController({
+    AddPersonEntry? initialEntry,
+    List<String> initialPetIds = const [],
+  }) : _initialPetIds = List.unmodifiable(initialPetIds),
+       _entry = initialEntry,
+       _form = PersonFormController.forNewContact(
+         kind: initialEntry?.contactKind ?? ContactKind.person,
+       );
 
+  final List<String> _initialPetIds;
   AddPersonEntry? _entry;
   int _stepIndex = 0;
   final PersonFormController _form;
@@ -21,14 +25,17 @@ class AddPersonFlowController extends ChangeNotifier {
   AddPersonAppAccessChoice _appAccess = AddPersonAppAccessChoice.skip;
   String? _householdName;
   String? _rolesError;
+  String? _petsLinkError;
 
   AddPersonEntry? get entry => _entry;
   int get stepIndex => _stepIndex;
   PersonFormController get form => _form;
   List<AddPersonPetSelection> get pets => List.unmodifiable(_pets);
+  List<String> get initialPetIds => _initialPetIds;
   AddPersonAppAccessChoice get appAccess => _appAccess;
   String? get householdName => _householdName;
   String? get rolesError => _rolesError;
+  String? get petsLinkError => _petsLinkError;
 
   static const int stepCount = 5;
 
@@ -46,7 +53,13 @@ class AddPersonFlowController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void touchPets() => notifyListeners();
+  void touchPets() {
+    _petsLinkError = null;
+    notifyListeners();
+  }
+
+  bool get _selectedPetMissingLinkKind =>
+      _pets.any((p) => p.selected && !p.linkKindChosen);
 
   void setAppAccess(AddPersonAppAccessChoice value) {
     _appAccess = value;
@@ -72,7 +85,7 @@ class AddPersonFlowController extends ChangeNotifier {
           requiresRoles: entry.requiresRoles,
         );
       case 3:
-        return true;
+        return !_selectedPetMissingLinkKind;
       case 4:
         return true;
       default:
@@ -90,6 +103,10 @@ class AddPersonFlowController extends ChangeNotifier {
         _rolesError = 'required';
         notifyListeners();
       }
+      if (_stepIndex == 3 && _selectedPetMissingLinkKind) {
+        _petsLinkError = 'required';
+        notifyListeners();
+      }
       return false;
     }
     if (_stepIndex >= stepCount - 1) return false;
@@ -98,8 +115,16 @@ class AddPersonFlowController extends ChangeNotifier {
       // Professionals / organisations skip app-access UI but stay on review step.
     }
     _rolesError = null;
+    _petsLinkError = null;
     notifyListeners();
     return true;
+  }
+
+  bool validatePetLinksForSave() {
+    if (!_selectedPetMissingLinkKind) return true;
+    _petsLinkError = 'required';
+    notifyListeners();
+    return false;
   }
 
   void backStep() {

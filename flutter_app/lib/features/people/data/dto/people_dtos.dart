@@ -377,6 +377,7 @@ class PetPeopleDto {
               firstName: m['first_name']?.toString() ?? '',
               tier: m['tier']?.toString() ?? '',
               isOrganiser: m['is_organiser'] == true,
+              photoUrl: m['photo_url']?.toString(),
             ),
           )
           .toList(),
@@ -409,9 +410,18 @@ class PetPeopleDto {
                   : contact?['inactive_at'] != null
                   ? DateTime.tryParse(contact!['inactive_at'].toString())
                   : null,
+              contactRoles: _rolesFromWire(
+                contact?['roles'] ?? r['contact_roles'],
+              ),
+              sortOrder: (r['sort_order'] as num?)?.toInt() ?? 0,
             );
           })
           .toList(),
     );
+  }
+
+  static List<String> _rolesFromWire(dynamic raw) {
+    if (raw is! List) return const [];
+    return raw.map((e) => e.toString()).where((s) => s.isNotEmpty).toList();
   }
 }
