@@ -635,6 +635,9 @@
 
   "sharing": "Partage",
   "couldNotLoadSharingInfo": "Impossible de charger les informations de partage",
+  "shareAccessUnavailable": "Les accès de partage ne sont pas disponibles pour le moment",
+  "shareUpdateFailed": "Impossible de mettre à jour le partage. Réessayez dans un instant.",
+  "shareSessionExpired": "Votre session a expiré. Reconnectez-vous pour continuer.",
   "sessionExpired": "Session expirée. Veuillez vous reconnecter.",
   "shareLinkTitle": "Lien de partage",
   "shareLinkDescription": "Partagez ce lien pour que d'autres puissent voir le profil de {petName} :",

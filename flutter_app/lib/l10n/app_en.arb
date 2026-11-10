@@ -729,6 +729,18 @@
   "householdCanLogCareLabel": "Can log care",
   "sharing": "Sharing",
   "couldNotLoadSharingInfo": "Could not load sharing info",
+  "shareAccessUnavailable": "Sharing access is unavailable right now",
+  "@shareAccessUnavailable": {
+    "description": "Supplemental caption when direct or household pet access could not be loaded on the share screen."
+  },
+  "shareUpdateFailed": "We couldn't update sharing. Try again in a moment.",
+  "@shareUpdateFailed": {
+    "description": "Generic localized message when a sharing mutation fails."
+  },
+  "shareSessionExpired": "Your session expired. Sign in again to continue.",
+  "@shareSessionExpired": {
+    "description": "Localized message when a sharing action fails because the user is not authenticated."
+  },
   "sessionExpired": "Session expired. Please log in again.",
   "shareLinkTitle": "Share Link",
   "shareLinkDescription": "Share this link so others can view {petName}'s profile:",
