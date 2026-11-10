@@ -19,7 +19,15 @@ import 'package:pet_profile_app/features/health_tracking/presentation/screens/he
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/health_events_section.dart';
+import 'package:pet_profile_app/features/auth/application/auth_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/application/health_documents_providers.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_document.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/entities/health_issue.dart';
+import 'package:pet_profile_app/features/health_tracking/domain/repositories/health_documents_repository.dart';
+import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_issue_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+
+import '../../../../helpers/fakes.dart';
 
 class _FakeHealthRepository implements HealthRepository {
   _FakeHealthRepository(this.entry, {this.onUpdate});
@@ -75,6 +83,22 @@ class _TestHealthEntriesNotifier extends HealthEntriesNotifier {
     lastUpdated = entry;
     return const CommandOutcome(committed: true);
   }
+}
+
+class _EmptyHealthIssueNotifier extends HealthIssueNotifier {
+  @override
+  Future<List<HealthIssue>> build(String arg) async => const [];
+}
+
+class _FakeHealthDocumentsRepository implements HealthDocumentsRepository {
+  @override
+  Future<List<HealthDocument>> listEntryDocuments(
+    String entryId, {
+    String? occurrenceId,
+  }) async => const [];
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _RecordingHealthRepository implements HealthRepository {
@@ -301,8 +325,13 @@ Widget _wrapEditFlow({
 
   return ProviderScope(
     overrides: [
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
       petListProvider.overrideWith(_TwoPetsNotifier.new),
       healthRepositoryProvider.overrideWithValue(repository),
+      healthDocumentsRepositoryProvider.overrideWithValue(
+        _FakeHealthDocumentsRepository(),
+      ),
+      healthIssueNotifierProvider.overrideWith(_EmptyHealthIssueNotifier.new),
       healthEntriesNotifierProvider.overrideWith(
         _TestHealthEntriesNotifier.new,
       ),

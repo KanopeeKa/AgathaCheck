@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
+import 'package:pet_profile_app/core/widgets/async_state/async_state.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
@@ -51,24 +52,33 @@ class CareItemDetailScreen extends ConsumerWidget {
     return petsAsync.when(
       loading: () =>
           routeShell(child: const Center(child: CircularProgressIndicator())),
-      error: (error, _) =>
-          routeShell(child: Center(child: Text(l.errorWithMessage('$error')))),
+      error: (_, __) => routeShell(
+        child: AsyncErrorState(
+          title: l.loadErrorYourPets,
+          onRetry: () => ref.invalidate(allPetsIncludingOrgProvider),
+          retryKey: const Key('care_item_pets_load_retry'),
+        ),
+      ),
       data: (pets) {
         final pet = pets.where((p) => p.id == petId).firstOrNull;
         if (pet == null) {
-          return routeShell(child: Center(child: Text(l.petNotFound)));
+          return routeShell(child: AsyncErrorState(title: l.petNotFound));
         }
 
         return entryAsync.when(
           loading: () => routeShell(
             child: const Center(child: CircularProgressIndicator()),
           ),
-          error: (error, _) => routeShell(
-            child: Center(child: Text(l.errorWithMessage('$error'))),
+          error: (_, __) => routeShell(
+            child: AsyncErrorState(
+              title: l.loadErrorCareItem,
+              onRetry: () => ref.invalidate(petHealthEntryByIdProvider),
+              retryKey: const Key('care_item_entry_load_retry'),
+            ),
           ),
           data: (entry) {
             if (entry == null) {
-              return routeShell(child: Center(child: Text(l.entryNotFound)));
+              return routeShell(child: AsyncErrorState(title: l.entryNotFound));
             }
 
             final isClosed = isHealthEntrySeriesClosed(entry);
@@ -224,21 +234,17 @@ class CareItemDetailScreen extends ConsumerWidget {
                   onPlanAnotherDate: onPlanAnotherDate,
                 ),
               ],
-              child: historyAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, _) =>
-                    Center(child: Text(l.failedToLoadHistory('$error'))),
-                data: (history) => CareItemDetailBody(
-                  petId: petId,
-                  entry: entry,
-                  pet: pet,
-                  history: history,
-                  isClosed: isClosed,
-                  isEstablished: isEstablished,
-                  onSeeHistory: onSeeHistory,
-                  careClosedReason: careClosedReason,
-                  onCloseCare: canCloseCare ? onCloseCare : null,
-                ),
+              child: CareItemDetailBody(
+                petId: petId,
+                entry: entry,
+                pet: pet,
+                historyAsync: historyAsync,
+                entryId: entryId,
+                isClosed: isClosed,
+                isEstablished: isEstablished,
+                onSeeHistory: onSeeHistory,
+                careClosedReason: careClosedReason,
+                onCloseCare: canCloseCare ? onCloseCare : null,
               ),
             );
           },

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../core/widgets/app_logo_title.dart';
 import '../../../../core/widgets/form/app_form_breakpoints.dart';
 import '../../../../core/widgets/form/app_form_discard_dialog.dart';
@@ -103,24 +104,9 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     );
     if (widget.entryId != null) {
       Future.microtask(() async {
-        try {
-          final loaded = await _controller.loadEntry(widget.entryId!);
-          if (loaded) {
-            await _controller.loadPhotos();
-          } else if (mounted) {
-            _controller.captureBaseline();
-          }
-        } catch (e) {
-          if (mounted) {
-            _controller.captureBaseline();
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppLocalizations.of(context)!.failedToLoadEntry('$e'),
-                ),
-              ),
-            );
-          }
+        final loaded = await _controller.loadEntry(widget.entryId!);
+        if (loaded && mounted) {
+          await _controller.loadPhotos();
         }
       });
     } else {
@@ -164,6 +150,36 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
     final isPhone =
         AppFormBreakpoints.layoutForWidth(MediaQuery.sizeOf(context).width) ==
         AppFormLayoutSize.phone;
+    final saveBlocked = !form.canSubmitEdit;
+    final showForm =
+        !form.isLoading && !form.editLoadFailed && !form.editNotFound;
+
+    Widget body;
+    if (form.isLoading) {
+      body = Center(child: LabelledProgress(label: l.loadingLabel));
+    } else if (form.editNotFound) {
+      body = AsyncErrorState(title: l.entryNotFound);
+    } else if (form.editLoadFailed) {
+      body = AsyncErrorState(
+        title: l.loadErrorCareItem,
+        onRetry: () => _controller.loadEntry(widget.entryId!),
+        retryKey: const Key('health_entry_edit_load_retry'),
+      );
+    } else {
+      body = HealthEntryFormScreenBody(
+        formKey: _formKey,
+        params: _params,
+        documents: _documents,
+        baseUrl: ref.watch(apiBaseUrlProvider),
+        actionsBar: HealthEntryFormActionsBar(
+          params: _params,
+          isLoading: _isSubmitting || saveBlocked,
+          onSave: _submit,
+          onCancel: _handleBack,
+        ),
+        onDelete: form.isEdit ? _confirmDelete : null,
+      );
+    }
 
     return PopScope(
       canPop: !form.isEdit || !_controller.isDirty,
@@ -186,25 +202,11 @@ class _HealthEntryFormScreenState extends ConsumerState<HealthEntryFormScreen> {
             onPressed: _handleBack,
           ),
         ),
-        body: form.isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : HealthEntryFormScreenBody(
-                formKey: _formKey,
-                params: _params,
-                documents: _documents,
-                baseUrl: ref.watch(apiBaseUrlProvider),
-                actionsBar: HealthEntryFormActionsBar(
-                  params: _params,
-                  isLoading: _isSubmitting,
-                  onSave: _submit,
-                  onCancel: _handleBack,
-                ),
-                onDelete: form.isEdit ? _confirmDelete : null,
-              ),
-        bottomNavigationBar: isPhone && !form.isLoading
+        body: body,
+        bottomNavigationBar: isPhone && showForm
             ? HealthEntryFormStickyActionsBar(
                 params: _params,
-                isLoading: _isSubmitting,
+                isLoading: _isSubmitting || saveBlocked,
                 onSave: _submit,
                 onCancel: _handleBack,
               )

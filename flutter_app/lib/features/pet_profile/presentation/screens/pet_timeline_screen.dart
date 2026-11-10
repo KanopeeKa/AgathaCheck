@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/shell_return_navigation.dart';
+import '../../../../core/widgets/async_state/async_state.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import '../providers/pet_providers.dart';
@@ -53,17 +54,10 @@ class PetTimelineScreen extends ConsumerWidget {
           Expanded(
             child: timelineAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Text(
-                    l.petTimelineLoadError,
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.error,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
+              error: (_, __) => AsyncErrorState(
+                title: l.loadErrorTimeline,
+                onRetry: () => ref.invalidate(petTimelineListProvider(petId)),
+                retryKey: const Key('pet_timeline_load_retry'),
               ),
               data: (entries) {
                 if (entries.isEmpty) {

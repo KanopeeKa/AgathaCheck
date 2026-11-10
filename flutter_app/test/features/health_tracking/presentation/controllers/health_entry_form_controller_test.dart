@@ -19,9 +19,13 @@ class _EmptyHealthEntriesNotifier extends HealthEntriesNotifier {
 
 class _FakeHealthRepository implements HealthRepository {
   HealthEntry? entryToReturn;
+  bool getEntryThrows = false;
 
   @override
-  Future<HealthEntry?> getEntry(String id) async => entryToReturn;
+  Future<HealthEntry?> getEntry(String id) async {
+    if (getEntryThrows) throw Exception('network');
+    return entryToReturn;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -247,6 +251,30 @@ void main() {
       final state = readState();
       expect(state.scheduleAtSpecificTimes, isTrue);
       expect(state.scheduleTimes, ['08:00', '20:00']);
+    });
+
+    test('edit load failure blocks submit (B-10.2)', () async {
+      repository.getEntryThrows = true;
+      const params = HealthEntryFormParams(entryId: 'entry-1', petId: 'pet-9');
+      final c = controller(params);
+      final loaded = await c.loadEntry('entry-1');
+      expect(loaded, isFalse);
+      final state = readState(params);
+      expect(state.editLoadFailed, isTrue);
+      expect(state.canSubmitEdit, isFalse);
+
+      final outcome = await c.submit();
+      expect(outcome, isA<HealthEntrySubmitValidationFailed>());
+    });
+
+    test('edit not found blocks submit', () async {
+      repository.entryToReturn = null;
+      const params = HealthEntryFormParams(entryId: 'missing', petId: 'pet-9');
+      final c = controller(params);
+      await c.loadEntry('missing');
+      expect(readState(params).editNotFound, isTrue);
+      final outcome = await c.submit();
+      expect(outcome, isA<HealthEntrySubmitValidationFailed>());
     });
   });
 }
