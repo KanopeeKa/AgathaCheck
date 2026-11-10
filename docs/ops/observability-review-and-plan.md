@@ -43,7 +43,7 @@ More exists than "very little", but almost none of it can be seen or acted on.
 | Health data, GDPR, EU hosting | Any new vendor is a new processor: EU region, DPA, and an entry in `regulatory/INTERNAL_GDPR.md` and the privacy notice. Logs must never carry health content, tokens or contact details. |
 | Analytics is consent-based | PostHog cannot be the only source for errors or operational health: it only sees consenting users. |
 | Pre-launch, production has no users | Thresholds can be set loosely and tuned on UAT first. Schema and log-format changes are cheap now and costly later. |
-| CI minutes and a small team | Few vendors, few dashboards. Prefer alerts that create a GitHub issue or an email over a console someone must watch. |
+| CI minutes and a small team | Few vendors, few dashboards. Prefer email alerts over a console someone must watch. |
 
 ## Review by area
 
@@ -90,12 +90,12 @@ flowchart LR
     C[Cron: care tick, retention, backup, checks] --> DB
   end
   F -- X-Request-Id --> A
-  F -- errors, timings --> E[Error tracking EU]
+  F -- errors, subject to Q8 --> E[PostHog errors EU]
   A -- errors --> E
-  L -- ship --> S[Log store EU, 30 days]
-  C -- heartbeat --> H[Heartbeats + uptime]
-  H -- probes --> A
-  E --> N[Alert routing: email + GitHub issue]
+  L -- ship --> S[PostHog logs EU, 14 days]
+  C -- pulse on success --> H[updown.io]
+  H -- external check --> A
+  E --> N[Email alerts]
   S --> N
   H --> N
 ```
@@ -107,42 +107,68 @@ Rules for every step:
 2. **One ID across the stack.** `requestId` is on the access line, error report, audit row and the error the
    user sees.
 3. **Audit is not logging.** `audit_events` answers "who did what" and follows the retention tiers. Logs answer
-   "what went wrong" and live 30 days. Product analytics answers "what do people use" and needs consent.
+   "what went wrong" and live 14 days. Product analytics answers "what do people use" and needs consent.
    Keep the three apart.
 4. **Deny by default on content.** IDs, counts and field names only. No bodies, no health text, no emails, no
    tokens. Enforced by Pino `redact` and a test, not by care.
 5. **Every scheduled job reports in.** Silence is the alert.
 6. **Every alert has an owner, a severity and a runbook line** in one catalogue.
 
-## Decisions needed before step 4
+## Decisions
 
-Steps 1–3 need no vendor and can start now. These need the owner (new processors and cost):
+Steps 1–3 need no vendor and can start now.
+
+### Taken (owner, 2026-11-10)
+
+Vendor facts in this section are from the owner's check of each vendor's official documentation on that date.
+
+| Capability | Choice | Notes |
+|------------|--------|-------|
+| Application errors | PostHog (EU Cloud) | Free allowance: 100,000 exceptions a month. Bugsink (Dutch, EU-hosted, Sentry SDKs, 15,000 events a month free) is the fallback if the UAT proof fails. |
+| Technical logs | PostHog, selective structured collection | Free allowance: 10 GB ingested a month. **Default retention is 14 days**; longer is a paid storage option. |
+| External uptime, TLS expiry | updown.io | French-operated. 100,000 introductory credits, then roughly €0.22 a month for one endpoint every five minutes; minimum top-up €5, no subscription. |
+| Scheduled jobs | updown.io pulse checks | One service for both checks. healthchecks.io (Latvian, German hosting, 20 checks free, expects companies to upgrade eventually) is the fallback; it has no external website check. |
+| Business audit trail | AgathaTrack database (`audit_events`) | Never PostHog. Own retention tiers, set in `observability.md`. |
+| Product analytics | Existing PostHog setup | Consent-based, unchanged. |
+| Alerts | Email from PostHog and updown.io | No paging, no extra alerting tool. |
+| Not adopted | Sentry, Grafana Cloud, Better Stack, GlitchTip, any self-hosted stack, distributed tracing | Revisit only if a chosen service fails its proof. |
+
+Consequences the steps below must respect:
+
+1. **Retention follows what is configured, not what was hoped.** Three stores, three policies: technical logs
+   14 days in PostHog; error events at whatever PostHog applies to exceptions on our plan (confirm and record
+   it); audit rows in our database under the hot/warm/cold tiers. `regulatory/INTERNAL_GDPR.md` says 30 days
+   for application logs today and is corrected in the PR that turns log shipping on. Security detection
+   (step 9) therefore reads `audit_events`, not logs, for anything older than 14 days.
+2. **Operational telemetry and analytics are governed apart.** A separate project is tidy but is not a legal
+   basis. Server-side errors and logs are always on, carry no cookies, no profile and no identifying fields
+   beyond an opaque user ID, and do not depend on the analytics consent switch in either direction: opting out
+   of analytics must not turn monitoring off, and monitoring must not collect analytics by another route.
+3. **Client-side error capture waits for its own privacy assessment** (Q8). Until then, browser errors are
+   captured only for users who accepted analytics; API failures are seen server-side for everyone.
+4. **Two independent checks, neither implies the other.** An external check answers "can a real internet
+   client reach the site and get a valid response". A pulse check answers "did the job finish successfully",
+   so it pings only after success and reports failure explicitly. A job that starts and dies must alert.
+5. **updown.io is not EU-only.** Its subprocessor list includes US providers and non-EU probe locations. This
+   is acceptable because checks carry no personal data: probe URLs and pulse payloads must contain no user
+   IDs, emails or tokens. Record it in the processing register all the same.
+
+### Still open
 
 | # | Decision | Recommendation |
 |---|----------|----------------|
-| Q1 | Error tracking for API and Flutter web | A hosted EU error tracker with Node and Flutter SDKs (Sentry EU region is the usual choice). Run it on legitimate interest with scrubbing and no session replay, so it covers all users, not only those who accepted analytics. Alternative: PostHog error tracking, which adds no vendor but only sees consenting users. |
-| Q2 | Log store | A hosted EU log service fed by a Pino transport or a small cron shipper, 30-day retention to match the GDPR register. Fallback with no vendor: rotated files on the host plus the checks in step 9, accepting no search. |
-| Q3 | Uptime and heartbeats | Already asked as D3 in the backup plan (healthchecks.io plus an uptime monitor). Take one decision for both plans; prefer a single service that does both. |
-| Q4 | Where alerts go | Email to the owner plus an auto-opened GitHub issue with an `incident` label for P0/P1; weekly digest issue for P2/P3. No paging before launch. |
-| Q5 | Legal basis and notice text for error and log processing | Legitimate interest (Art. 6(1)(f)); add the processors to `INTERNAL_GDPR.md`, `DATA_MAP.md` and both privacy notices in the same PR that turns each one on. |
 | Q6 | Audit pseudonym scheme | HMAC-SHA-256 with a dedicated `AUDIT_PSEUDONYM_SALT` (no fallback to `JWT_SECRET` in production); change the retention job to match. |
+| Q7 | PostHog project layout | The free plan allows one project. A separate operations project needs the pay-as-you-go plan, which keeps the monthly free allowances but puts a card on file. Recommended: pay-as-you-go with a spending limit of zero on every product, and a separate project. If a card on file is unacceptable: one project, with every operational event marked by a `source: ops` property and excluded from analytics insights. |
+| Q8 | Legal basis and scope for browser error capture | Assess before step 7. Option A: capture through the PostHog SDK, consenting users only. Option B: the app posts a scrubbed error (stack, release, route name, request ID; no cookies, no screen content) to our own API, which logs and forwards it server-side for all users on legitimate interest. B gives full coverage but needs the assessment and a privacy-notice line. |
+| Q9 | Backups | The backup plan says nothing automated runs today. If hosting-provider backups are to be relied on instead, record that in [prod-backup-restore-plan.md](./prod-backup-restore-plan.md) with a periodic restore check; this plan only monitors backup age and the restore check. |
 
-### Vendor candidates (free tiers, checked 2026-11-10)
+### Proof on UAT before committing to the vendors
 
-Free-tier limits come from public pricing pages and third-party listings on that date. Confirm each on the
-vendor's own page, and confirm the EU region and DPA, before signing up.
+Run in step 4 (the first two) and step 7 (the third). A failure switches that capability to its fallback.
 
-| Need | First choice | Why | Alternatives |
-|------|--------------|-----|--------------|
-| Errors (Q1) and logs (Q2) | **PostHog EU, in a separate "operations" project** | Already a processor with an EU region, so no new vendor. Free tier lists 100,000 exceptions and 10 GB of logs a month. A separate project keeps legitimate-interest operational data apart from consent-based analytics. | Errors: Bugsink hosted (EU-owned, EU-hosted, Sentry SDKs, about 15,000 events a month, one user); GlitchTip hosted (German instance, about 1,000 events a month); Sentry EU region (5,000 errors a month, one user, US company). Logs: Grafana Cloud EU stack (50 GB, 14 days); Better Stack (about 3 GB, 3 days). |
-| Heartbeats and uptime (Q3) | **healthchecks.io Hobbyist** | EU company (Latvia), 20 checks free, open source. Covers every cron job, plus an in-host loopback probe of `/health/ready` that pings each minute, which the host WAF cannot block. | Better Stack free (10 monitors and heartbeats combined) for an outside probe with TLS-expiry checks. |
-
-Points to prove on UAT before committing: PostHog captures Flutter web errors with readable stacks; PostHog log
-retention can be held to 30 days; an outside uptime probe is not blocked by the o2switch WAF. If the first fails,
-use Bugsink for errors: it takes the standard Sentry SDKs, so a later move is a DSN change.
-
-Self-hosting (GlitchTip, Uptime Kuma, Loki) is not possible on the shared cPanel host and would need a
-separate server, which is a cost and a second system to keep alive. Not recommended at this size.
+1. From outside the host, the updown.io check reaches the public endpoint and is not blocked or challenged by the o2switch WAF.
+2. A scheduled job made to fail on purpose raises an email alert; the same job stopped entirely also raises one.
+3. A Flutter web exception thrown on purpose appears in PostHog with a readable Dart stack trace.
 
 ## Status board
 
@@ -153,7 +179,7 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 | 1 | Log every server error | 2, 3 | | ⬜ |
 | 2 | Logger foundation: context, redaction, process safety | 1, 2 | | ⬜ |
 | 3 | Real health checks and process metrics | 1, 4 | | ⬜ |
-| 4 | Uptime, heartbeats and alert routing | 1, 8, 12 | | ⬜ |
+| 4 | External uptime and job pulse checks | 1, 8, 12 | | ⬜ |
 | 5 | Log shipping and retention | 2 | | ⬜ |
 | 6 | Error tracking: API | 3 | | ⬜ |
 | 7 | Error tracking and RUM: Flutter web | 3, 5 | | ⬜ |
@@ -167,7 +193,7 @@ One PR per step. Each PR updates `observability.md` and ticks its row here.
 
 Legend: ⬜ not started · 🟡 in progress · ✅ done (link PR)
 
-Order: 1–3 first (no dependencies). 4–7 after Q1–Q5. 8–9 before launch. 10–14 can run in parallel after 5.
+Order: 1–3 first (no dependencies). 4–6 after Q7; 7 after Q8; 8 after Q6. 8–9 before launch. 10–14 can run in parallel after 5.
 
 ## Steps
 
@@ -198,34 +224,35 @@ Order: 1–3 first (no dependencies). 4–7 after Q1–Q5. 8–9 before launch. 
 
 ### Phase B — get the signals off the host and to a person
 
-**Step 4 — Uptime, heartbeats, alert routing** (needs Q3, Q4)
+**Step 4 — External uptime and job pulse checks** (updown.io)
 
-- External probe on `/backend/health/ready` for UAT and production, plus TLS-expiry and domain-expiry checks.
-- Heartbeat wrapper script for cron jobs (start, success, fail); apply to the care tick, `audit-retention.js` and `run-cleanup-jobs.js`. Share the crontab mechanism with backup plan step 3 rather than building a second one.
-- Alert route per Q4. Closes the uptime and retention-cron debt rows.
-- **Done when:** stopping the UAT app and skipping one cron run each raise an alert.
+- External check on the public `/backend/health/ready` for UAT and production, with TLS-expiry alerts. If UAT sits behind Basic Auth, check a path the gate leaves open or supply the credential in the check, never in the URL.
+- Wrapper script for cron jobs: ping the pulse URL only after the job exits `0`; on any other exit send the failure signal. Apply to the care tick, `audit-retention.js` and `run-cleanup-jobs.js`. Share the crontab mechanism with backup plan step 3 rather than building a second one.
+- Email alerts to the owner. Add updown.io to the processing register. Closes the uptime and retention-cron debt rows.
+- **Done when:** UAT proofs 1 and 2 pass, and stopping the UAT app raises an alert while the job pulse stays green (and the reverse).
 
-**Step 5 — Log shipping and retention** (needs Q2, Q5)
+**Step 5 — Log shipping and retention** (PostHog logs; needs Q7)
 
-- Write logs to a rotated file outside the deploy folder; ship to the chosen store; 30-day retention in both places.
-- Saved searches: errors by route, by release, one request by ID.
-- **Done when:** a UAT request can be found by its `request_id` within a minute, and nothing older than 30 days exists.
+- Ship selectively: `warn` and above, plus the named events alerts depend on (`http.error`, `email.failed`, `job.*`, `authz.denied`, `process.stats`). The full access log stays in a rotated file on the host, outside the deploy folder, kept 14 days.
+- Retention 14 days in both places; correct the 30-day line in `INTERNAL_GDPR.md` and the privacy notices in this PR.
+- Saved searches: errors by route, by release, one request by ID. Usage alert well below the 10 GB allowance.
+- **Done when:** a UAT request can be found by its `request_id` within a minute, nothing older than 14 days exists, and a test proves no redacted field leaves the host.
 
-**Step 6 — Error tracking: API** (needs Q1, Q5)
+**Step 6 — Error tracking: API** (PostHog; needs Q7)
 
-- SDK in `start.js`, fed from `sendServerError`, the error middleware, process handlers and job failures. Tags: release, route, `requestId`. Scrub with the same deny-list as the logger; send no bodies.
-- Release created by the deploy workflows. Alert on a new error group and on a regression after deploy.
+- Server-side capture in `start.js`, independent of any browser consent state, fed from `sendServerError`, the error middleware, process handlers and job failures. Tags: release, route, `requestId`. Scrub with the same deny-list as the logger; send no bodies.
+- Release created by the deploy workflows. Email alert on a new error group and on a regression after deploy. Record the retention PostHog applies to exception events.
 - **Done when:** a deliberate UAT error appears grouped, with the right release, and notifies.
 
-**Step 7 — Error tracking and RUM: Flutter web** (needs Q1, Q5)
+**Step 7 — Error tracking and RUM: Flutter web** (PostHog; needs Q8)
 
 - Global handlers in `main.dart` (`FlutterError.onError`, `PlatformDispatcher.instance.onError`, guarded zone). Upload source maps in the web build.
 - HTTP client: send a generated `X-Request-Id`, record failures and latency by endpoint template, keep the returned `request_id`.
 - Show a short reference code in the shared failed-load widgets so a user can quote it to support.
 - Triage the 97 silent `catch` blocks: report, or comment why ignoring is correct.
 - Timings: app start to first usable screen, route change duration.
-- No session replay, no screen content, sensitive screens excluded as in `analytics_service.dart`.
-- **Done when:** a thrown error in a UAT build shows a readable Dart stack linked to the API error by ID.
+- No session replay, no screen content, sensitive screens excluded as in `analytics_service.dart`. Capture path and coverage follow Q8; it must neither bypass the analytics consent choice nor be switched off by it without that being a recorded decision.
+- **Done when:** UAT proof 3 passes and the error links to the API error by ID.
 
 ### Phase C — security, audit and workflows (before launch)
 
@@ -242,7 +269,7 @@ Order: 1–3 first (no dependencies). 4–7 after Q1–Q5. 8–9 before launch. 
 **Step 9 — Security events and detection rules**
 
 - Emit `authz.denied` (403), `auth.rejected` (401) and `ratelimit.hit` (429, via the limiter `handler`) with user, IP, route template and reason. Audit E2E-bypass use.
-- Implement the taxonomy thresholds as one scheduled check (`server/scripts/ops/security-check.js`) reading `audit_events` and the log store: failed-login bursts per account and per IP, reset storms, export volume, permission grants, mass deletion. Output goes through the step 4 alert route.
+- Implement the taxonomy thresholds as one scheduled check (`server/scripts/ops/security-check.js`) reading `audit_events` and the log store: failed-login bursts per account and per IP, reset storms, export volume, permission grants, mass deletion. Output is an email alert and a failed pulse check.
 - Move the taxonomy from `docs/engineering/pet-care-hardening/` to `docs/ops/` as the live rule list.
 - **Done when:** scripted brute force on UAT raises a P1 within the documented window.
 
@@ -263,7 +290,7 @@ Order: 1–3 first (no dependencies). 4–7 after Q1–Q5. 8–9 before launch. 
 
 **Step 12 — Data integrity checks**
 
-- `server/scripts/ops/integrity-check.js`, read-only, nightly, with a heartbeat. Start with: access rows pointing at missing pets or users; pets with no owner; duplicate or out-of-order care occurrences (reuse `repair_occurrences --dry-run`); household and people drift (reuse the reconcile scripts in report mode); files on disk without a row and rows without a file; `cleanup_jobs` stuck in `running`; audit rows past their tier.
+- `server/scripts/ops/integrity-check.js`, read-only, nightly, with a pulse check. Start with: access rows pointing at missing pets or users; pets with no owner; duplicate or out-of-order care occurrences (reuse `repair_occurrences --dry-run`); household and people drift (reuse the reconcile scripts in report mode); files on disk without a row and rows without a file; `cleanup_jobs` stuck in `running`; audit rows past their tier.
 - Each invariant has an ID, a query and an owner in `docs/ops/`. Violations alert as P2 with counts only.
 
 **Step 13 — Product analytics catalogue and funnels**
