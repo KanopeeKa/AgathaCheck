@@ -12,10 +12,7 @@ void main() {
 
     test('encodes returnTo', () {
       expect(
-        globalAllCareLocation(
-          petIds: {'pet-1'},
-          returnTo: '/pet/pet-1',
-        ),
+        globalAllCareLocation(petIds: {'pet-1'}, returnTo: '/pet/pet-1'),
         '/pc/events?pet=pet-1&returnTo=%2Fpet%2Fpet-1',
       );
     });
