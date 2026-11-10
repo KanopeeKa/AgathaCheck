@@ -4411,30 +4411,6 @@ abstract class AppLocalizations {
   /// **'Subscription plans aren\'t available right now. Try again in a moment.'**
   String get subscriptionPlansUnavailable;
 
-  /// No description provided for @subscriptionPurchaseFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'We couldn\'t complete your purchase. Try again or restore purchases if you were already subscribed.'**
-  String get subscriptionPurchaseFailed;
-
-  /// No description provided for @subscriptionRestoreFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'We couldn\'t restore your purchases. Check your connection and try again.'**
-  String get subscriptionRestoreFailed;
-
-  /// No description provided for @subscriptionManagementUnavailable.
-  ///
-  /// In en, this message translates to:
-  /// **'We couldn\'t open subscription management. Copy this link and open it in your browser:'**
-  String get subscriptionManagementUnavailable;
-
-  /// No description provided for @subscriptionManagementNoUrl.
-  ///
-  /// In en, this message translates to:
-  /// **'Subscription management isn\'t available from this device. Use your app store account settings to manage billing.'**
-  String get subscriptionManagementNoUrl;
-
   /// No description provided for @subscriptionStatusActiveSemantic.
   ///
   /// In en, this message translates to:
@@ -4447,29 +4423,29 @@ abstract class AppLocalizations {
   /// **'Free plan'**
   String get subscriptionStatusFreeSemantic;
 
-  /// No description provided for @subscriptionPlanUnlimitedTitle.
+  /// No description provided for @subscriptionProductNameUnlimited.
   ///
   /// In en, this message translates to:
   /// **'AgathaTrack Unlimited'**
-  String get subscriptionPlanUnlimitedTitle;
+  String get subscriptionProductNameUnlimited;
 
-  /// No description provided for @subscriptionPlanFreeTitle.
+  /// No description provided for @subscriptionProductNameFree.
   ///
   /// In en, this message translates to:
-  /// **'Free plan'**
-  String get subscriptionPlanFreeTitle;
+  /// **'Free Plan'**
+  String get subscriptionProductNameFree;
 
-  /// No description provided for @subscriptionPlanUnlimitedBody.
+  /// No description provided for @subscriptionBodyUnlimited.
   ///
   /// In en, this message translates to:
   /// **'You have full access to all features.'**
-  String get subscriptionPlanUnlimitedBody;
+  String get subscriptionBodyUnlimited;
 
-  /// No description provided for @subscriptionPlanFreeBody.
+  /// No description provided for @subscriptionBodyFree.
   ///
   /// In en, this message translates to:
   /// **'Upgrade to unlock all features.'**
-  String get subscriptionPlanFreeBody;
+  String get subscriptionBodyFree;
 
   /// No description provided for @subscriptionRenewsOn.
   ///
@@ -4483,12 +4459,6 @@ abstract class AppLocalizations {
   /// **'Active until {date}'**
   String subscriptionActiveUntil(String date);
 
-  /// No description provided for @subscriptionBestValue.
-  ///
-  /// In en, this message translates to:
-  /// **'Best value'**
-  String get subscriptionBestValue;
-
   /// No description provided for @subscriptionPeriodPerMonth.
   ///
   /// In en, this message translates to:
@@ -4501,123 +4471,123 @@ abstract class AppLocalizations {
   /// **'per year'**
   String get subscriptionPeriodPerYear;
 
-  /// No description provided for @subscriptionPeriodPerWeek.
+  /// No description provided for @subscriptionFallbackMonthly.
   ///
   /// In en, this message translates to:
-  /// **'per week'**
-  String get subscriptionPeriodPerWeek;
+  /// **'Monthly'**
+  String get subscriptionFallbackMonthly;
 
-  /// No description provided for @subscriptionPeriodRecurring.
+  /// No description provided for @subscriptionFallbackYearly.
   ///
   /// In en, this message translates to:
-  /// **'per billing period'**
-  String get subscriptionPeriodRecurring;
+  /// **'Yearly'**
+  String get subscriptionFallbackYearly;
 
-  /// No description provided for @subscriptionPeriodEveryMonths.
+  /// No description provided for @subscriptionBestValue.
   ///
   /// In en, this message translates to:
-  /// **'every {count} months'**
-  String subscriptionPeriodEveryMonths(int count);
-
-  /// No description provided for @subscriptionPeriodEveryYears.
-  ///
-  /// In en, this message translates to:
-  /// **'every {count} years'**
-  String subscriptionPeriodEveryYears(int count);
+  /// **'Best Value'**
+  String get subscriptionBestValue;
 
   /// No description provided for @subscriptionAutoRenewDisclosure.
   ///
   /// In en, this message translates to:
-  /// **'{priceString} {cadence}. Auto-renews until you cancel.'**
-  String subscriptionAutoRenewDisclosure(String priceString, String cadence);
+  /// **'This subscription renews automatically each billing period until you cancel.'**
+  String get subscriptionAutoRenewDisclosure;
 
   /// No description provided for @subscriptionCancelDisclosure.
   ///
   /// In en, this message translates to:
-  /// **'Cancel anytime in your app store subscription settings before the next billing date.'**
+  /// **'Cancel in your app store account before the next billing date to avoid being charged.'**
   String get subscriptionCancelDisclosure;
 
-  /// No description provided for @subscriptionIntroductoryOffer.
+  /// No description provided for @subscriptionIntroDays.
   ///
   /// In en, this message translates to:
-  /// **'Introductory offer: {introPrice} for {periodDescription}, for {cycles} billing period(s), then the standard price applies.'**
-  String subscriptionIntroductoryOffer(
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String subscriptionIntroDays(int count);
+
+  /// No description provided for @subscriptionIntroWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week} other{{count} weeks}}'**
+  String subscriptionIntroWeeks(int count);
+
+  /// No description provided for @subscriptionIntroMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String subscriptionIntroMonths(int count);
+
+  /// No description provided for @subscriptionIntroYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year} other{{count} years}}'**
+  String subscriptionIntroYears(int count);
+
+  /// No description provided for @subscriptionTrialDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Introductory offer: {introPrice} for {introPeriod}, then {recurringPrice} per billing period.'**
+  String subscriptionTrialDisclosure(
     String introPrice,
-    String periodDescription,
-    int cycles,
+    String introPeriod,
+    String recurringPrice,
   );
 
-  /// No description provided for @subscriptionIntroPeriodOneDay.
+  /// No description provided for @subscriptionManagementUnavailable.
   ///
   /// In en, this message translates to:
-  /// **'1 day'**
-  String get subscriptionIntroPeriodOneDay;
+  /// **'Subscription management isn\'t available on this device.'**
+  String get subscriptionManagementUnavailable;
 
-  /// No description provided for @subscriptionIntroPeriodDays.
+  /// No description provided for @subscriptionManagementOpenFailed.
   ///
   /// In en, this message translates to:
-  /// **'{count} days'**
-  String subscriptionIntroPeriodDays(int count);
+  /// **'We couldn\'t open subscription management. Copy this link to open it in your browser:'**
+  String get subscriptionManagementOpenFailed;
 
-  /// No description provided for @subscriptionIntroPeriodOneWeek.
+  /// No description provided for @subscriptionPurchaseFailed.
   ///
   /// In en, this message translates to:
-  /// **'1 week'**
-  String get subscriptionIntroPeriodOneWeek;
+  /// **'Purchase didn\'t complete. Try again, or restore an existing purchase.'**
+  String get subscriptionPurchaseFailed;
 
-  /// No description provided for @subscriptionIntroPeriodWeeks.
+  /// No description provided for @subscriptionRestoreFailed.
   ///
   /// In en, this message translates to:
-  /// **'{count} weeks'**
-  String subscriptionIntroPeriodWeeks(int count);
+  /// **'We couldn\'t restore purchases. Try again in a moment.'**
+  String get subscriptionRestoreFailed;
 
-  /// No description provided for @subscriptionIntroPeriodOneMonth.
+  /// No description provided for @subscriptionFeatureUnlimitedTitle.
   ///
   /// In en, this message translates to:
-  /// **'1 month'**
-  String get subscriptionIntroPeriodOneMonth;
+  /// **'AgathaTrack Unlimited'**
+  String get subscriptionFeatureUnlimitedTitle;
 
-  /// No description provided for @subscriptionIntroPeriodMonths.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} months'**
-  String subscriptionIntroPeriodMonths(int count);
-
-  /// No description provided for @subscriptionIntroPeriodOneYear.
-  ///
-  /// In en, this message translates to:
-  /// **'1 year'**
-  String get subscriptionIntroPeriodOneYear;
-
-  /// No description provided for @subscriptionIntroPeriodYears.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} years'**
-  String subscriptionIntroPeriodYears(int count);
-
-  /// No description provided for @subscriptionFeatureUnlimitedPets.
+  /// No description provided for @subscriptionFeatureProfiles.
   ///
   /// In en, this message translates to:
   /// **'Unlimited pet profiles'**
-  String get subscriptionFeatureUnlimitedPets;
+  String get subscriptionFeatureProfiles;
 
-  /// No description provided for @subscriptionFeatureHealthTracking.
+  /// No description provided for @subscriptionFeatureHealth.
   ///
   /// In en, this message translates to:
   /// **'Full health tracking'**
-  String get subscriptionFeatureHealthTracking;
+  String get subscriptionFeatureHealth;
 
-  /// No description provided for @subscriptionFeaturePetSharing.
+  /// No description provided for @subscriptionFeatureSharing.
   ///
   /// In en, this message translates to:
   /// **'Pet sharing with family'**
-  String get subscriptionFeaturePetSharing;
+  String get subscriptionFeatureSharing;
 
-  /// No description provided for @subscriptionFeaturePdfReports.
+  /// No description provided for @subscriptionFeaturePdf.
   ///
   /// In en, this message translates to:
   /// **'PDF report generation'**
-  String get subscriptionFeaturePdfReports;
+  String get subscriptionFeaturePdf;
 
   /// No description provided for @subscriptionFeatureReminders.
   ///
@@ -4625,23 +4595,11 @@ abstract class AppLocalizations {
   /// **'Health reminders'**
   String get subscriptionFeatureReminders;
 
-  /// No description provided for @subscriptionFeaturePrioritySupport.
+  /// No description provided for @subscriptionFeatureSupport.
   ///
   /// In en, this message translates to:
   /// **'Priority support'**
-  String get subscriptionFeaturePrioritySupport;
-
-  /// No description provided for @subscriptionFallbackTitleMonthly.
-  ///
-  /// In en, this message translates to:
-  /// **'Monthly'**
-  String get subscriptionFallbackTitleMonthly;
-
-  /// No description provided for @subscriptionFallbackTitleYearly.
-  ///
-  /// In en, this message translates to:
-  /// **'Yearly'**
-  String get subscriptionFallbackTitleYearly;
+  String get subscriptionFeatureSupport;
 
   /// No description provided for @petReport.
   ///

@@ -7,24 +7,22 @@ void main() {
   testWidgets('PaywallFeatureListCard lists unlimited features', (
     tester,
   ) async {
-    late AppLocalizations l;
     await tester.pumpWidget(
       MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
-          builder: (context) {
-            l = AppLocalizations.of(context)!;
-            return Scaffold(
-              body: PaywallFeatureListCard(theme: Theme.of(context)),
-            );
-          },
+          builder: (context) =>
+              Scaffold(body: PaywallFeatureListCard(theme: Theme.of(context))),
         ),
       ),
     );
     await tester.pumpAndSettle();
 
-    expect(find.text(l.subscriptionPlanUnlimitedTitle), findsOneWidget);
-    expect(find.text(l.subscriptionFeatureUnlimitedPets), findsOneWidget);
+    final context = tester.element(find.byType(PaywallFeatureListCard));
+    final l = AppLocalizations.of(context)!;
+
+    expect(find.text(l.subscriptionFeatureUnlimitedTitle), findsOneWidget);
+    expect(find.text(l.subscriptionFeatureProfiles), findsOneWidget);
   });
 }
