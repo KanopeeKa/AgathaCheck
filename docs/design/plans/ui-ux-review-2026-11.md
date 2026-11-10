@@ -10,7 +10,7 @@ tags: [design,ui,ux,review]
 
 Analysis only. No app code, theme, copy, tests or routes were changed. Graded against the repository's own guidance ([`true-north.md`](../true-north.md), [`principles.md`](../principles.md), [`system.md`](../system.md), [`tokens.md`](../tokens.md), [`copy-tone.md`](../copy-tone.md), [`terminology.md`](../terminology.md), the `ui-design-deep` skill) and against public material from comparable pet apps (Part 3).
 
-> **Archive record.** This file is the original review, committed unchanged as the source for the execute-plan split in [`ui-ux-review-2026-11-execute-plan-split.md`](./ui-ux-review-2026-11-execute-plan-split.md). Only two kinds of edit were made to the text: (1) the two screenshot embeds in "Method and limits" are replaced by an archive note, because the image files were not supplied; (2) the file name of the full pre-push script was reworded in two places (Part 5 § 5.2 table row on the frozen test lane, and the last line of § 5.7), because `scripts/validate_docs.sh` fails when more than 40 lines in `docs/` contain that exact file name and the repository sits at the limit. Neither edit changes a finding.
+> **Archive record.** This file is the original review, committed unchanged as the source for the execute-plan split in [`ui-ux-review-2026-11-execute-plan-split.md`](./ui-ux-review-2026-11-execute-plan-split.md). One edit was made to the text: the two screenshot embeds in "Method and limits" are replaced by an archive note, because the image files were not supplied. It does not change any finding.
 
 ## Summary
 
@@ -2788,7 +2788,7 @@ This replaces the "frozen, not deleted" stance of the [frozen-domains programme]
 | `server/lib/` frozen-only modules: `adoptionJourneys`, `adoptionVisits`, `custodyTransfers`, `deriveSessionStatus`, `fosterAgreementWithdrawal`, `fosterCapacity`, `fosterCompliance`, `fosteringActivitySummary`, `fosterInvite`, `fosterParentPresenter`, `fosterPlacements`, `fosterProfiles`, `fosterRequests`, `fosterSessions`, `fosterVisibility`, `orgConnections`, `orgMemberPrivacy`, `orgPermissions`, `orgPetShadow`, `orgPetViewAccess`, `petCustody`, `sessionDetail` | Domain logic for the above | 22 files, about 5,100 lines | Three of them (`adoptionJourneys`, `fosterProfiles`, `orgMemberPrivacy`) and the shared `orgRoles` are imported by migration scripts `023`, `028` and `042`. Migrations must stay runnable on a fresh database, so either inline the SQL those migrations need or move the three modules under the migrations folder. Decide this first. |
 | `server/lib/email/templates/fosterInvitationNewUser.js`, `externalFosterNotice.js` | Foster e-mails | 2 files | Remove their entries from `server/lib/email/i18n.js` and `emailTemplates.js` |
 | `server/test/organizations/` | Server tests for the above | 31 files, 5,223 lines | Delete with the code |
-| `server/jest.config.frozen.cjs`, `scripts/test-frozen-domains.sh`, the frozen job in `.github/workflows/_reusable-test.yml`, the exclusions in `server/jest.config.active.cjs`, `scripts/pre-push` (the full script, `.sh`), `scripts/pre-push-changed.sh` | Separate frozen test lane | — | Delete the lane; fold the active config back into the default |
+| `server/jest.config.frozen.cjs`, `scripts/test-frozen-domains.sh`, the frozen job in `.github/workflows/_reusable-test.yml`, the exclusions in `server/jest.config.active.cjs`, `scripts/pre-push.sh`, `scripts/pre-push-changed.sh` | Separate frozen test lane | — | Delete the lane; fold the active config back into the default |
 | `server/lib/frozenDomains.js` and the `frozenDomainsEnabled()` branches in `server/bin/server.js` (lines 113–116, 138–141) | Mount gate | — | Delete the gate with the routes. The two helpers `rejectFrozenShelterApi` and `rejectFrozenOrganizationIdOnPetWrite` are used inside active pet routes; replace each call site with a plain 404/400 or remove the branch they guard (see 5.3) |
 | `scripts/check_frozen_domain_boundaries.sh`, `docs/engineering/frozen-domains/manifest.json`, `ci-integration.md` | Boundary machinery | — | Delete once the roots are gone; the boundary has nothing left to guard |
 | BDD features matching `organisation_*`, `org_*`, `foster_*`, `fostering_*`, `redacted_org_pet`, `admin_contacts`, `pet_screen_filters`, `pet_ownership_and_adoption` | Gherkin specs | 22 of 53 `.feature` files | Confirm `admin_contacts` and `pet_screen_filters` have no active scenarios before deleting; the other patterns are unambiguous |
@@ -2946,7 +2946,7 @@ Risk to manage: validation copy duplicated between JS and Dart. Keep JS validati
 7. **Password-manager bridge** (5.5): independent of the above; can start any time after step 4 removes the dead auth screens.
 8. **Data decision** (5.4): separate track with the data-protection owner.
 
-Each step ends with the existing gates (the full `./scripts/pre-push` script, the active E2E lane) and, for steps 2, 3 and 5, a grep for the frozen words to show the count falling toward the 5.3 measure of done.
+Each step ends with the existing gates (`./scripts/pre-push.sh`, the active E2E lane) and, for steps 2, 3 and 5, a grep for the frozen words to show the count falling toward the 5.3 measure of done.
 
 ---
 
