@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/invite_return.dart';
-import '../../../../core/widgets/async_state/async_error_state.dart';
+import '../../../../core/widgets/invite_recipient_block.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/services/experience_eligibility.dart';
 import '../../../pet_profile/pet_profile.dart';
