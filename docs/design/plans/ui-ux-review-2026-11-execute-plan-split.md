@@ -13,7 +13,7 @@ November 2026 UI/UX review of all active screens. It asks one question: can the 
 suggested tracks run as three separate `/execute-plan` (v2) programmes, and if so, how should they be
 cut so that they don't block each other? Plan files and snapshots are not written here.
 
-Finding IDs (A-…, B-…, C-…, D-…, X-…) and Part 5 sections refer to that review. Execute-plan rules come
+Finding IDs (A-…, B-…, C-…, D-…, X-…) and Part 5 sections refer to that review, kept as the original source record in [`ui-ux-review-2026-11.md`](./ui-ux-review-2026-11.md) (its text as written, except that the two screenshots are omitted). Execute-plan rules come
 from [`execute-plan-v2.md`](../../agent-efficiency/plans/execute-plan-v2.md), its
 [`contracts.md`](../../agent-efficiency/plans/execute-plan-v2/contracts.md), the scope checker
 (`scripts/lib/execute_plan_scope.js`) and the safety gate (`.github/scripts/agent-safety-lib.js`), as
@@ -263,8 +263,8 @@ findings the review ranks highly:
 
 ## 8. Before writing the plan files
 
-1. Commit the source review to `docs/design/plans/` (its relative links resolve from there). Workers
-   need the nine-part specs.
+1. ~~Commit the source review to `docs/design/plans/`~~ Done: [`ui-ux-review-2026-11.md`](./ui-ux-review-2026-11.md)
+   (its relative links resolve from there). Workers need the nine-part specs.
 2. Run the X-13 check on UAT.
 3. Land phase 0 on `main`.
 4. Take the §5 decisions and record them in the canonical docs (decision-log rows) or in each plan's
