@@ -8175,6 +8175,36 @@ abstract class AppLocalizations {
   /// **'A pet parent'**
   String get sharedPetLinkIdentityUnavailable;
 
+  /// No description provided for @sharedPetAgeMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String sharedPetAgeMonths(int count);
+
+  /// No description provided for @sharedPetAgeYearsOne.
+  ///
+  /// In en, this message translates to:
+  /// **'1 year'**
+  String get sharedPetAgeYearsOne;
+
+  /// No description provided for @sharedPetAgeYearsFormatted.
+  ///
+  /// In en, this message translates to:
+  /// **'{formattedYears} years'**
+  String sharedPetAgeYearsFormatted(String formattedYears);
+
+  /// No description provided for @shareAcceptFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t accept this share. Try again.'**
+  String get shareAcceptFailed;
+
+  /// No description provided for @shareInviteDecisionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t complete this invitation. Try again.'**
+  String get shareInviteDecisionFailed;
+
   /// Title when post-login experience resolution fails to load pets.
   ///
   /// In en, this message translates to:

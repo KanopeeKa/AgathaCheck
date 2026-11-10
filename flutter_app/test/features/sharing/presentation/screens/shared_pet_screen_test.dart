@@ -13,18 +13,32 @@ import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart
 import 'package:pet_profile_app/features/sharing/domain/entities/share_preview.dart';
 import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_repository.dart';
 import 'package:pet_profile_app/features/sharing/presentation/providers/sharing_providers.dart';
+import 'package:pet_profile_app/features/auth/auth.dart';
 import 'package:pet_profile_app/features/sharing/presentation/screens/shared_pet_screen.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+import '../../../../helpers/fakes.dart';
+
 class FakeSharingRepository implements SharingRepository {
-  FakeSharingRepository({this.preview, this.throwExpired = false});
+  FakeSharingRepository({
+    this.preview,
+    this.throwExpired = false,
+    this.throwLoadFailed = false,
+    this.loadAttempts = 0,
+  });
 
   final SharePreview? preview;
   final bool throwExpired;
+  final bool throwLoadFailed;
+  int loadAttempts;
 
   @override
   Future<SharePreview> getSharePreview(String code) async {
+    loadAttempts++;
     if (throwExpired) throw SharePreviewExpiredException();
+    if (throwLoadFailed && loadAttempts == 1) {
+      throw Exception('network');
+    }
     return preview ??
         const SharePreview(
           pet: {'name': 'Buddy', 'species': 'Dog'},
@@ -180,6 +194,51 @@ void main() {
     );
     await tester.pumpAndSettle();
 
+    expect(find.text('Buddy'), findsWidgets);
+  });
+
+  testWidgets('SharedPetScreen signed out shows invite account CTA', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      buildTestApp(
+        const SharedPetScreen(shareCode: 'abc'),
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sharingRepositoryProvider.overrideWithValue(FakeSharingRepository()),
+          authProvider.overrideWith((ref) {
+            final n = FakeAuthNotifier();
+            n.state = const AuthState(isLoading: false);
+            return n;
+          }),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sign in or create an account'), findsOneWidget);
+    expect(find.text('Accept and add'), findsNothing);
+  });
+
+  testWidgets('SharedPetScreen load failure offers retry', (
+    WidgetTester tester,
+  ) async {
+    final repo = FakeSharingRepository(throwLoadFailed: true);
+    await tester.pumpWidget(
+      buildTestApp(
+        const SharedPetScreen(shareCode: 'abc'),
+        overrides: [
+          sharedPreferencesProvider.overrideWithValue(prefs),
+          sharingRepositoryProvider.overrideWithValue(repo),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Retry'), findsOneWidget);
+    await tester.tap(find.text('Retry'));
+    await tester.pumpAndSettle();
+    expect(repo.loadAttempts, 2);
     expect(find.text('Buddy'), findsWidgets);
   });
 

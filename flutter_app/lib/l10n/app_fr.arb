@@ -1601,6 +1601,13 @@
   "inviteRecipientAccessScope": "Accès : {scope}",
   "@inviteRecipientAccessScope": { "placeholders": { "scope": { "type": "String" } } },
   "sharedPetLinkIdentityUnavailable": "Un parent d'animal",
+  "sharedPetAgeMonths": "{count, plural, =1{1 mois} other{{count} mois}}",
+  "@sharedPetAgeMonths": { "placeholders": { "count": { "type": "int" } } },
+  "sharedPetAgeYearsOne": "1 an",
+  "sharedPetAgeYearsFormatted": "{formattedYears} ans",
+  "@sharedPetAgeYearsFormatted": { "placeholders": { "formattedYears": { "type": "String" } } },
+  "shareAcceptFailed": "Impossible d'accepter ce partage. Réessayez.",
+  "shareInviteDecisionFailed": "Impossible de traiter cette invitation. Réessayez.",
   "entryResolutionFailed": "Impossible de charger vos animaux",
 
   "invited": "Invité(e)",

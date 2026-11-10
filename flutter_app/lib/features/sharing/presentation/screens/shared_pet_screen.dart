@@ -3,9 +3,11 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/utils/calendar_date.dart';
 import '../../../../core/widgets/app_logo_title.dart';
+import '../../../../core/widgets/invite_recipient_block.dart';
 import '../../../../l10n/app_localizations.dart';
 import 'package:pet_profile_app/features/auth/auth.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
@@ -38,25 +40,36 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
   }
 
   Future<void> _loadSharedPet() async {
+    if (!mounted) return;
+    setState(() {
+      _loading = true;
+      _errorKey = null;
+      _petData = null;
+      _ownerData = null;
+    });
     try {
       final repo = ref.read(sharingRepositoryProvider);
       final preview = await repo.getSharePreview(widget.shareCode);
+      if (!mounted) return;
       setState(() {
         _petData = preview.pet;
         _ownerData = preview.owner;
         _loading = false;
       });
     } on SharePreviewExpiredException {
+      if (!mounted) return;
       setState(() {
         _errorKey = 'expired';
         _loading = false;
       });
     } on SharePreviewNotFoundException {
+      if (!mounted) return;
       setState(() {
         _errorKey = 'not_found';
         _loading = false;
       });
     } catch (_) {
+      if (!mounted) return;
       setState(() {
         _errorKey = 'load_failed';
         _loading = false;
@@ -64,20 +77,62 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     }
   }
 
+  String? _ageDisplay(BuildContext context, Map<String, dynamic> pet) {
+    final l = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context).toString();
+    final dobStr = (pet['dateOfBirth'] ?? pet['date_of_birth']) as String?;
+    final dateOfBirth = parseCalendarDate(dobStr);
+    if (dateOfBirth != null) {
+      final diff = DateTime.now().difference(dateOfBirth).inDays / 365.25;
+      if (diff < 1) {
+        final months = (diff * 12).round().clamp(1, 11);
+        return l.sharedPetAgeMonths(months);
+      }
+      if (diff >= 0.95 && diff < 1.5) {
+        return l.sharedPetAgeYearsOne;
+      }
+      final years = NumberFormat.decimalPattern(locale).format(
+        double.parse(diff.toStringAsFixed(1)),
+      );
+      return l.sharedPetAgeYearsFormatted(years);
+    }
+    if (pet['age'] != null) {
+      final ageNum = pet['age'];
+      final ageDouble =
+          ageNum is num ? ageNum.toDouble() : double.tryParse('$ageNum') ?? 0;
+      if (ageDouble >= 0.95 && ageDouble < 1.5) {
+        return l.sharedPetAgeYearsOne;
+      }
+      final years = NumberFormat.decimalPattern(locale).format(ageDouble);
+      return l.sharedPetAgeYearsFormatted(years);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final l = AppLocalizations.of(context)!;
+    final isLoggedIn = ref.watch(authProvider).isLoggedIn;
 
     if (_loading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (_errorKey != null || _petData == null) {
+      if (_errorKey == 'load_failed') {
+        return Scaffold(
+          appBar: AppBar(title: AppLogoTitle(title: l.sharedPetTitle)),
+          body: AsyncErrorState(
+            title: l.sharedPetLoadFailed,
+            onRetry: _loadSharedPet,
+          ),
+        );
+      }
       final errorMessage = switch (_errorKey) {
-        'load_failed' => l.sharedPetLoadFailed,
         'expired' => l.sharedPetNotFound,
+        'not_found' => l.sharedPetNotFound,
         _ => l.sharedPetNotFound,
       };
       return Scaffold(
@@ -102,28 +157,19 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
     }
 
     final pet = _petData!;
-    final name = pet['name'] as String? ?? 'Unknown';
+    final name = (pet['name'] as String?)?.trim();
+    final displayName =
+        (name != null && name.isNotEmpty) ? name : l.unknownPet;
     final species = pet['species'] as String? ?? '';
     final breed = pet['breed'] as String? ?? '';
-    final dobStr = (pet['dateOfBirth'] ?? pet['date_of_birth']) as String?;
-    final dateOfBirth = parseCalendarDate(dobStr);
-    String? ageDisplay;
-    if (dateOfBirth != null) {
-      final diff = DateTime.now().difference(dateOfBirth).inDays / 365.25;
-      if (diff < 1) {
-        final months = (diff * 12).round();
-        ageDisplay = months <= 1 ? '1 month' : '$months months';
-      } else {
-        ageDisplay = '${diff.toStringAsFixed(1)} yrs';
-      }
-    } else if (pet['age'] != null) {
-      ageDisplay = '${pet['age']} yrs';
-    }
+    final ageDisplay = _ageDisplay(context, pet);
     final photoPath = (pet['photoPath'] ?? pet['photo_path']) as String?;
+    final inviterFirst = _ownerData?['first_name'] as String?;
+    final invitePath = '/shared/${widget.shareCode}';
 
     return Scaffold(
       appBar: AppBar(
-        title: AppLogoTitle(title: name),
+        title: AppLogoTitle(title: displayName),
         leading: IconButton(
           icon: const Icon(Icons.home),
           tooltip: l.goToPetCare,
@@ -159,7 +205,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
         padding: const EdgeInsets.all(16),
         children: [
           SharedPetProfileCard(
-            name: name,
+            name: displayName,
             species: species,
             breed: breed,
             ageDisplay: ageDisplay,
@@ -174,7 +220,7 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
           ),
           const SizedBox(height: 16),
           SharedPetAcceptSection(
-            isLoggedIn: ref.watch(authProvider).isLoggedIn,
+            isLoggedIn: isLoggedIn,
             accepting: _accepting,
             onAccept: () async {
               setState(() => _accepting = true);
@@ -183,7 +229,13 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                 final token = await ref
                     .read(authProvider.notifier)
                     .getValidAccessToken();
-                if (token == null) return;
+                if (token == null) {
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l.shareAcceptFailed)),
+                  );
+                  return;
+                }
                 await repo.acceptShare(widget.shareCode, token);
                 ref.invalidate(allPetsIncludingOrgProvider);
                 await ref.read(allPetsIncludingOrgProvider.future);
@@ -192,14 +244,10 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
                   context,
                 ).showSnackBar(SnackBar(content: Text(l.shareAccepted)));
                 context.go('/');
-              } catch (e) {
+              } catch (_) {
                 if (!mounted) return;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(
-                      'Error: ${e.toString().replaceFirst("Exception: ", "")}',
-                    ),
-                  ),
+                  SnackBar(content: Text(l.shareAcceptFailed)),
                 );
               } finally {
                 if (mounted) setState(() => _accepting = false);
@@ -209,9 +257,12 @@ class _SharedPetScreenState extends ConsumerState<SharedPetScreen> {
             colorScheme: colorScheme,
             promptText: l.sharedPetAcceptPrompt,
             buttonText: _accepting ? l.sharedPetAdding : l.acceptAndAdd,
+            invitePath: invitePath,
+            inviterName: inviterFirst,
+            petsSummary: displayName,
+            scopeDescription: l.viewOnly,
           ),
-          if (_ownerData != null &&
-              (_ownerData!['first_name'] as String?)?.isNotEmpty == true) ...[
+          if (_ownerData != null) ...[
             const SizedBox(height: 24),
             Row(
               children: [
