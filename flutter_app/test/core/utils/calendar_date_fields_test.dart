@@ -299,7 +299,6 @@ void main() {
                 ).toJson()['date']
                 as String?,
       );
-
     },
   );
 

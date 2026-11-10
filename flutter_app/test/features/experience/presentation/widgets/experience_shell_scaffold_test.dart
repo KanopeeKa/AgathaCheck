@@ -41,7 +41,6 @@ List<AppNotification> _bellBadgeNotifications(int count) {
   );
 }
 
-
 /// Builds a test app wrapping [ExperienceShellScaffold] with minimal overrides.
 Widget _buildApp({
   required SharedPreferences prefs,

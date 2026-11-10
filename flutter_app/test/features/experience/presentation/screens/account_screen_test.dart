@@ -15,7 +15,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/fakes.dart';
 
-
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

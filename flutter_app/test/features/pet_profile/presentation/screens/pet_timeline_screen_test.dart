@@ -17,7 +17,6 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
 
-
 class _TestPetListNotifier extends PetListNotifier {
   _TestPetListNotifier(this.pets);
 

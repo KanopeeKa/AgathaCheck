@@ -14,7 +14,6 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../../../../helpers/fakes.dart';
 import '../providers/pet_list_notifier_test.dart';
 
-
 class _EmptyRosterNotifier extends RosterNotifier {
   @override
   Future<Roster> build() async =>

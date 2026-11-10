@@ -7,12 +7,9 @@ import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_
 import 'package:pet_profile_app/features/experience/experience.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 Future<List<Override>> _baseOverrides() async {
   final prefs = await SharedPreferences.getInstance();
-  return [
-    sharedPreferencesProvider.overrideWithValue(prefs),
-  ];
+  return [sharedPreferencesProvider.overrideWithValue(prefs)];
 }
 
 void main() {

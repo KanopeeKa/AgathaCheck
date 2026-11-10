@@ -57,7 +57,6 @@ class _PeopleVetRosterNotifier extends RosterNotifier {
   );
 }
 
-
 Widget _wrapAddForm({RecordingPetRepository? repo, String? initialOrgId}) {
   final repository = repo ?? RecordingPetRepository();
   final router = GoRouter(

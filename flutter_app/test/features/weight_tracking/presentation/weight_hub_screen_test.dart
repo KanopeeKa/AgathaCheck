@@ -35,7 +35,6 @@ class _FakeWeightEntriesNotifier extends WeightEntriesNotifier {
   Future<List<WeightEntry>> build(String arg) async => _entries;
 }
 
-
 WeightEntry _entry(
   String id,
   DateTime date,
