@@ -2,28 +2,66 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_color_tokens.dart';
 
+/// Top inset and title-to-content gap shared by pet detail section blocks.
+const double kPetDetailSectionInsetTop = 16;
+const double kPetDetailSectionTitleGap = 10;
+const EdgeInsets kPetDetailSectionHorizontalPadding = EdgeInsets.symmetric(
+  horizontal: 16,
+);
+
+/// Matches design token `font-size-section-title` (system.md §2.3).
+const double kFontSizeSectionTitle = 12;
+
+bool _titleUsesUppercaseEyebrowTracking(String title) {
+  if (title.isEmpty) return false;
+  final hasAlpha = RegExp(r'[A-Za-z]').hasMatch(title);
+  return hasAlpha && title == title.toUpperCase();
+}
+
+TextStyle? _sectionTitleTextStyle(
+  TextTheme textTheme,
+  String title,
+  Color titleColor,
+) {
+  final base = textTheme.labelSmall;
+  if (base == null) return null;
+  final letterSpacing = _titleUsesUppercaseEyebrowTracking(title)
+      ? kFontSizeSectionTitle * 0.08
+      : 0.0;
+  return base.copyWith(
+    color: titleColor,
+    fontSize: kFontSizeSectionTitle,
+    fontWeight: FontWeight.w700,
+    letterSpacing: letterSpacing,
+    height: 16 / kFontSizeSectionTitle,
+  );
+}
+
 /// Eyebrow title for dashboard sections.
 class PetCareDashboardSectionHeader extends StatelessWidget {
   const PetCareDashboardSectionHeader({
     super.key,
     required this.title,
     this.titleColor = AppColorTokens.petCareActive,
+    this.maxLines = 1,
   });
 
   final String title;
   final Color titleColor;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Text(
-      title,
-      maxLines: 1,
-      overflow: TextOverflow.ellipsis,
-      style: theme.textTheme.labelLarge?.copyWith(
-        color: titleColor,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 1.2,
+    final style = _sectionTitleTextStyle(theme.textTheme, title, titleColor);
+    return Semantics(
+      container: true,
+      header: true,
+      child: Text(
+        title,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+        style: style,
       ),
     );
   }
@@ -37,6 +75,7 @@ class PetCareDashboardSectionChrome extends StatelessWidget {
     super.key,
     this.title,
     this.titleColor = AppColorTokens.petCareActive,
+    this.titleMaxLines = 1,
     this.linkLabel,
     this.onLinkPressed,
     this.linkKey,
@@ -44,6 +83,7 @@ class PetCareDashboardSectionChrome extends StatelessWidget {
 
   final String? title;
   final Color titleColor;
+  final int titleMaxLines;
   final String? linkLabel;
   final VoidCallback? onLinkPressed;
   final Key? linkKey;
@@ -56,7 +96,11 @@ class PetCareDashboardSectionChrome extends StatelessWidget {
     if (!showTitle && !showLink) return const SizedBox.shrink();
 
     final titleWidget = showTitle
-        ? PetCareDashboardSectionHeader(title: title!, titleColor: titleColor)
+        ? PetCareDashboardSectionHeader(
+            title: title!,
+            titleColor: titleColor,
+            maxLines: titleMaxLines,
+          )
         : const SizedBox.shrink();
     final linkWidget = showLink
         ? PetCareDashboardSectionLink(

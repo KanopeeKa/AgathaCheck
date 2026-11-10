@@ -55,6 +55,7 @@ PetPeople _samplePeople({
 Widget _wrap({
   required PetPeople people,
   required bool canManage,
+  String petName = 'Buddy',
   FakePeopleRepository? repo,
   Roster? roster,
   PetPeople? Function()? asyncLoader,
@@ -77,7 +78,7 @@ Widget _wrap({
       child: SingleChildScrollView(
         child: PetPeopleSection(
           petId: 'p1',
-          petName: 'Buddy',
+          petName: petName,
           canManage: canManage,
         ),
       ),
@@ -365,6 +366,31 @@ void main() {
 
     expect(find.byKey(const Key('pet_emergency_up_e2')), findsOneWidget);
     expect(find.byKey(const Key('pet_emergency_down_e1')), findsOneWidget);
+  });
+
+  testWidgets('long pet name wraps section title at 200% text scale', (
+    tester,
+  ) async {
+    const longName = 'Sir Bartholomew Paddington III';
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(textScaler: TextScaler.linear(2)),
+        child: _wrap(
+          people: _samplePeople(),
+          canManage: true,
+          petName: longName,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('People around $longName'), findsOneWidget);
+    final title = tester.widget<Text>(find.text('People around $longName'));
+    expect(title.maxLines, 2);
+    expect(
+      find.byKey(const Key('pet_emergency_manage_button')),
+      findsOneWidget,
+    );
   });
 }
 

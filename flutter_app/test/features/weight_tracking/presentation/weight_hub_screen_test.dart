@@ -224,7 +224,7 @@ void main() {
     GoRouter.of(context).push('/pet/pet-1/weight');
     await tester.pumpAndSettle();
 
-    expect(find.text('Weight Tracking'), findsOneWidget);
+    expect(find.text('Weight tracking'), findsOneWidget);
     expect(find.text('No weight data yet'), findsOneWidget);
     expect(find.byType(WeightChart), findsNothing);
     expect(

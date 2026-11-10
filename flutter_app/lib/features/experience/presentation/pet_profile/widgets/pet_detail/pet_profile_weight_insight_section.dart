@@ -17,10 +17,12 @@ class PetProfileWeightInsightSection extends ConsumerWidget {
     super.key,
     required this.petId,
     required this.pet,
+    this.insetPadding = const EdgeInsets.fromLTRB(16, 16, 16, 0),
   });
 
   final String petId;
   final Pet pet;
+  final EdgeInsets insetPadding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +32,7 @@ class PetProfileWeightInsightSection extends ConsumerWidget {
     final entriesAsync = ref.watch(weightEntriesNotifierProvider(petId));
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+      padding: insetPadding,
       child: entriesAsync.when(
         loading: () => const SizedBox(
           height: 120,

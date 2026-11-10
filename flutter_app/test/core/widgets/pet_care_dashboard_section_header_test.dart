@@ -1,8 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
 
 void main() {
+  group('PetCareDashboardSectionHeader', () {
+    testWidgets('section title exposes header semantics', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: PetCareDashboardSectionHeader(title: 'Health & history'),
+          ),
+        ),
+      );
+
+      final semantics = tester.getSemantics(find.text('Health & history'));
+      expect(semantics.label, 'Health & history');
+      expect(
+        semantics.hasFlag(SemanticsFlag.isHeader),
+        isTrue,
+        reason: 'PET-PROFILE-DECISIONS-R-004',
+      );
+    });
+
+    testWidgets('uppercase dashboard title uses eyebrow tracking', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: PetCareDashboardSectionHeader(title: 'CARE ACTIONS'),
+          ),
+        ),
+      );
+
+      final text = tester.widget<Text>(find.text('CARE ACTIONS'));
+      expect(text.style?.fontWeight, FontWeight.w700);
+      expect(text.style?.fontSize, kFontSizeSectionTitle);
+      expect(text.style?.letterSpacing, greaterThan(0.5));
+      expect(text.maxLines, 1);
+    });
+
+    testWidgets(
+      'sentence-case title uses section title size without tracking',
+      (tester) async {
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: PetCareDashboardSectionHeader(title: 'People around Miso'),
+            ),
+          ),
+        );
+
+        final text = tester.widget<Text>(find.text('People around Miso'));
+        expect(text.style?.fontSize, kFontSizeSectionTitle);
+        expect(text.style?.letterSpacing, 0);
+      },
+    );
+  });
+
   group('PetCareDashboardSectionChrome', () {
     testWidgets('places title and link on one row when wide enough', (
       tester,

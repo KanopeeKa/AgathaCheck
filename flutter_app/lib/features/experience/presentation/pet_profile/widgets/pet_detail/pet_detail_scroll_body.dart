@@ -10,7 +10,6 @@ import '../pet_profile_care_suggestion_section.dart';
 import 'pet_detail_profile_card.dart';
 import 'pet_profile_completeness_section.dart';
 import 'pet_profile_health_history_section.dart';
-import 'pet_profile_weight_insight_section.dart';
 
 /// Scrollable pet profile body in spec §9 order, with desktop sidebar for insight rows.
 class PetDetailScrollBody extends StatelessWidget {
@@ -49,8 +48,7 @@ class PetDetailScrollBody extends StatelessWidget {
         ];
 
         final secondaryColumn = <Widget>[
-          PetProfileWeightInsightSection(petId: pet.id, pet: pet),
-          PetProfileHealthHistorySection(petId: pet.id),
+          PetProfileHealthHistorySection(petId: pet.id, pet: pet),
         ];
 
         final tagRow = PetTagChipRow(petId: pet.id);
