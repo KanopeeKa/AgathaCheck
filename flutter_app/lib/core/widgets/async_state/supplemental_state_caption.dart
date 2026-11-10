@@ -62,7 +62,12 @@ class SupplementalStateCaption extends StatelessWidget {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-          Text(label, style: muted),
+          // While loading, LabelledProgress already exposes [label]; keep the visible text out of
+          // semantics so screen readers announce it once.
+          if (state == SupplementalState.loading)
+            ExcludeSemantics(child: Text(label, style: muted))
+          else
+            Text(label, style: muted),
           if (showRetry)
             TextButton(
               key: retryKey,

@@ -670,7 +670,7 @@ Shared Flutter widgets for these states live in
 
 | Widget | Use for |
 |---|---|
-| `AsyncErrorState` | a failed primary load: localized title (defaults to "We couldn't load this"), one-line hint and Retry; never pass exception text, log it instead; place it inside the screen shell so title and back stay |
+| `AsyncErrorState` | a failed primary load: localized title (defaults to "We couldn't load this") and Retry, with a "check your connection" hint only when Retry is offered (pass your own `detail` otherwise); never pass exception text, log it instead; place it inside the screen shell so title and back stay |
 | `LabelledProgress` | any wait: a progress indicator whose accessible label names what is loading (defaults to "Loading") |
 | `SupplementalStateCaption` | a dependent query that is loading or unavailable next to content that would otherwise read as "none" or "all set" (tag filters, care status, pet names); shows Retry when unavailable |
 

@@ -70,6 +70,27 @@ void main() {
       expect(find.byType(OutlinedButton), findsNothing);
     });
 
+    testWidgets('omits the try-again hint when there is no Retry', (
+      tester,
+    ) async {
+      await _pump(tester, const AsyncErrorState());
+
+      expect(find.text("We couldn't load this"), findsOneWidget);
+      expect(find.text('Check your connection and try again.'), findsNothing);
+    });
+
+    testWidgets('keeps a caller detail when there is no Retry', (tester) async {
+      await _pump(
+        tester,
+        const AsyncErrorState(
+          title: "This invitation isn't available",
+          detail: 'Ask for a new link.',
+        ),
+      );
+
+      expect(find.text('Ask for a new link.'), findsOneWidget);
+    });
+
     testWidgets('Retry meets the 48 dp touch target', (tester) async {
       await _pump(tester, AsyncErrorState(onRetry: () {}));
 
@@ -157,6 +178,22 @@ void main() {
       expect(find.text('Tag filters loading'), findsOneWidget);
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       expect(find.text('Retry'), findsNothing);
+    });
+
+    testWidgets('loading exposes its label to assistive technology once', (
+      tester,
+    ) async {
+      final handle = tester.ensureSemantics();
+      await _pump(
+        tester,
+        const SupplementalStateCaption(
+          state: SupplementalState.loading,
+          label: 'Tag filters loading',
+        ),
+      );
+
+      expect(find.bySemanticsLabel('Tag filters loading'), findsOneWidget);
+      handle.dispose();
     });
 
     testWidgets('unavailable shows the label and a Retry that calls back', (

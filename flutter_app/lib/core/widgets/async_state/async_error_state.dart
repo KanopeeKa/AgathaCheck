@@ -19,7 +19,9 @@ class AsyncErrorState extends StatelessWidget {
   /// Localized title. Defaults to `loadErrorTitle` ("We couldn't load this").
   final String? title;
 
-  /// Localized one-line hint. Defaults to `loadErrorRetryHint`.
+  /// Localized one-line hint. When null, `loadErrorRetryHint` ("Check your connection and try
+  /// again.") is shown only if [onRetry] is set; without Retry no hint is shown, so pass a
+  /// [detail] that fits the state (for example how to get a fresh invite).
   final String? detail;
 
   /// Re-runs the failed load. When null, no Retry button is shown (for example a gone record).
@@ -33,6 +35,7 @@ class AsyncErrorState extends StatelessWidget {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final hint = detail ?? (onRetry != null ? l.loadErrorRetryHint : null);
     return Center(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
@@ -54,14 +57,16 @@ class AsyncErrorState extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                detail ?? l.loadErrorRetryHint,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: scheme.onSurfaceVariant,
+              if (hint != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  hint,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: scheme.onSurfaceVariant,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                textAlign: TextAlign.center,
-              ),
+              ],
               if (onRetry != null) ...[
                 const SizedBox(height: 16),
                 OutlinedButton.icon(
