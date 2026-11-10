@@ -1,4 +1,26 @@
+import '../../../../../../core/router/shell_return_navigation.dart';
 import '../../../pet_profile/screens/widgets/pet_care_global_events_filters.dart';
+
+/// Builds `/pc/events` with optional `?pet=` and encoded `returnTo`.
+String globalAllCareLocation({
+  Iterable<String> petIds = const [],
+  String? returnTo,
+  Map<String, String> baseQuery = const {},
+}) {
+  final sortedIds = petIds.toSet().toList()..sort();
+  final params = GlobalEventsPetQuery.petIdsToQueryParameters(
+    sortedIds.toSet(),
+    base: baseQuery,
+  );
+  final safeReturnTo = parseShellReturnTo(returnTo);
+  if (safeReturnTo != null) {
+    params['returnTo'] = safeReturnTo;
+  }
+  return Uri(
+    path: '/pc/events',
+    queryParameters: params.isEmpty ? null : params,
+  ).toString();
+}
 
 /// Deep-link pet selection for global All care (`/pc/events?pet=id1,id2`).
 abstract final class GlobalEventsPetQuery {

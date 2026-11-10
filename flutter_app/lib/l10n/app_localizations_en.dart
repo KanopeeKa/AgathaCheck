@@ -1391,7 +1391,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petsNavLabel => 'Pets';
 
   @override
-  String get allCare => 'All Actions';
+  String get allCare => 'All care';
 
   @override
   String careForPet(String petName) {
@@ -1402,7 +1402,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardNavLabel => 'Dashboard';
 
   @override
-  String get careNavLabel => 'Actions';
+  String get careNavLabel => 'Care';
 
   @override
   String get peopleNavLabel => 'Contacts';

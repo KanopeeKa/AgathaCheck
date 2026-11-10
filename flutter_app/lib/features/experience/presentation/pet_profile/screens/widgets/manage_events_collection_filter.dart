@@ -38,7 +38,7 @@ class PetCareGlobalEventsCollectionFilterBar extends StatelessWidget {
       onSelectionsChanged: (next) =>
           onChanged(guardianGlobalEventsFiltersFromSelections(next)),
       primaryDimensionIds: primaryGlobalEventsFilterDimensionIds(shellPets),
-      moreDimensionIds: ManageEventsCollectionFilterIds.more,
+      moreDimensionIds: ManageEventsCollectionFilterIds.globalMore,
     );
   }
 }

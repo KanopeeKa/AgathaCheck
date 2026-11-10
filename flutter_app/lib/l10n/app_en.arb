@@ -604,7 +604,7 @@
   "careEyebrow": "CARE ACTIONS",
   "petsEyebrow": "PETS",
   "petsNavLabel": "Pets",
-  "allCare": "All Actions",
+  "allCare": "All care",
   "careForPet": "{petName}'s care",
   "@careForPet": {
     "placeholders": {
@@ -614,7 +614,7 @@
     }
   },
   "dashboardNavLabel": "Dashboard",
-  "careNavLabel": "Actions",
+  "careNavLabel": "Care",
   "peopleNavLabel": "Contacts",
   "careDueTab": "Due {count}",
   "@careDueTab": { "placeholders": { "count": { "type": "int" } } },
