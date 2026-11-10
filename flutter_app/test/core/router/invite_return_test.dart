@@ -6,8 +6,10 @@ void main() {
     for (final prefix in kInviteRecipientRoutePrefixes) {
       test('accepts $prefix with code', () {
         expect(parseInviteReturnTo('${prefix}abc123'), '${prefix}abc123');
-        expect(parseInviteReturnTo(Uri.encodeComponent('${prefix}abc123')),
-            '${prefix}abc123');
+        expect(
+          parseInviteReturnTo(Uri.encodeComponent('${prefix}abc123')),
+          '${prefix}abc123',
+        );
       });
     }
 
@@ -49,7 +51,10 @@ void main() {
     });
 
     test('omits query when returnTo invalid', () {
-      expect(appendInviteReturnQuery('/app/resolve', '/pc/home'), '/app/resolve');
+      expect(
+        appendInviteReturnQuery('/app/resolve', '/pc/home'),
+        '/app/resolve',
+      );
     });
   });
 }

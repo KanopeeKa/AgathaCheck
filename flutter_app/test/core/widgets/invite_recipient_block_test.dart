@@ -43,7 +43,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('invite_recipient_continue_account')));
+    await tester.tap(
+      find.byKey(const Key('invite_recipient_continue_account')),
+    );
     await tester.pumpAndSettle();
 
     expect(router.state.uri.path, '/landing');
