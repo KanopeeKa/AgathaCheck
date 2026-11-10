@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/providers/analytics_providers.dart';
+import '../../../core/theme/app_color_tokens.dart';
 import '../../../core/widgets/app_undo_snackbar.dart';
 import '../../../core/providers/pet_care_sync.dart';
 import '../../../core/router/shell_return_navigation.dart';
@@ -206,6 +207,10 @@ class CareCompletionFlow {
     }
     final undoToken = result.undoToken;
     messenger.hideCurrentSnackBar();
+    // Primary is for light surfaces. Match Undo (snackbar action text).
+    final linkColor =
+        Theme.of(context).snackBarTheme.actionTextColor ??
+        AppColorTokens.inverse;
     final doneContent = Semantics(
       identifier: 'care_done_snackbar',
       container: true,
@@ -220,6 +225,7 @@ class CareCompletionFlow {
               alignment: Alignment.centerLeft,
               child: TextButton(
                 key: const Key('care_done_change_date'),
+                style: TextButton.styleFrom(foregroundColor: linkColor),
                 onPressed: () {
                   messenger.hideCurrentSnackBar();
                   openOccurrenceScreen(
@@ -231,7 +237,13 @@ class CareCompletionFlow {
                     source: _analyticsSource(source),
                   );
                 },
-                child: Text(l.careChangeDate),
+                child: Text(
+                  l.careChangeDate,
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    decorationColor: linkColor,
+                  ),
+                ),
               ),
             ),
         ],
