@@ -158,7 +158,7 @@ Follow `autonomous-pr-policy.md` §**CI retry budget** (red-push streak, same si
 **Push batching (Actions cost):** Accumulate fixes locally until `./scripts/pre-push-changed.sh` is green, then **one push** per logical batch — do not push after every single-file triage fix. Re-run pre-push after the batch, not after each file.
 
 1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --check` — if behind, `--push` once instead of waiting for a failure.
-2. Push fixes; watch CI (`ManagePullRequest get_ci_status` or `gh pr checks`).
+2. Push the accumulated fix batch, then watch until required checks finish: `gh pr checks <url> --watch`. Pending or in progress means this step is not done. A one-shot `gh pr checks` or a fixed `sleep` does not finish it.
 3. **After every push**, `node scripts/babysit_pr_reviews.js wait --pr <url>` — new threads (human, re-requested Copilot) go back through §2–§4 in the same batch as CI fixes. CI green alone never ends the loop.
 4. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
 5. Exhaust policy streak budget → halt; comment on PR + control issue (`**Needs you:**` or `/e2e-debug` handoff).

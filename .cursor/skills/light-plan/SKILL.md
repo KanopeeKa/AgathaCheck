@@ -1,6 +1,6 @@
 ---
 name: light-plan
-description: Single-agent sequential plan — phase PRs merge-committed one by one into an integration branch, one release PR to main after a full self-review, then /babysit-uat. Use for 2–4 phases; runs phase to phase without owner check-ins. /execute-plan when you need scope/budget guarantees or a longer programme.
+description: Single-agent sequential plan — phase PRs merge-committed one by one into an integration branch, one release PR to main after a full self-review, then /babysit-uat through Pre-UAT and tracking-issue close. Stays in session while CI or Pre-UAT is still running. Use for 2–4 phases. /execute-plan when you need scope/budget guarantees or a longer programme.
 disable-model-invocation: true
 ---
 
@@ -10,9 +10,9 @@ Minimal sequential programme — tracking issue only; no execute-plan runtime. P
 
 ## Run to completion
 
-- `/light-plan` delivers a release merged to `main` with Pre-UAT green, not a plan.
+- `/light-plan` delivers a release squash-merged to `main`, Pre-UAT green on that SHA, and the tracking issue closed.
 - Do not end the turn or ask the owner at a step boundary (setup done, phase merged, checklist tick, sync PR, waiting on CI — `gh pr checks --watch`; waiting on review — `node scripts/babysit_pr_reviews.js wait --pr <url>`).
-- End the turn only for stops in §Stop and ask, blocked `./scripts/pre-push.sh` in §Final self-review, or Done (§Release).
+- End the turn only for stops in §Stop and ask, blocked `./scripts/pre-push.sh` in §Final self-review, or Done (§Release). Leaving merge, Pre-UAT, or issue close for a later session is not an ending.
 - Put status on the tracking issue (checklist ticks with PR links). Never ask for acknowledgement.
 
 ## When to use
@@ -66,7 +66,20 @@ Record under `## Self-review` on the release PR.
 
 Open integration → `main` only now. Body: goal, phase links, `## Self-review`, `## Docs`, `Closes #<issue>`. Read and follow [`/babysit-uat`](../babysit-uat/SKILL.md) in the same turn (builds on [`/babysit-plus`](../babysit-plus/SKILL.md); remedial via [`/e2e-debug`](../e2e-debug/SKILL.md) when needed). Programme-owned merges: [`AGENTS.md`](../../../AGENTS.md) §Autonomy and merging.
 
-Do not end the turn while the release PR is open, except [§Stop and ask](#stop-and-ask). Never ask the owner to merge or to run `/babysit-uat`. Done when Pre-UAT green on release merge SHA.
+Re-read this section before opening that PR, and again before any user-facing message while the programme is unfinished. Until Done, take the first matching action. Do not describe it and stop.
+
+| Situation | Action |
+|-----------|--------|
+| Required checks pending or running (Playwright, `ci-gate`, any other required check) | `gh pr checks <url> --watch` until every required check has finished. A fixed `sleep` or a one-shot `gh pr checks` does not finish the wait. |
+| A check failed | Fix inside `/babysit-uat`. Retry budget exhausted → §Stop and ask. |
+| Branch behind `main`, or merge rejected because the head moved | `./scripts/babysit_sync_base.sh --pr <url> --push` once, then watch again. |
+| Checks green, review gate exit `0` | Squash-merge (babysit-uat Phase 1). |
+| Merged, Pre-UAT not yet green | `./scripts/babysit_uat_watch_preuat.sh <merge_sha> --json --timeout-min 90`. Failure → Phase 3–4, then watch again. |
+| Pre-UAT green | Tick the checklist, comment the merge SHA and pre-UAT run URL, `gh issue close <n>`. |
+
+Done when that last row has happened. A later message that only says `/babysit-plus` or "merge it" still owes the Pre-UAT watch and the issue close. If this conversation is woken by a CI subscription, the first action is the matching row — the wake is not an owner question.
+
+Do not end the turn while the release PR is open or Pre-UAT / issue close is unfinished, except [§Stop and ask](#stop-and-ask). Never ask the owner to merge, to run `/babysit-uat`, or to pick the work up in another session.
 
 ## Recovery
 
@@ -74,7 +87,7 @@ If the run is cut off (platform limit, crash, or the owner stops it), a new sess
 
 ## Stop and ask
 
-[`AGENTS.md`](../../../AGENTS.md) §When to ask, plus: CI retry budget exhausted per `autonomous-pr-policy.md` §CI retry budget; a change to the goal; unresolvable main/integration conflict. One question + recommendation on the tracking issue.
+[`AGENTS.md`](../../../AGENTS.md) §When to ask, plus: CI retry budget exhausted per `autonomous-pr-policy.md` §CI retry budget; a change to the goal; unresolvable main/integration conflict. One question + recommendation on the tracking issue. Pending CI, an open release PR, Pre-UAT still running, and an open tracking issue are not stops.
 
 ## Not included
 
