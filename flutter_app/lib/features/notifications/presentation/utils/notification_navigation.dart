@@ -35,28 +35,9 @@ void navigateFromNotification(
       }
       break;
     case 'pendingFosterPlacementReceived':
-      context.go('/pending-actions?focus=foster');
-      return;
     case 'pendingAdoptionPlacementReceived':
-      context.go('/pending-actions?focus=adoption');
-      return;
     case 'pendingCustodyTransferReceived':
-      context.go('/pending-actions?focus=custody');
-      return;
     case 'fosterRequestReceived':
-      final orgId = notification.organizationId;
-      final requestId = notification.healthEntryId;
-      if (orgId != null &&
-          orgId.isNotEmpty &&
-          requestId != null &&
-          requestId.isNotEmpty) {
-        context.go('/o/orgs/$orgId/foster-requests/$requestId/respond');
-        return;
-      }
-      if (orgId != null && orgId.isNotEmpty) {
-        context.go('/o/orgs/$orgId/foster-requests');
-        return;
-      }
       context.go('/pending-actions');
       return;
   }
@@ -77,9 +58,4 @@ void navigateFromNotification(
     return;
   }
 
-  final organizationId = notification.organizationId;
-  if (organizationId != null && organizationId.isNotEmpty) {
-    context.go('/o/orgs/$organizationId');
-    return;
-  }
 }

@@ -58,7 +58,12 @@ class NotificationSettingsMatrixSection extends StatelessWidget {
           theme: theme,
           showPush: kNotificationPushTransportShipped,
         ),
-        ...NotificationMatrixCategory.values.map((category) {
+        ...NotificationMatrixCategory.values
+            .where(
+              (category) =>
+                  category != NotificationMatrixCategory.organisationFoster,
+            )
+            .map((category) {
           if (category == NotificationMatrixCategory.agathaSuggestions) {
             return _AgathaSuggestionsRow(
               l: l,

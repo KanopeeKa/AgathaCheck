@@ -11217,6 +11217,24 @@ abstract class AppLocalizations {
   /// **'Action needed'**
   String get notificationActionNeeded;
 
+  /// No description provided for @pendingActionsUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No actions here'**
+  String get pendingActionsUnavailableTitle;
+
+  /// No description provided for @pendingActionsUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster, adoption and custody approvals are no longer handled on this page. Open your inbox for people updates and Agatha suggestions.'**
+  String get pendingActionsUnavailableBody;
+
+  /// No description provided for @pendingActionsOpenInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Open inbox'**
+  String get pendingActionsOpenInbox;
+
   /// No description provided for @notificationRead.
   ///
   /// In en, this message translates to:

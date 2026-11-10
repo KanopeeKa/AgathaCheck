@@ -40,6 +40,7 @@ enum SuggestionPushMode { off, weeklyDigest, instant }
 enum NotificationMatrixCategory {
   invitesRequests,
   accessMembership,
+  @Deprecated('Frozen shelter/foster category — hidden from settings UI')
   organisationFoster,
   agathaSuggestions,
   accountSecurity,
@@ -86,12 +87,6 @@ class NotificationSettingsMatrix {
               pushEnabled: true,
               emailEnabled: false,
             ),
-        NotificationMatrixCategory.organisationFoster:
-            const NotificationCategoryChannels(
-              inboxAlways: true,
-              pushEnabled: true,
-              emailEnabled: true,
-            ),
         NotificationMatrixCategory.agathaSuggestions:
             const NotificationCategoryChannels(
               inboxEnabled: true,
@@ -117,8 +112,17 @@ class NotificationSettingsMatrix {
   }
 
   NotificationCategoryChannels channel(NotificationMatrixCategory category) {
-    return categories[category] ??
-        NotificationSettingsMatrix.defaults().categories[category]!;
+    final resolved = categories[category] ??
+        NotificationSettingsMatrix.defaults().categories[category];
+    if (resolved != null) return resolved;
+    if (category == NotificationMatrixCategory.organisationFoster) {
+      return const NotificationCategoryChannels(
+        inboxAlways: true,
+        pushEnabled: false,
+        emailEnabled: false,
+      );
+    }
+    throw StateError('Unknown notification matrix category: $category');
   }
 
   NotificationSettingsMatrix copyWithCategory(
