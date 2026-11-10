@@ -116,8 +116,9 @@ class _SharePetScreenState extends ConsumerState<SharePetScreen> {
                 pendingInvites: accessResolved
                     ? (accessRow?.pendingInvites ?? const [])
                     : const [],
-                accessList:
-                    accessResolved ? (accessRow?.access ?? const []) : const [],
+                accessList: accessResolved
+                    ? (accessRow?.access ?? const [])
+                    : const [],
                 accessLoading: shareState.isLoading,
                 accessFailed: shareState.error != null,
                 prefillEmail: widget.prefillEmail,

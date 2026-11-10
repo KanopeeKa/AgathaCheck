@@ -48,9 +48,7 @@ class OwnerSharingContent extends ConsumerWidget {
 
     final linksResolved =
         shareLinks != null ||
-        (linksAsync != null &&
-            !linksAsync.isLoading &&
-            !linksAsync.hasError);
+        (linksAsync != null && !linksAsync.isLoading && !linksAsync.hasError);
     final resolvedLinks =
         shareLinks ?? linksAsync?.valueOrNull ?? const <ShareLink>[];
 
