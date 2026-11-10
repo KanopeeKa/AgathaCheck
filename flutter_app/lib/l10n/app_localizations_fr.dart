@@ -328,6 +328,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retry => 'Réessayer';
 
   @override
+  String get loadErrorTitle => 'Impossible de charger ce contenu';
+
+  @override
+  String get loadErrorRetryHint => 'Vérifiez votre connexion et réessayez.';
+
+  @override
+  String get loadingLabel => 'Chargement';
+
+  @override
   String get language => 'Langue';
 
   @override
@@ -4616,6 +4625,30 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get shareInviteAlreadyAccepted =>
       'Vous avez déjà accepté cette invitation.';
+
+  @override
+  String get inviteContinueWithAccount => 'Se connecter ou créer un compte';
+
+  @override
+  String inviteRecipientInvitedBy(String inviterName) {
+    return '$inviterName vous a invité(e)';
+  }
+
+  @override
+  String inviteRecipientHousehold(String name) {
+    return 'Foyer : $name';
+  }
+
+  @override
+  String inviteRecipientAccessScope(String scope) {
+    return 'Accès : $scope';
+  }
+
+  @override
+  String get sharedPetLinkIdentityUnavailable => 'Un parent d\'animal';
+
+  @override
+  String get entryResolutionFailed => 'Impossible de charger vos animaux';
 
   @override
   String get invited => 'Invité(e)';

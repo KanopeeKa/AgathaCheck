@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/invite_return.dart';
 import '../../../../core/theme/experience_colors.dart';
 import '../../../../core/utils/constants.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -40,10 +41,16 @@ class _PetCareOnboardingScreenState
     ref.invalidate(petCareOnboardingCompletedProvider);
   }
 
+  String _postOnboardingLocation() {
+    final returnTo = inviteReturnToFromState(GoRouterState.of(context));
+    if (returnTo != null) return returnTo;
+    return '/pc/home';
+  }
+
   Future<void> _skip() async {
     await _persistOnboardingComplete();
     if (!mounted) return;
-    context.go('/pc/home');
+    context.go(_postOnboardingLocation());
   }
 
   Future<void> _finish() async {
@@ -58,7 +65,7 @@ class _PetCareOnboardingScreenState
           .addPet(name: petName, species: _species);
       await _persistOnboardingComplete();
       if (!mounted) return;
-      context.go('/pc/home');
+      context.go(_postOnboardingLocation());
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

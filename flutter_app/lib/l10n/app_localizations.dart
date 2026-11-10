@@ -680,6 +680,24 @@ abstract class AppLocalizations {
   /// **'Retry'**
   String get retry;
 
+  /// Default title of the shared load-error state when a screen has no more specific subject (AsyncErrorState).
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load this'**
+  String get loadErrorTitle;
+
+  /// Default one-line hint under a load-error title (AsyncErrorState).
+  ///
+  /// In en, this message translates to:
+  /// **'Check your connection and try again.'**
+  String get loadErrorRetryHint;
+
+  /// Default accessible label of the shared progress indicator (LabelledProgress).
+  ///
+  /// In en, this message translates to:
+  /// **'Loading'**
+  String get loadingLabel;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
@@ -8126,6 +8144,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have already accepted this invitation.'**
   String get shareInviteAlreadyAccepted;
+
+  /// Primary action on signed-out invite recipient previews.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in or create an account'**
+  String get inviteContinueWithAccount;
+
+  /// No description provided for @inviteRecipientInvitedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{inviterName} invited you'**
+  String inviteRecipientInvitedBy(String inviterName);
+
+  /// No description provided for @inviteRecipientHousehold.
+  ///
+  /// In en, this message translates to:
+  /// **'Household: {name}'**
+  String inviteRecipientHousehold(String name);
+
+  /// No description provided for @inviteRecipientAccessScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Access: {scope}'**
+  String inviteRecipientAccessScope(String scope);
+
+  /// Fallback when a public share preview omits the inviter display name.
+  ///
+  /// In en, this message translates to:
+  /// **'A pet parent'**
+  String get sharedPetLinkIdentityUnavailable;
+
+  /// Title when post-login experience resolution fails to load pets.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load your pets'**
+  String get entryResolutionFailed;
 
   /// No description provided for @invited.
   ///
