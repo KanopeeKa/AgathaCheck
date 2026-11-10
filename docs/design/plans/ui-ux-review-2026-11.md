@@ -10,7 +10,7 @@ tags: [design,ui,ux,review]
 
 Analysis only. No app code, theme, copy, tests or routes were changed. Graded against the repository's own guidance ([`true-north.md`](../true-north.md), [`principles.md`](../principles.md), [`system.md`](../system.md), [`tokens.md`](../tokens.md), [`copy-tone.md`](../copy-tone.md), [`terminology.md`](../terminology.md), the `ui-design-deep` skill) and against public material from comparable pet apps (Part 3).
 
-> **Archive record.** This file is the original review, committed unchanged as the source for the execute-plan split in [`ui-ux-review-2026-11-execute-plan-split.md`](./ui-ux-review-2026-11-execute-plan-split.md). One edit was made to the text: the two screenshot embeds in "Method and limits" are replaced by an archive note, because the image files were not supplied. It does not change any finding.
+> **Archive record.** This file is the original review, committed as the source record for the execute-plan split in [`ui-ux-review-2026-11-execute-plan-split.md`](./ui-ux-review-2026-11-execute-plan-split.md). One edit was made to the text: the two screenshot embeds in "Method and limits" are replaced by an archive note, because the image files were not supplied. It does not change any finding.
 
 ## Summary
 
