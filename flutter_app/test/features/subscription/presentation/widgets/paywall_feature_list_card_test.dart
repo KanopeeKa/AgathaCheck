@@ -12,9 +12,8 @@ void main() {
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Builder(
-          builder: (context) => Scaffold(
-            body: PaywallFeatureListCard(theme: Theme.of(context)),
-          ),
+          builder: (context) =>
+              Scaffold(body: PaywallFeatureListCard(theme: Theme.of(context))),
         ),
       ),
     );
