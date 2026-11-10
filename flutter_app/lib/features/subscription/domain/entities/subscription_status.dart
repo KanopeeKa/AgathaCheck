@@ -6,6 +6,8 @@ class SubscriptionStatus {
   final DateTime? expirationDate;
   final String? managementUrl;
   final String? productIdentifier;
+
+  /// From RevenueCat [EntitlementInfo.willRenew] when the entitlement is active.
   final bool willRenew;
 
   const SubscriptionStatus({
