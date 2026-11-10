@@ -8,6 +8,7 @@ import {
   careAsOfForZone,
   careItemReadAdditions,
   filterOpenRowsForListRead,
+  listCompletionsTodayByEntry,
   listLastDoneByEntry,
   listOpenRows,
   listOpenRowsByEntry,
@@ -30,6 +31,26 @@ function lastDoneToWire(row, timeZone) {
 }
 
 /**
+ * One slot completed on the item's pet-home today (multi-line care cards).
+ *
+ * @param {object} row normalized completed occurrence
+ * @param {string} timeZone pet home timezone
+ */
+function completionTodayToWire(row, timeZone) {
+  return {
+    occurrence_id: row.id,
+    scheduled_date: row.scheduled_date,
+    scheduled_time: row.scheduled_time,
+    completed_on: row.completed_on,
+    time: row.marked_at ? wallClockInTimeZone(timeZone, new Date(row.marked_at)).nowTimeIso : null,
+  };
+}
+
+function completionsTodayToWire(rows, timeZone) {
+  return (rows || []).map((row) => completionTodayToWire(row, timeZone));
+}
+
+/**
  * @param {import('pg').Pool|import('pg').PoolClient} db
  * @param {object} entry health_entries row
  * @param {import('express').Request|null} req
@@ -41,10 +62,14 @@ export async function careItemWire(db, entry, req, { openRows = null, asOf = nul
   const clock = asOf || await resolveCareAsOf(db, entry, req);
   const rows = openRows || await listOpenRows(db, entry.id);
   const lastDone = (await listLastDoneByEntry(db, [entry.id])).get(entry.id);
+  const completionsToday = (
+    await listCompletionsTodayByEntry(db, [{ id: entry.id, todayIso: clock.todayIso }])
+  ).get(entry.id);
   return {
     ...healthEntryToMap(entry),
     ...careItemReadAdditions(entry, rows, clock),
     last_done: lastDoneToWire(lastDone, clock.timeZone),
+    completions_today: completionsTodayToWire(completionsToday, clock.timeZone),
   };
 }
 
@@ -60,9 +85,15 @@ export async function careItemsWire(db, entries, req) {
   const requestClock = careClockFromRequest(req);
   const now = new Date();
   const byZone = new Map();
-  return entries.map((entry) => {
+  const entryToday = entries.map((entry) => {
     const zone = normalizePetHomeTimezone(entry.pet_home_timezone);
     if (!byZone.has(zone)) byZone.set(zone, careAsOfForZone(zone, requestClock, now));
+    const zoneClock = byZone.get(zone);
+    return { id: entry.id, todayIso: zoneClock.todayIso };
+  });
+  const completionsTodayByEntry = await listCompletionsTodayByEntry(db, entryToday);
+  return entries.map((entry) => {
+    const zone = normalizePetHomeTimezone(entry.pet_home_timezone);
     const zoneClock = byZone.get(zone);
     const openRows = filterOpenRowsForListRead(
       entry,
@@ -73,6 +104,7 @@ export async function careItemsWire(db, entries, req) {
       ...healthEntryToMap(entry),
       ...careItemReadAdditions(entry, openRows, zoneClock),
       last_done: lastDoneToWire(lastDoneByEntry.get(entry.id), zone),
+      completions_today: completionsTodayToWire(completionsTodayByEntry.get(entry.id), zone),
     };
   });
 }
