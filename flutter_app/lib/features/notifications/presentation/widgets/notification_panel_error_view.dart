@@ -20,9 +20,6 @@ class NotificationPanelErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AsyncErrorState(
-      title: l.notificationsLoadError,
-      onRetry: onRetry,
-    );
+    return AsyncErrorState(title: l.notificationsLoadError, onRetry: onRetry);
   }
 }

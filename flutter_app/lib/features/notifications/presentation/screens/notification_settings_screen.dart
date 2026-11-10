@@ -84,8 +84,7 @@ class _NotificationSettingsScreenState
         loading: () => Center(child: LabelledProgress(label: l.loadingLabel)),
         error: (error, _) => AsyncErrorState(
           title: l.notificationPreferencesLoadError,
-          onRetry: () =>
-              ref.invalidate(notificationPreferencesProvider),
+          onRetry: () => ref.invalidate(notificationPreferencesProvider),
         ),
         data: (_) => ListView(
           children: [

@@ -175,9 +175,9 @@ class ManagePetTagsScreen extends ConsumerWidget {
       await ref.read(petTagListProvider.notifier).deleteTag(tag.id);
     } catch (_) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l.petTagDeleteFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l.petTagDeleteFailed)));
       }
     }
   }

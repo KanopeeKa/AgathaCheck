@@ -97,10 +97,7 @@ class PaywallBodyContent extends StatelessWidget {
                 PaywallFeatureListCard(theme: theme),
                 const SizedBox(height: 24),
                 if (error != null)
-                  AsyncErrorState(
-                    title: error,
-                    onRetry: onReloadOfferings,
-                  )
+                  AsyncErrorState(title: error, onRetry: onReloadOfferings)
                 else
                   ..._offeringCards(context, l),
                 const SizedBox(height: 12),
