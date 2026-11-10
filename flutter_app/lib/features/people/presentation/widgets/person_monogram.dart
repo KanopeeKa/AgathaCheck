@@ -19,13 +19,39 @@ String personMonogramFromName(String name) {
   return word[0].toUpperCase();
 }
 
-Color personAccentColor(String stableId, ColorScheme scheme) {
-  final candidates = <Color>[
-    scheme.primary,
-    scheme.secondary,
-    scheme.tertiary,
-    scheme.primaryContainer,
-  ];
-  final index = stableId.hashCode.abs() % candidates.length;
-  return candidates[index];
+/// Ring/tint and glyph colors for [PersonAvatar] placeholders.
+class PersonMonogramStyle {
+  const PersonMonogramStyle({required this.accent, required this.foreground});
+
+  /// Drives the circular tint and ring — never the initials glyph.
+  final Color accent;
+
+  /// Initials on the tinted circle (paired `on*Container` per accent family).
+  final Color foreground;
+}
+
+PersonMonogramStyle personMonogramStyle(String stableId, ColorScheme scheme) {
+  PersonMonogramStyle slot(int i) {
+    switch (i) {
+      case 0:
+        return PersonMonogramStyle(
+          accent: scheme.primary,
+          foreground: scheme.onPrimaryContainer,
+        );
+      case 1:
+        return PersonMonogramStyle(
+          accent: scheme.secondary,
+          foreground: scheme.onSecondaryContainer,
+        );
+      case 2:
+      default:
+        return PersonMonogramStyle(
+          accent: scheme.tertiary,
+          foreground: scheme.onTertiaryContainer,
+        );
+    }
+  }
+
+  final index = stableId.hashCode.abs() % 3;
+  return slot(index);
 }
