@@ -147,7 +147,8 @@ class _PetCareBulkShareSelectScreenState
                               padding: const EdgeInsets.only(bottom: 8),
                               child: SupplementalStateCaption(
                                 state: careSupplemental,
-                                label: careSupplemental ==
+                                label:
+                                    careSupplemental ==
                                         SupplementalState.loading
                                     ? l.loadingLabel
                                     : l.careStatusUnavailable,

@@ -56,9 +56,8 @@ class _PetDetailScreenState extends ConsumerState<PetDetailScreen> {
     }
 
     return petListAsync.when(
-      loading: () => routeShell(
-        child: const Center(child: CircularProgressIndicator()),
-      ),
+      loading: () =>
+          routeShell(child: const Center(child: CircularProgressIndicator())),
       error: (error, _) => routeShell(
         child: AsyncErrorState(
           title: l.loadErrorYourPets,

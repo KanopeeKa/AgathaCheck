@@ -93,8 +93,7 @@ class PetCarePetsTileGrid extends StatelessWidget {
   }) {
     final theme = Theme.of(context);
     final PetTileStatusLineData? statusLine = switch (careSummaryResolution) {
-      CareSummaryResolution.loading ||
-      CareSummaryResolution.unavailable =>
+      CareSummaryResolution.loading || CareSummaryResolution.unavailable =>
         const PetTileStatusLineData(label: ''),
       CareSummaryResolution.ready => resolvePetTileStatusLine(
         l: l,

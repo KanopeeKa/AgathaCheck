@@ -387,13 +387,15 @@ void main() {
               ),
             ),
           ),
-          petListProvider.overrideWith(() => _RetryPetListNotifier(() async {
-            attempts++;
-            if (attempts < 2) {
-              throw Exception('DioException failed');
-            }
-            return [ownedPet];
-          })),
+          petListProvider.overrideWith(
+            () => _RetryPetListNotifier(() async {
+              attempts++;
+              if (attempts < 2) {
+                throw Exception('DioException failed');
+              }
+              return [ownedPet];
+            }),
+          ),
           allPetsIncludingOrgProvider.overrideWith((ref) async => [ownedPet]),
           organizationListProvider.overrideWith(
             FakeOrganizationListNotifier.new,
@@ -409,8 +411,9 @@ void main() {
             (ref) => _FakeSharingRepository(),
           ),
           petShareLinksNotifierProvider('pet-1').overrideWith(
-            (ref) => PetShareLinksNotifier(ref, 'pet-1')
-              ..state = const AsyncValue.data([]),
+            (ref) =>
+                PetShareLinksNotifier(ref, 'pet-1')
+                  ..state = const AsyncValue.data([]),
           ),
           weightEntriesNotifierProvider.overrideWith(
             () => _EmptyWeightEntriesNotifier(),
