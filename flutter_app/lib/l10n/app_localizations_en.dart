@@ -322,6 +322,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get retry => 'Retry';
 
   @override
+  String get loadErrorTitle => 'We couldn\'t load this';
+
+  @override
+  String get loadErrorRetryHint => 'Check your connection and try again.';
+
+  @override
+  String get loadingLabel => 'Loading';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -4544,6 +4553,30 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shareInviteAlreadyAccepted =>
       'You have already accepted this invitation.';
+
+  @override
+  String get inviteContinueWithAccount => 'Sign in or create an account';
+
+  @override
+  String inviteRecipientInvitedBy(String inviterName) {
+    return '$inviterName invited you';
+  }
+
+  @override
+  String inviteRecipientHousehold(String name) {
+    return 'Household: $name';
+  }
+
+  @override
+  String inviteRecipientAccessScope(String scope) {
+    return 'Access: $scope';
+  }
+
+  @override
+  String get sharedPetLinkIdentityUnavailable => 'A pet parent';
+
+  @override
+  String get entryResolutionFailed => 'We couldn\'t load your pets';
 
   @override
   String get invited => 'Invited';

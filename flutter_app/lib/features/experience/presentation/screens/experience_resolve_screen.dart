@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/router/invite_return.dart';
+import '../../../../core/widgets/invite_recipient_block.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../domain/services/experience_eligibility.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../providers/experience_providers.dart';
@@ -19,6 +22,10 @@ class _ExperienceResolveScreenState
     extends ConsumerState<ExperienceResolveScreen> {
   bool _navigated = false;
 
+  void _resetNavigation() {
+    _navigated = false;
+  }
+
   void _navigate(ExperienceEligibility eligibility) {
     if (_navigated || !mounted) return;
     _navigated = true;
@@ -27,16 +34,28 @@ class _ExperienceResolveScreenState
     final petCareOnboardingCompleted = ref.read(
       petCareOnboardingCompletedProvider,
     );
-    final path = resolvePostLoginPath(
+    final returnTo = inviteReturnToFromState(GoRouterState.of(context));
+    var path = resolvePostLoginPath(
       eligibility: eligibility,
       pets: pets,
       petCareOnboardingCompleted: petCareOnboardingCompleted,
     );
+
+    if (returnTo != null) {
+      if (path == '/pc/onboarding') {
+        path = appendInviteReturnQuery(path, returnTo);
+      } else {
+        path = returnTo;
+      }
+    }
+
     context.go(path);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     ref.listen<AsyncValue<ExperienceEligibility>>(
       experienceEligibilityProvider,
       (_, next) {
@@ -45,21 +64,27 @@ class _ExperienceResolveScreenState
     );
 
     final eligibility = ref.watch(experienceEligibilityProvider);
-    eligibility.whenOrNull(
+    return eligibility.when(
+      loading: () =>
+          const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (_, __) {
+        return Scaffold(
+          body: AsyncErrorState(
+            title: l10n.entryResolutionFailed,
+            onRetry: () {
+              _resetNavigation();
+              ref.invalidate(petListProvider);
+            },
+            retryKey: const Key('experience_resolve_retry'),
+          ),
+        );
+      },
       data: (data) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) _navigate(data);
         });
-      },
-      error: (_, __) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_navigated || !mounted) return;
-          _navigated = true;
-          context.go('/pc/home');
-        });
+        return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     );
-
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
