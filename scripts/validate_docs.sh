@@ -174,8 +174,9 @@ fi
 echo ""
 echo "Checking for potential duplicate content..."
 
+# pre-push.sh is deliberately not listed (DOCUMENTATION-STANDARDS-D-010): most mentions are
+# one-line pointers to the canonical script, which is the pattern docs should follow.
 DUPLICATE_PATTERNS=(
-  "pre-push.sh"
   "flutter pub get"
   "npm ci"
   "flutter analyze"

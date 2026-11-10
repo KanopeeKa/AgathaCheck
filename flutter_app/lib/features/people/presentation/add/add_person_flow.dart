@@ -35,6 +35,7 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
     super.initState();
     _controller = AddPersonFlowController(
       initialEntry: widget.args?.initialEntry,
+      initialPetIds: widget.args?.initialPetIds ?? const [],
     );
     if (widget.args?.initialEntry != null) {
       _controller.selectEntry(widget.args!.initialEntry!);
@@ -58,6 +59,14 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
     if (entry == null) return;
     if (!_controller.form.validate()) {
       setState(() {});
+      return;
+    }
+    if (!_controller.validatePetLinksForSave()) {
+      setState(() {});
+      final l = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l.peopleDetailLinkPetKindRequired)),
+      );
       return;
     }
     setState(() => _saving = true);

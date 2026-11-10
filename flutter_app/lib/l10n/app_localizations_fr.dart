@@ -8406,7 +8406,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get peoplePickerQuickAddSave => 'Enregistrer le contact';
 
   @override
-  String get peopleGroupCarers => 'Aidants de confiance';
+  String get peopleGroupCarers => 'Proches & pet-sitters';
 
   @override
   String get peopleGroupProfessionals => 'Professionnels';
@@ -8466,15 +8466,29 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String peoplePetOwnerQuiet(String petName, String ownerName) {
-    return '$petName · l\'animal de $ownerName';
-  }
-
-  @override
   String get peopleGroupAtHome => 'À la maison';
 
   @override
-  String get peoplePetEmergencyCardTitle => 'Urgences';
+  String get peopleGroupVets => 'Vétérinaires';
+
+  @override
+  String get peopleGroupEmergencyContacts => 'Contacts d\'urgence';
+
+  @override
+  String get peopleGroupPetProfessionals => 'Ses pros';
+
+  @override
+  String peopleParentOf(String petName) {
+    return 'Parent de $petName';
+  }
+
+  @override
+  String peopleCallPerson(String name) {
+    return 'Appeler $name';
+  }
+
+  @override
+  String get peopleAddSomeonePet => '+ Ajouter quelqu\'un';
 
   @override
   String get peoplePetEmergencyManage => 'Gérer';
@@ -8494,10 +8508,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peoplePetAddEmergencyContact => 'Ajouter un contact d\'urgence';
-
-  @override
-  String get peoplePetEmptyAtHome =>
-      'Aucun membre du foyer pour cet animal pour l\'instant.';
 
   @override
   String get peopleReorderUp => 'Monter';

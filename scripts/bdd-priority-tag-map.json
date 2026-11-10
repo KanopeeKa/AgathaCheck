@@ -87,7 +87,7 @@
     "No identification reminder for pet with ID": "P2",
     "Adding a photo to a pet profile": "P1",
     "Linking a veterinarian to a pet": "P1",
-    "Buddy's emergency card shows the primary vet set from Contacts, with a call action": "P1",
+    "Buddy's people around box shows the primary vet from Contacts, with a call action": "P1",
     "Set Buddy's out-of-hours vet from People around Buddy": "P1"
   },
   "health_tracking.feature": {

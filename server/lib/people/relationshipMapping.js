@@ -1,3 +1,12 @@
+import { CONTACT_ROLES_AGG_SQL } from './contactRolesSql.js';
+
+function contactRolesFromRow(row) {
+  const raw = row.contact_roles;
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.filter(Boolean);
+  return [];
+}
+
 export function relationshipRowToMap(row) {
   return {
     id: row.id,
@@ -16,6 +25,7 @@ export function relationshipRowToMap(row) {
         inactive_at: row.contact_inactive_at
           ? row.contact_inactive_at.toISOString?.() || String(row.contact_inactive_at)
           : null,
+        roles: contactRolesFromRow(row),
       }
       : null,
     created_at: row.created_at,
@@ -28,7 +38,8 @@ export const RELATIONSHIP_LIST_SQL = `
     pc.kind AS contact_kind,
     pc.name AS contact_name,
     pc.phone AS contact_phone,
-    pc.inactive_at AS contact_inactive_at
+    pc.inactive_at AS contact_inactive_at,
+    ${CONTACT_ROLES_AGG_SQL} AS contact_roles
   FROM pet_contact_relationships pcr
   INNER JOIN people_contacts pc ON pc.id = pcr.contact_id
   WHERE pcr.pet_id = $1

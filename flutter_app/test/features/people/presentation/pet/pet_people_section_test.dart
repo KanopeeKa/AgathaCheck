@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:pet_profile_app/features/people/application/people_api_exception.dart';
 import 'package:pet_profile_app/features/people/application/people_commands.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
@@ -14,7 +17,10 @@ import 'package:pet_profile_app/features/people/domain/enums/relationship_kind.d
 import 'package:pet_profile_app/features/people/domain/repositories/people_repository.dart';
 import 'package:pet_profile_app/features/people/presentation/pet/pet_emergency_manage_sheet.dart';
 import 'package:pet_profile_app/features/people/presentation/pet/pet_people_section.dart';
+import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
+import '../../../../helpers/fakes.dart';
 import '../../application/people_providers_test.dart';
+import '../hub/people_hub_test_support.dart';
 import '../people_test_harness.dart';
 
 PetPeople _samplePeople({
@@ -27,6 +33,13 @@ PetPeople _samplePeople({
     scope: scope,
     owner: const PetPeopleOwner(userId: 'u1', displayName: 'Alex'),
     householdMembers: const [
+      HouseholdMemberSnapshot(
+        userId: 'u1',
+        displayName: 'Alex',
+        firstName: 'Alex',
+        tier: 'full_access',
+        isOrganiser: true,
+      ),
       HouseholdMemberSnapshot(
         userId: 'u2',
         displayName: 'Sam',
@@ -43,12 +56,21 @@ Widget _wrap({
   required PetPeople people,
   required bool canManage,
   FakePeopleRepository? repo,
+  Roster? roster,
+  PetPeople? Function()? asyncLoader,
 }) {
   final repository = repo ?? FakePeopleRepository();
+  final rosterData =
+      roster ?? const Roster(households: [], contacts: [], pendingInvites: []);
   return ProviderScope(
     overrides: [
+      authProvider.overrideWith((ref) => FakeAuthNotifier()),
       peopleRepositoryProvider.overrideWithValue(repository),
-      petPeopleProvider.overrideWith((ref, petId) async => people),
+      rosterProvider.overrideWith(() => TestRosterNotifier(rosterData)),
+      petPeopleProvider.overrideWith((ref, petId) async {
+        if (asyncLoader != null) return asyncLoader();
+        return people;
+      }),
       peopleCommandsProvider.overrideWith((ref) => PeopleCommands(ref)),
     ],
     child: peopleTestApp(
@@ -64,7 +86,9 @@ Widget _wrap({
 }
 
 void main() {
-  testWidgets('owner sees Manage and household At home group', (tester) async {
+  testWidgets('owner sees Manage, vets group, and household At home', (
+    tester,
+  ) async {
     final people = _samplePeople(
       relationships: [
         PetRelationship(
@@ -85,9 +109,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('People around Buddy'), findsOneWidget);
-    expect(find.text("Buddy · Alex's pet"), findsOneWidget);
-    expect(find.text('At home'), findsOneWidget);
+    expect(find.text('VETS'), findsOneWidget);
+    expect(find.text('AT HOME'), findsOneWidget);
     expect(find.text('Sam'), findsOneWidget);
+    expect(find.text('Parent of Buddy'), findsOneWidget);
     expect(find.text('Greenhill Vet'), findsWidgets);
     expect(
       find.byKey(const Key('pet_emergency_manage_button')),
@@ -99,7 +124,9 @@ void main() {
     );
   });
 
-  testWidgets('can log care handover hides Manage and At home', (tester) async {
+  testWidgets('can log care handover hides Manage but shows owner At home', (
+    tester,
+  ) async {
     final people = _samplePeople(
       scope: 'handover',
       relationships: [
@@ -121,7 +148,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('pet_emergency_manage_button')), findsNothing);
-    expect(find.text('At home'), findsNothing);
+    expect(find.text('AT HOME'), findsOneWidget);
+    expect(find.text('Alex'), findsOneWidget);
+    expect(find.text('Sam'), findsNothing);
     expect(find.text('Greenhill Vet'), findsWidgets);
   });
 
@@ -148,6 +177,55 @@ void main() {
       find.bySemanticsIdentifier('pet_emergency_call_primary_vet'),
       findsNothing,
     );
+  });
+
+  testWidgets('loading state renders inside the module', (tester) async {
+    final loading = Completer<PetPeople?>();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          peopleRepositoryProvider.overrideWithValue(FakePeopleRepository()),
+          petPeopleProvider.overrideWith((ref, petId) => loading.future),
+        ],
+        child: peopleTestApp(
+          child: const PetPeopleSection(
+            petId: 'p1',
+            petName: 'Buddy',
+            canManage: true,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+
+  testWidgets('error state renders inside the module', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          peopleRepositoryProvider.overrideWithValue(FakePeopleRepository()),
+          petPeopleProvider.overrideWith((ref, petId) async {
+            throw PeopleApiException(
+              code: 'server_error',
+              statusCode: 500,
+              message: 'fail',
+            );
+          }),
+        ],
+        child: peopleTestApp(
+          child: const PetPeopleSection(
+            petId: 'p1',
+            petName: 'Buddy',
+            canManage: true,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Could not load contacts. Try again.'), findsOneWidget);
   });
 
   testWidgets('manage sheet lists out-of-hours vet row', (tester) async {
@@ -218,12 +296,14 @@ void main() {
   testWidgets('primary vet picker lists directory vets for an unlinked pet', (
     tester,
   ) async {
-    // Whiskers-like pet: no relationships at all.
+    final vetRepo = _DirectoryVetRepository();
+    final vetRoster = await vetRepo.fetchRoster();
     await tester.pumpWidget(
       _wrap(
         people: _samplePeople(),
         canManage: true,
-        repo: _DirectoryVetRepository(),
+        repo: vetRepo,
+        roster: vetRoster,
       ),
     );
     await tester.pumpAndSettle();
@@ -243,7 +323,6 @@ void main() {
       find.byKey(const Key('people_picker_option_vet-person-1')),
       findsOneWidget,
     );
-    // Non-vet professionals stay out of the vet slot.
     expect(
       find.byKey(const Key('people_picker_option_groomer-1')),
       findsNothing,

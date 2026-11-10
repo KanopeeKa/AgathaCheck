@@ -14554,23 +14554,47 @@ abstract class AppLocalizations {
   /// **'People around {petName}'**
   String peopleAroundPetTitle(String petName);
 
-  /// No description provided for @peoplePetOwnerQuiet.
-  ///
-  /// In en, this message translates to:
-  /// **'{petName} · {ownerName}\'s pet'**
-  String peoplePetOwnerQuiet(String petName, String ownerName);
-
   /// No description provided for @peopleGroupAtHome.
   ///
   /// In en, this message translates to:
   /// **'At home'**
   String get peopleGroupAtHome;
 
-  /// No description provided for @peoplePetEmergencyCardTitle.
+  /// No description provided for @peopleGroupVets.
   ///
   /// In en, this message translates to:
-  /// **'Emergency'**
-  String get peoplePetEmergencyCardTitle;
+  /// **'Vets'**
+  String get peopleGroupVets;
+
+  /// No description provided for @peopleGroupEmergencyContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contacts'**
+  String get peopleGroupEmergencyContacts;
+
+  /// No description provided for @peopleGroupPetProfessionals.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet professionals'**
+  String get peopleGroupPetProfessionals;
+
+  /// No description provided for @peopleParentOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent of {petName}'**
+  String peopleParentOf(String petName);
+
+  /// No description provided for @peopleCallPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Call {name}'**
+  String peopleCallPerson(String name);
+
+  /// No description provided for @peopleAddSomeonePet.
+  ///
+  /// In en, this message translates to:
+  /// **'+ Add someone'**
+  String get peopleAddSomeonePet;
 
   /// No description provided for @peoplePetEmergencyManage.
   ///
@@ -14601,12 +14625,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add emergency contact'**
   String get peoplePetAddEmergencyContact;
-
-  /// No description provided for @peoplePetEmptyAtHome.
-  ///
-  /// In en, this message translates to:
-  /// **'No household members for this pet yet.'**
-  String get peoplePetEmptyAtHome;
 
   /// No description provided for @peopleReorderUp.
   ///

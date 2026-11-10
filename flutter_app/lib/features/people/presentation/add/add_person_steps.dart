@@ -296,9 +296,16 @@ class AddPersonStepPets extends ConsumerWidget {
       error: (_, __) => Text(l.peopleListLoadError),
       data: (petNames) {
         if (controller.pets.isEmpty && petNames.isNotEmpty) {
+          final initialIds = controller.initialPetIds.toSet();
           controller.setPets(
             petNames
-                .map((p) => AddPersonPetSelection(petId: p.id, petName: p.name))
+                .map(
+                  (p) => AddPersonPetSelection(
+                    petId: p.id,
+                    petName: p.name,
+                    selected: initialIds.contains(p.id),
+                  ),
+                )
                 .toList(),
           );
         }
@@ -311,6 +318,16 @@ class AddPersonStepPets extends ConsumerWidget {
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 12),
+            if (controller.petsLinkError != null)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  l.peopleDetailLinkPetKindRequired,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+              ),
             if (selections.isEmpty)
               Text(
                 l.peopleAddPetsEmpty,
@@ -358,8 +375,13 @@ class _PetRow extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 16, bottom: 8),
             child: DropdownButtonFormField<RelationshipKind>(
-              initialValue: selection.relationshipKind,
-              decoration: InputDecoration(labelText: l.peopleAddPetLinkKind),
+              value: selection.relationshipKind,
+              decoration: InputDecoration(
+                labelText: l.peopleAddPetLinkKind,
+                helperText: selection.relationshipKind == null
+                    ? l.peopleDetailLinkPetKindRequired
+                    : null,
+              ),
               items:
                   const [
                         RelationshipKind.primaryVet,
