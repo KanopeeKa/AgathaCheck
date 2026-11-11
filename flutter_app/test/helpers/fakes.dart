@@ -16,6 +16,7 @@ import 'package:pet_profile_app/features/notifications/domain/entities/notificat
 import 'package:pet_profile_app/features/notifications/domain/services/notification_inbox_v2_rules.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
+import 'package:pet_profile_app/features/subscription/domain/entities/subscription_operation_outcomes.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -236,12 +237,12 @@ class FakeRevenueCatService implements RevenueCatService {
   Future<List<Offering>> getOfferings() async => [];
 
   @override
-  Future<SubscriptionStatus> purchasePackage(Package package) async =>
-      SubscriptionStatus.free;
+  Future<PurchaseOutcome> purchasePackage(Package package) async =>
+      const PurchaseOutcome.failed();
 
   @override
-  Future<SubscriptionStatus> restorePurchases() async =>
-      SubscriptionStatus.free;
+  Future<RestoreOutcome> restorePurchases() async =>
+      const RestoreOutcome.nothingToRestore();
 
   @override
   void addCustomerInfoListener(void Function(SubscriptionStatus) listener) {}

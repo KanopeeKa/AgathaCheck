@@ -7,6 +7,7 @@ import 'package:pet_profile_app/core/utils/external_link_launcher.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+import '../../domain/entities/subscription_operation_outcomes.dart';
 import '../providers/subscription_providers.dart';
 import '../widgets/paywall_body_content.dart';
 
@@ -66,52 +67,59 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
   Future<void> _purchasePackage(Package package) async {
     setState(() => _purchasing = true);
-    try {
-      final service = ref.read(revenueCatServiceProvider);
-      final status = await service.purchasePackage(package);
-      await ref.read(subscriptionStatusProvider.notifier).refresh();
-      if (mounted) {
-        setState(() => _purchasing = false);
-        if (status.hasUnlimited) {
-          final l = AppLocalizations.of(context)!;
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l.welcomeUnlimited),
-              backgroundColor: AppColorTokens.success,
-            ),
-          );
-        }
-      }
-    } catch (_) {
-      if (mounted) {
-        setState(() => _purchasing = false);
-        final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.subscriptionPurchaseFailed)));
-      }
+    final outcome = await ref
+        .read(subscriptionStatusProvider.notifier)
+        .purchasePackage(package);
+    if (!mounted) return;
+    setState(() => _purchasing = false);
+    final l = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    switch (outcome.kind) {
+      case PurchaseOutcomeKind.success:
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(l.welcomeUnlimited),
+            backgroundColor: AppColorTokens.success,
+          ),
+        );
+      case PurchaseOutcomeKind.cancelled:
+        break;
+      case PurchaseOutcomeKind.failed:
+        messenger.showSnackBar(
+          SnackBar(content: Text(l.subscriptionPurchaseFailed)),
+        );
+      case PurchaseOutcomeKind.pendingUnconfirmed:
+        messenger.showSnackBar(
+          SnackBar(content: Text(l.subscriptionPurchasePending)),
+        );
     }
   }
 
   Future<void> _restorePurchases() async {
     setState(() => _loading = true);
-    try {
-      await ref.read(subscriptionStatusProvider.notifier).restorePurchases();
-      if (mounted) {
-        final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.purchasesRestored)));
-      }
-    } catch (_) {
-      if (mounted) {
-        final l = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l.subscriptionRestoreFailed)));
-      }
-    } finally {
-      if (mounted) setState(() => _loading = false);
+    final outcome = await ref
+        .read(subscriptionStatusProvider.notifier)
+        .restorePurchases();
+    if (!mounted) return;
+    setState(() => _loading = false);
+    final l = AppLocalizations.of(context)!;
+    final messenger = ScaffoldMessenger.of(context);
+    switch (outcome.kind) {
+      case RestoreOutcomeKind.restored:
+        messenger.showSnackBar(
+          SnackBar(
+            content: Text(l.purchasesRestored),
+            backgroundColor: AppColorTokens.success,
+          ),
+        );
+      case RestoreOutcomeKind.nothingToRestore:
+        messenger.showSnackBar(
+          SnackBar(content: Text(l.subscriptionNothingToRestore)),
+        );
+      case RestoreOutcomeKind.failed:
+        messenger.showSnackBar(
+          SnackBar(content: Text(l.subscriptionRestoreFailed)),
+        );
     }
   }
 

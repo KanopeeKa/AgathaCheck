@@ -2569,6 +2569,74 @@ class AppLocalizationsFr extends AppLocalizations {
   String get subscriptionPeriodPerYear => 'par an';
 
   @override
+  String get subscriptionPeriodPerWeek => 'par semaine';
+
+  @override
+  String get subscriptionPeriodLifetime => 'achat unique';
+
+  @override
+  String get subscriptionPeriodBillingPeriod => 'par période de facturation';
+
+  @override
+  String subscriptionCadenceDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tous les $count jours',
+      one: 'par jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionCadenceWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'toutes les $count semaines',
+      one: 'par semaine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionCadenceMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tous les $count mois',
+      one: 'par mois',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionCadenceYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tous les $count ans',
+      one: 'par an',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get subscriptionOneTimeDisclosure =>
+      'Achat unique. L\'accès reste actif tant que le produit est proposé ; pas de renouvellement automatique.';
+
+  @override
+  String get subscriptionCancelDisclosureWeb =>
+      'Annulez dans les réglages d\'abonnement de votre compte AgathaTrack avant la prochaine date de facturation pour éviter un prélèvement.';
+
+  @override
+  String get subscriptionIntroPeriodUnknown =>
+      'la période d\'introduction indiquée au paiement';
+
+  @override
+  String get subscriptionFallbackLifetime => 'À vie';
+
+  @override
   String get subscriptionFallbackMonthly => 'Mensuel';
 
   @override
@@ -2657,6 +2725,14 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get subscriptionRestoreFailed =>
       'Impossible de restaurer les achats. Réessayez dans un instant.';
+
+  @override
+  String get subscriptionNothingToRestore =>
+      'Aucun achat n\'a été trouvé pour ce compte.';
+
+  @override
+  String get subscriptionPurchasePending =>
+      'Votre achat est en cours de traitement. Si l\'accès n\'apparaît pas bientôt, essayez Restaurer les achats.';
 
   @override
   String get subscriptionFeatureUnlimitedTitle => 'AgathaTrack Illimité';

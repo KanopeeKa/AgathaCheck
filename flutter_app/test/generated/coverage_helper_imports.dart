@@ -143,6 +143,7 @@ import 'package:pet_profile_app/features/sharing/domain/entities/share_invite.da
 import 'package:pet_profile_app/features/sharing/domain/entities/share_link.dart';
 import 'package:pet_profile_app/features/sharing/domain/entities/share_preview.dart';
 import 'package:pet_profile_app/features/sharing/domain/repositories/sharing_repository.dart';
+import 'package:pet_profile_app/features/subscription/domain/entities/subscription_operation_outcomes.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_entry.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_fulfilment_candidates.dart';
@@ -152,4 +153,4 @@ import 'package:pet_profile_app/features/weight_tracking/domain/entities/weight_
 import 'package:pet_profile_app/features/weight_tracking/domain/repositories/weight_repository.dart';
 import 'package:pet_profile_app/features/weight_tracking/domain/weight_entry_sort.dart';
 
-const int coverageHelperDomainFileCount = 150;
+const int coverageHelperDomainFileCount = 151;

@@ -75,6 +75,122 @@ void main() {
       expect(displays.single.savingsTag, isNull);
     });
 
+    test('uses weekly cadence from ISO period', () {
+      const weekly = PaywallOfferProductFacts(
+        identifier: 'weekly',
+        title: 'Weekly',
+        priceString: '\$2.00',
+        price: 2,
+        subscriptionPeriodIso: 'P1W',
+        packageType: PackageType.weekly,
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(weekly, l);
+
+      expect(display.cadenceLabel, l.subscriptionPeriodPerWeek);
+      expect(display.autoRenewLine, l.subscriptionAutoRenewDisclosure);
+    });
+
+    test('lifetime omits cancel line', () {
+      const lifetime = PaywallOfferProductFacts(
+        identifier: 'lifetime',
+        title: 'Lifetime',
+        priceString: '\$199.00',
+        price: 199,
+        packageType: PackageType.lifetime,
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(lifetime, l);
+
+      expect(display.cancelLine, isEmpty);
+    });
+
+    test('ISO period wins over conflicting package type', () {
+      const quarterly = PaywallOfferProductFacts(
+        identifier: 'q',
+        title: 'Quarterly',
+        priceString: '\$15.00',
+        price: 15,
+        subscriptionPeriodIso: 'P3M',
+        packageType: PackageType.annual,
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(quarterly, l);
+
+      expect(display.cadenceLabel, l.subscriptionCadenceMonths(3));
+      expect(display.cadenceLabel, isNot(l.subscriptionPeriodPerYear));
+    });
+
+    test('lifetime shows one-time disclosure and cadence', () {
+      const lifetime = PaywallOfferProductFacts(
+        identifier: 'lifetime',
+        title: 'Lifetime',
+        priceString: '\$199.00',
+        price: 199,
+        packageType: PackageType.lifetime,
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(lifetime, l);
+
+      expect(display.cadenceLabel, l.subscriptionPeriodLifetime);
+      expect(display.autoRenewLine, l.subscriptionOneTimeDisclosure);
+    });
+
+    test('web billing uses web cancel copy', () {
+      const monthly = PaywallOfferProductFacts(
+        identifier: 'm',
+        title: 'Monthly',
+        priceString: '\$4.99',
+        price: 4.99,
+        subscriptionPeriodIso: 'P1M',
+        packageType: PackageType.monthly,
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(
+        monthly,
+        l,
+        billingOnWeb: true,
+      );
+
+      expect(display.cancelLine, l.subscriptionCancelDisclosureWeb);
+    });
+
+    test('unknown introductory period uses localized placeholder', () {
+      const withIntro = PaywallOfferProductFacts(
+        identifier: 'trial',
+        title: 'Monthly',
+        priceString: '\$4.99',
+        price: 4.99,
+        subscriptionPeriodIso: 'P1M',
+        introductoryPrice: PaywallIntroductoryPriceFacts(
+          priceString: '\$0.00',
+          cycles: 1,
+          periodUnit: PeriodUnit.unknown,
+          periodNumberOfUnits: 1,
+          periodIso: 'P7D',
+        ),
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(withIntro, l);
+
+      expect(display.trialLine, contains(l.subscriptionIntroPeriodUnknown));
+      expect(display.trialLine, isNot(contains('P7D')));
+    });
+
+    test('parses multi-month ISO cadence', () {
+      const quarterly = PaywallOfferProductFacts(
+        identifier: 'q',
+        title: 'Quarterly',
+        priceString: '\$15.00',
+        price: 15,
+        subscriptionPeriodIso: 'P3M',
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(quarterly, l);
+
+      expect(display.cadenceLabel, l.subscriptionCadenceMonths(3));
+    });
+
     test('shows Best Value when annual monthly cost beats monthly', () {
       const monthly = PaywallOfferProductFacts(
         identifier: 'm',

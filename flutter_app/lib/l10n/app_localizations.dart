@@ -4513,6 +4513,72 @@ abstract class AppLocalizations {
   /// **'per year'**
   String get subscriptionPeriodPerYear;
 
+  /// No description provided for @subscriptionPeriodPerWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'per week'**
+  String get subscriptionPeriodPerWeek;
+
+  /// No description provided for @subscriptionPeriodLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'one-time purchase'**
+  String get subscriptionPeriodLifetime;
+
+  /// No description provided for @subscriptionPeriodBillingPeriod.
+  ///
+  /// In en, this message translates to:
+  /// **'per billing period'**
+  String get subscriptionPeriodBillingPeriod;
+
+  /// No description provided for @subscriptionCadenceDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{per day} other{every {count} days}}'**
+  String subscriptionCadenceDays(int count);
+
+  /// No description provided for @subscriptionCadenceWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{per week} other{every {count} weeks}}'**
+  String subscriptionCadenceWeeks(int count);
+
+  /// No description provided for @subscriptionCadenceMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{per month} other{every {count} months}}'**
+  String subscriptionCadenceMonths(int count);
+
+  /// No description provided for @subscriptionCadenceYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{per year} other{every {count} years}}'**
+  String subscriptionCadenceYears(int count);
+
+  /// No description provided for @subscriptionOneTimeDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'One-time purchase. Access continues for the lifetime of the product; no automatic renewal.'**
+  String get subscriptionOneTimeDisclosure;
+
+  /// No description provided for @subscriptionCancelDisclosureWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel from your AgathaTrack account subscription settings before the next billing date to avoid being charged.'**
+  String get subscriptionCancelDisclosureWeb;
+
+  /// No description provided for @subscriptionIntroPeriodUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'the introductory period shown at checkout'**
+  String get subscriptionIntroPeriodUnknown;
+
+  /// No description provided for @subscriptionFallbackLifetime.
+  ///
+  /// In en, this message translates to:
+  /// **'Lifetime'**
+  String get subscriptionFallbackLifetime;
+
   /// No description provided for @subscriptionFallbackMonthly.
   ///
   /// In en, this message translates to:
@@ -4606,6 +4672,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t restore purchases. Try again in a moment.'**
   String get subscriptionRestoreFailed;
+
+  /// No description provided for @subscriptionNothingToRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'No purchases were found for this account.'**
+  String get subscriptionNothingToRestore;
+
+  /// No description provided for @subscriptionPurchasePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your purchase is processing. If access doesn\'t appear soon, try Restore purchases.'**
+  String get subscriptionPurchasePending;
 
   /// No description provided for @subscriptionFeatureUnlimitedTitle.
   ///
