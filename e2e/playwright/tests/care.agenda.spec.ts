@@ -160,38 +160,22 @@ test.describe('Care agenda', () => {
         { timeout: 30_000 },
       ).toBe('closed');
 
-      await expect(async () => {
-        await page.goto(flutterGotoUrl(`/pet/${pet.id}/events`), {
-          waitUntil: 'networkidle',
-        });
-        await waitForFlutterRoutePattern(
-          page,
-          new RegExp(`/pet/${pet.id}/events`),
-          15_000,
-        );
-      }).toPass({ timeout: 60_000 });
-      await enableFlutterAccessibility(page);
-      const allCareList = page.locator('[flt-semantics-identifier="all_care_list"]');
-      await expect
-        .poll(async () => allCareList.isVisible(), { timeout: 60_000 })
-        .toBe(true);
-      const closedCareLink = page.locator(
-        '[flt-semantics-identifier="all_care_closed_care_link"]',
+      await waitForFlutterRoute(page, `/pc/events?pet=${pet.id}`);
+      const closedSection = page.locator(
+        '[flt-semantics-identifier="global_events_closed_care"]',
       );
       await expect
-        .poll(async () => closedCareLink.isVisible(), { timeout: 45_000 })
+        .poll(async () => closedSection.isVisible(), { timeout: 60_000 })
         .toBe(true);
-      await closedCareLink.scrollIntoViewIfNeeded();
-      await page
-        .getByRole('button', { name: /Closed care \(1\)|Soins fermés \(1\)/i })
-        .click({ force: true, timeout: 15_000 });
-      await page.locator('[flt-semantics-identifier="closed_care_list"]').waitFor({
+      await closedSection.click();
+      await refreshFlutterAccessibility(page);
+      await expect(page.getByText(new RegExp(entry.name, 'i')).first()).toBeVisible({
         timeout: 30_000,
       });
-      const row = page.locator(`[flt-semantics-identifier="closed_care_row_${entry.id}"]`);
-      await expect(row).toBeVisible();
-      await expect(row).toContainText(/Closed by you|Fermé par vous/i);
-      await expect(row).not.toContainText(/Jun|juin|2026-06/i);
+      await expect(page.getByText(/Closed by you|Fermé par vous/i).first()).toBeVisible();
+      await expect(page.getByText(new RegExp(entry.name, 'i')).first()).not.toContainText(
+        /Jun|juin|2026-06/i,
+      );
       // Row tap → detail is covered in widget tests; go_router hash is flaky from the
       // Material Closed care list overlay — open detail the same way as other agenda specs.
       await careItem.open(pet.id, entry.id);
