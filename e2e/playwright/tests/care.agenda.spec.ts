@@ -119,6 +119,9 @@ test.describe('Care agenda', () => {
       await enableFlutterAccessibility(page);
       await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 60_000);
       const agenda = new CareAgendaPage(page);
+      await expect(
+        page.locator('[flt-semantics-identifier="care_list_today"]'),
+      ).toBeVisible({ timeout: 30_000 });
       await agenda.showUpcomingCare();
       await agenda.expectRowVisible('Future Groom');
       await agenda.markDone(entry.id);

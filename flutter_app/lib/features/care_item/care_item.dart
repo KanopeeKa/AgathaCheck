@@ -16,6 +16,7 @@ export 'application/care_stack_feedback.dart';
 export 'application/care_weigh_in_refresh.dart';
 export 'data/care_item_wire.dart' show careItemScheduleFromJson;
 export 'domain/care_agenda.dart';
+export 'domain/care_list_ordering.dart';
 export 'domain/care_item_schedule.dart';
 export 'domain/care_occurrence.dart';
 export 'domain/completion_requirements.dart';

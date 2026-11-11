@@ -6,7 +6,6 @@ import '../../../../../core/theme/app_color_tokens.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../../../health_tracking/health_tracking.dart';
 import '../../../../care_item/care_item.dart';
-import '../../../../pet_care/pet_care.dart';
 import '../../../../pet_profile/pet_profile.dart';
 import '../../pet_profile/screens/widgets/manage_events_collection_filter.dart';
 import '../../pet_profile/screens/widgets/org_events_collection_filter.dart';
@@ -17,6 +16,8 @@ import 'care_list/global_events_collapsible_section.dart';
 import 'care_list/global_events_entry_partitions.dart';
 import 'care_list/global_events_pet_chip_bar.dart';
 import 'care_list/global_events_pet_query.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_list/care_list_collection.dart';
+import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_list/care_list_skeleton.dart';
 import 'pet_care_due_events_screen.dart';
 
 // ---------------------------------------------------------------------------
@@ -197,8 +198,8 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
         historiesAsync.isLoading && !historiesAsync.hasValue;
     if (entriesLoading || historiesLoading) {
       return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 32),
-        child: Center(child: CircularProgressIndicator()),
+        padding: EdgeInsets.only(top: 8, bottom: 32),
+        child: CareListSkeleton(),
       );
     }
 
@@ -233,7 +234,7 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (parts.planned.isNotEmpty)
-            CareAgendaCollection(
+            CareListCollection(
               entries: parts.planned,
               source: CareCommandSource.agenda,
               petNames: {for (final p in widget.shellPets) p.id: p.name},
