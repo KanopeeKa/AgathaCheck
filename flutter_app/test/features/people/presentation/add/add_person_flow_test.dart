@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_detail.dart';
+import 'package:pet_profile_app/features/people/domain/entities/household.dart';
 import 'package:pet_profile_app/features/people/domain/entities/contact_summary.dart';
 import 'package:pet_profile_app/features/people/domain/entities/roster.dart';
 import 'package:pet_profile_app/features/people/domain/enums/contact_group.dart';
@@ -88,6 +89,104 @@ void main() {
     await tester.pumpAndSettle();
     expect(rolesValidForAdd({ContactRole.vet}, requiresRoles: true), isTrue);
   });
+
+  testWidgets('household invite failure keeps contact and retries invite only', (
+    tester,
+  ) async {
+    final fakePeople = _CountingPeopleRepository();
+    final fakeHouseholds = _FailingInviteHouseholdsRepository();
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          peopleRepositoryProvider.overrideWithValue(fakePeople),
+          householdsRepositoryProvider.overrideWithValue(fakeHouseholds),
+          addPersonPetsProvider.overrideWith((ref) async => const []),
+        ],
+        child: MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const AddPersonFlow(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byKey(const Key('people_add_tile_household')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    await tester.enterText(
+      find.byKey(const Key('people_add_name_field')),
+      'Alex',
+    );
+    await tester.enterText(find.byType(TextFormField).at(2), 'alex@example.com');
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continue'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Invite to a household'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save person'));
+    await tester.pumpAndSettle();
+
+    expect(fakePeople.createContactCalls, 1);
+    expect(fakeHouseholds.inviteCalls, 1);
+    expect(
+      find.text('Contact saved. The household invitation was not sent.'),
+      findsOneWidget,
+    );
+
+    fakeHouseholds.failInvite = false;
+    await tester.tap(find.byKey(const Key('people_add_retry_household_invite')));
+    await tester.pumpAndSettle();
+
+    expect(fakePeople.createContactCalls, 1);
+    expect(fakeHouseholds.inviteCalls, 2);
+  });
+}
+
+class _FailingInviteHouseholdsRepository extends FakeHouseholdsRepository {
+  _FailingInviteHouseholdsRepository() {
+    detail = Household(
+      id: 'hh-1',
+      name: 'Home',
+      myTier: 'full_access',
+      myIsOrganiser: true,
+      members: const [],
+    );
+  }
+
+  int inviteCalls = 0;
+  bool failInvite = true;
+
+  @override
+  Future<void> createHouseholdInvite({
+    required String householdId,
+    required String inviteeEmail,
+    String? contactId,
+    String accessTier = 'full_access',
+    bool isOrganiser = false,
+  }) async {
+    inviteCalls += 1;
+    lastInviteEmail = inviteeEmail;
+    if (failInvite) {
+      throw Exception('invite failed');
+    }
+  }
+}
+
+class _CountingPeopleRepository extends FakePeopleRepository {
+  int createContactCalls = 0;
+
+  @override
+  Future<ContactDetail> createContact(Map<String, dynamic> body) async {
+    createContactCalls += 1;
+    return super.createContact(body);
+  }
 }
 
 class _RecordingPeopleRepository extends FakePeopleRepository {

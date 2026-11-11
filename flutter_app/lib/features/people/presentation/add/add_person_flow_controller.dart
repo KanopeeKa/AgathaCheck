@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../../domain/entities/contact_detail.dart';
 import '../../domain/enums/contact_kind.dart';
 import '../edit/person_form_controller.dart';
 import 'add_person_app_access.dart';
@@ -26,6 +27,9 @@ class AddPersonFlowController extends ChangeNotifier {
   String? _householdName;
   String? _rolesError;
   String? _petsLinkError;
+  ContactDetail? _savedContact;
+  String? _pendingInviteHouseholdId;
+  bool _householdInviteFailed = false;
 
   AddPersonEntry? get entry => _entry;
   int get stepIndex => _stepIndex;
@@ -36,6 +40,9 @@ class AddPersonFlowController extends ChangeNotifier {
   String? get householdName => _householdName;
   String? get rolesError => _rolesError;
   String? get petsLinkError => _petsLinkError;
+  bool get householdInviteFailed => _householdInviteFailed;
+  ContactDetail? get savedContact => _savedContact;
+  String? get pendingInviteHouseholdId => _pendingInviteHouseholdId;
 
   static const int stepCount = 5;
 
@@ -68,6 +75,23 @@ class AddPersonFlowController extends ChangeNotifier {
 
   void setHouseholdName(String value) {
     _householdName = value.trim().isEmpty ? null : value.trim();
+    notifyListeners();
+  }
+
+  void setHouseholdInviteFailed({
+    required ContactDetail contact,
+    required String householdId,
+  }) {
+    _savedContact = contact;
+    _pendingInviteHouseholdId = householdId;
+    _householdInviteFailed = true;
+    notifyListeners();
+  }
+
+  void clearHouseholdInviteFailed() {
+    _householdInviteFailed = false;
+    _savedContact = null;
+    _pendingInviteHouseholdId = null;
     notifyListeners();
   }
 

@@ -3133,6 +3133,12 @@ abstract class AppLocalizations {
   /// **'Household name'**
   String get householdNameLabel;
 
+  /// No description provided for @householdNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a household name'**
+  String get householdNameRequired;
+
   /// No description provided for @householdOrganiserLabel.
   ///
   /// In en, this message translates to:
@@ -4546,6 +4552,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'We couldn\'t open subscription management. Copy this link to open it in your browser:'**
   String get subscriptionManagementOpenFailed;
+
+  /// No description provided for @externalLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open that link. Copy it to open in your browser:'**
+  String get externalLinkOpenFailed;
 
   /// No description provided for @subscriptionPurchaseFailed.
   ///
@@ -14282,6 +14294,18 @@ abstract class AppLocalizations {
   /// **'Tag name'**
   String get petTagsNameHint;
 
+  /// No description provided for @petTagNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a tag name'**
+  String get petTagNameRequired;
+
+  /// No description provided for @petTagUsageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Used by 1 pet} other{Used by {count} pets}}'**
+  String petTagUsageCount(int count);
+
   /// No description provided for @petTagsMyTags.
   ///
   /// In en, this message translates to:
@@ -15415,6 +15439,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save person'**
   String get peopleAddPersonSave;
+
+  /// No description provided for @peopleContactSavedInviteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact saved. The household invitation was not sent.'**
+  String get peopleContactSavedInviteFailed;
+
+  /// No description provided for @peopleRetryHouseholdInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry invitation'**
+  String get peopleRetryHouseholdInvite;
+
+  /// No description provided for @peopleOpenSavedContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Open contact'**
+  String get peopleOpenSavedContact;
 
   /// No description provided for @peopleAddRolesRequired.
   ///

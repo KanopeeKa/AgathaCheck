@@ -125,16 +125,26 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
 
   Future<void> _rename() async {
     final l = AppLocalizations.of(context)!;
+    final formKey = GlobalKey<FormState>();
+    final textController = TextEditingController(text: widget.household.name);
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) {
-        final controller = TextEditingController(text: widget.household.name);
         return AlertDialog(
           title: Text(l.peopleHouseholdRenameTitle),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(labelText: l.householdNameLabel),
-            autofocus: true,
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              controller: textController,
+              decoration: InputDecoration(labelText: l.householdNameLabel),
+              autofocus: true,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l.householdNameRequired;
+                }
+                return null;
+              },
+            ),
           ),
           actions: [
             TextButton(
@@ -142,14 +152,19 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
               child: Text(l.cancel),
             ),
             FilledButton(
-              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  Navigator.pop(ctx, textController.text.trim());
+                }
+              },
               child: Text(l.save),
             ),
           ],
         );
       },
     );
-    if (name == null || name.isEmpty) return;
+    textController.dispose();
+    if (name == null) return;
     setState(() => _busy = true);
     try {
       await ref
