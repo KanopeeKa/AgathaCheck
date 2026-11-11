@@ -3,7 +3,7 @@ title: GitHub issue workflow
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-02
+last_updated: 2026-11-11
 tags: [documentation]
 ---
 # GitHub issue workflow
@@ -176,6 +176,8 @@ When an agent PR merges to `main`:
 3. Tag push triggers **[deploy-uat.yml](../.github/workflows/deploy-uat.yml)** automatically.
 
 When UAT deploy finishes, the **Notify linked agent issue** job in `deploy-uat.yml` sets **In UAT** (or adds `question` on failure).
+
+A **plan control issue** is not a UAT ticket. The title starts with `light-plan` or `execute-plan` (`Light-plan:`, `Execute-plan:`, and `[execute-plan]` count). Light-plan closes it when Pre-UAT is green; the release PR says `Closes #<issue>`, so GitHub closes it at merge. The merge handler reopens that one close so the programme can finish Pre-UAT, and it does not set **In Main** or post the UAT-tracking comment. Deploy UAT notify leaves the plan issue untouched, so the Pre-UAT close stays closed. Product issues linked with `Refs` / `Fixes` still reopen for UAT.
 
 Manual UAT rerun: **Actions → Deploy UAT (uat.agathatrack.com) → Run workflow** with `deploy_ref` = your UAT tag (e.g. `uat-260709-122`).
 - UAT promotion tag: `uat-YYMMDD-PR#` (created automatically on merge to `main`)
