@@ -2383,6 +2383,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get notificationsMarkedRead => 'Tout est marqué comme lu';
 
   @override
+  String get notificationsMarkReadFailed =>
+      'Impossible de marquer les notifications comme lues. Réessayez.';
+
+  @override
   String get notificationOpenInbox => 'Ouvrir la boîte complète';
 
   @override
