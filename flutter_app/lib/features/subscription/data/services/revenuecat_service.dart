@@ -150,6 +150,7 @@ class RevenueCatService {
             : null,
         managementUrl: info.managementURL,
         productIdentifier: entitlement.productIdentifier,
+        willRenew: entitlement.willRenew,
       );
     }
     return SubscriptionStatus(

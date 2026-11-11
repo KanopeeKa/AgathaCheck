@@ -1782,6 +1782,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get householdNameLabel => 'Household name';
 
   @override
+  String get householdNameRequired => 'Enter a household name';
+
+  @override
   String get householdOrganiserLabel => 'Organiser · Full access';
 
   @override
@@ -2348,6 +2351,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markAllRead => 'Mark all as read';
 
   @override
+  String get notificationsMarkedRead => 'All marked as read';
+
+  @override
+  String get notificationOpenInbox => 'Open full inbox';
+
+  @override
   String get notificationSettingsTooltip => 'Notification settings';
 
   @override
@@ -2467,6 +2476,152 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get subscriptionPlansUnavailable =>
       'Subscription plans aren\'t available right now. Try again in a moment.';
+
+  @override
+  String get subscriptionStatusActiveSemantic => 'Active subscription';
+
+  @override
+  String get subscriptionStatusFreeSemantic => 'Free plan';
+
+  @override
+  String get subscriptionProductNameUnlimited => 'AgathaTrack Unlimited';
+
+  @override
+  String get subscriptionProductNameFree => 'Free Plan';
+
+  @override
+  String get subscriptionBodyUnlimited =>
+      'You have full access to all features.';
+
+  @override
+  String get subscriptionBodyFree => 'Upgrade to unlock all features.';
+
+  @override
+  String subscriptionRenewsOn(String date) {
+    return 'Renews on $date';
+  }
+
+  @override
+  String subscriptionActiveUntil(String date) {
+    return 'Active until $date';
+  }
+
+  @override
+  String get subscriptionPeriodPerMonth => 'per month';
+
+  @override
+  String get subscriptionPeriodPerYear => 'per year';
+
+  @override
+  String get subscriptionFallbackMonthly => 'Monthly';
+
+  @override
+  String get subscriptionFallbackYearly => 'Yearly';
+
+  @override
+  String get subscriptionBestValue => 'Best Value';
+
+  @override
+  String get subscriptionAutoRenewDisclosure =>
+      'This subscription renews automatically each billing period until you cancel.';
+
+  @override
+  String get subscriptionCancelDisclosure =>
+      'Cancel in your app store account before the next billing date to avoid being charged.';
+
+  @override
+  String subscriptionIntroDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks',
+      one: '1 week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years',
+      one: '1 year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionTrialDisclosure(
+    String introPrice,
+    String introPeriod,
+    String recurringPrice,
+  ) {
+    return 'Introductory offer: $introPrice for $introPeriod, then $recurringPrice per billing period.';
+  }
+
+  @override
+  String get subscriptionManagementUnavailable =>
+      'Subscription management isn\'t available on this device.';
+
+  @override
+  String get subscriptionManagementOpenFailed =>
+      'We couldn\'t open subscription management. Copy this link to open it in your browser:';
+
+  @override
+  String get externalLinkOpenFailed =>
+      'We couldn\'t open that link. Copy it to open in your browser:';
+
+  @override
+  String get subscriptionPurchaseFailed =>
+      'Purchase didn\'t complete. Try again, or restore an existing purchase.';
+
+  @override
+  String get subscriptionRestoreFailed =>
+      'We couldn\'t restore purchases. Try again in a moment.';
+
+  @override
+  String get subscriptionFeatureUnlimitedTitle => 'AgathaTrack Unlimited';
+
+  @override
+  String get subscriptionFeatureProfiles => 'Unlimited pet profiles';
+
+  @override
+  String get subscriptionFeatureHealth => 'Full health tracking';
+
+  @override
+  String get subscriptionFeatureSharing => 'Pet sharing with family';
+
+  @override
+  String get subscriptionFeaturePdf => 'PDF report generation';
+
+  @override
+  String get subscriptionFeatureReminders => 'Health reminders';
+
+  @override
+  String get subscriptionFeatureSupport => 'Priority support';
 
   @override
   String get petReport => 'Pet Report';
@@ -5132,6 +5287,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get consentManagePreferences => 'Manage Preferences';
 
   @override
+  String get consentRejectOptional => 'Reject Optional';
+
+  @override
+  String get consentBannerSaving => 'Saving your privacy choice';
+
+  @override
   String get consentSettings => 'Privacy Preferences';
 
   @override
@@ -5403,6 +5564,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataExported => 'Your data has been exported';
+
+  @override
+  String get dataExportUnavailable =>
+      'This device cannot save an export file. Use the web app to download your data.';
+
+  @override
+  String get dataExportCancelled =>
+      'Export cancelled. Your data was not saved.';
+
+  @override
+  String get dataExportFailed => 'Could not export your data. Try again.';
 
   @override
   String get consentPreferences => 'Privacy Preferences';
@@ -6357,8 +6529,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Nothing new. When someone shares a pet or joins your household, you\'ll see it here.';
 
   @override
-  String get notificationInboxForYouEmpty =>
-      'No suggestions right now. Agatha will let you know when something\'s worth a look.';
+  String get notificationInboxForYouEmpty => 'No suggestions right now.';
 
   @override
   String get notificationInboxV2Explainer =>
@@ -8077,6 +8248,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petTagsNameHint => 'Tag name';
 
   @override
+  String get petTagNameRequired => 'Enter a tag name';
+
+  @override
+  String petTagUsageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Used by $count pets',
+      one: 'Used by 1 pet',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get petTagsMyTags => 'My tags';
 
   @override
@@ -8711,6 +8896,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleAddPersonSave => 'Save person';
+
+  @override
+  String get peopleContactSavedInviteFailed =>
+      'Contact saved. The household invitation was not sent.';
+
+  @override
+  String get peopleRetryHouseholdInvite => 'Retry invitation';
+
+  @override
+  String get peopleOpenSavedContact => 'Open contact';
 
   @override
   String get peopleAddRolesRequired => 'Choose at least one role to continue.';
