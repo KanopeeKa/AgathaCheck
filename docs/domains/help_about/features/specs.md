@@ -3,7 +3,7 @@ title: Help & about specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-11-11
 tags: [domain,help_about,specs]
 domain: help_about
 feature_id: help-about
@@ -18,7 +18,7 @@ Account help, FAQ, about, and legal surfaces (`help_faq.feature`).
 | ID | Requirement | Status |
 |----|-------------|--------|
 | **HA-1** | Help reachable from Account; FAQ accordion EN+FR. | delivered |
-| **HA-2** | About shows app version and project information. | delivered |
+| **HA-2** | About shows app version and project information (no legal document list — Account **Legal Information** → `/legal`). | delivered |
 | **HA-3** | Legal copy in assets aligned with FAQ where referenced. | delivered |
 
 ## User journeys
@@ -45,6 +45,7 @@ About screens present app version and project information (`flutter_app/lib/feat
 
 - `flutter_app/lib/features/about/` — app version, project information.
 - Linked from Account area (D27 global settings, not org-scoped).
+- Legal documents are **not** listed on About or My Details; users open **Legal Information** from Account (`/legal`).
 
 ## Legal surfaces
 
