@@ -21,6 +21,24 @@ function parseLinkedIssues(prBody) {
   return [...new Set(matches.map((m) => Number(m.replace(/\D/g, ''))))];
 }
 
+/** Programme tracking issue (`light-plan:` / `execute-plan:`), not a product UAT ticket. */
+function isPlanControlIssue(issue) {
+  const title = String(issue?.title || '').trim();
+  return /^(?:\[)?(?:light-plan|execute-plan)\b/i.test(title);
+}
+
+function ioOr(io) {
+  return {
+    fetchIssue: io?.fetchIssue || fetchIssue,
+    fetchPullRequest: io?.fetchPullRequest || fetchPullRequest,
+    setLabels: io?.setLabels || setLabels,
+    reopenIssue: io?.reopenIssue || reopenIssue,
+    updateProjectStatus: io?.updateProjectStatus || updateProjectStatus,
+    upsertMarkerComment: io?.upsertMarkerComment || upsertMarkerComment,
+    assignIssue: io?.assignIssue || assignIssue,
+  };
+}
+
 /** @param {number} prNumber @param {Date} [now] */
 function uatTagName(prNumber, now = new Date()) {
   const yy = String(now.getUTCFullYear()).slice(-2);
@@ -72,7 +90,9 @@ async function handleMergedPr({
   projectsPat,
   projectId,
   statusFieldId,
+  io,
 }) {
+  const api = ioOr(io);
   const issueNumbers = parseLinkedIssues(prBody || '');
   const enqueuedBy =
     issueNumbers.length > 0
@@ -95,13 +115,25 @@ async function handleMergedPr({
   const expectedTag = `uat-YYMMDD-${Number(prNumber)}`;
   const results = [];
   for (const issueNumber of issueNumbers) {
-    await fetchIssue(owner, repo, issueNumber, token);
-    await setLabels(owner, repo, issueNumber, [], ['busy'], token);
-    await reopenIssue(owner, repo, issueNumber, token);
+    const issue = await api.fetchIssue(owner, repo, issueNumber, token);
+    await api.setLabels(owner, repo, issueNumber, [], ['busy'], token);
+    await api.reopenIssue(owner, repo, issueNumber, token);
+
+    if (isPlanControlIssue(issue)) {
+      results.push({
+        issueNumber,
+        expectedTag,
+        status: 'reopened-plan-control',
+      });
+      console.log(
+        `Issue #${issueNumber}: plan control issue reopened after merge auto-close; UAT status skipped`,
+      );
+      continue;
+    }
 
     if (projectsPat && projectId && statusFieldId) {
-      const refreshedIssue = await fetchIssue(owner, repo, issueNumber, token);
-      await updateProjectStatus({
+      const refreshedIssue = await api.fetchIssue(owner, repo, issueNumber, token);
+      await api.updateProjectStatus({
         issue: refreshedIssue,
         projectId,
         statusFieldId,
@@ -110,7 +142,7 @@ async function handleMergedPr({
       });
     }
 
-    await upsertMarkerComment({
+    await api.upsertMarkerComment({
       owner,
       repo,
       issueNumber,
@@ -258,7 +290,9 @@ async function handleUatWorkflowResult({
   statusFieldId,
   gateFailureClass,
   mergeSha,
+  io,
 }) {
+  const api = ioOr(io);
   const parsed = parseUatTag(deployRef);
   if (!parsed) {
     return { skipped: true, reason: 'deploy ref not UAT tag format' };
@@ -276,7 +310,7 @@ async function handleUatWorkflowResult({
     mergeSha,
   });
 
-  const pr = await fetchPullRequest(owner, repo, parsed.prNumber, token);
+  const pr = await api.fetchPullRequest(owner, repo, parsed.prNumber, token);
   const issueNumbers = parseLinkedIssues(pr.body || '');
 
   if (issueNumbers.length === 0) {
@@ -306,13 +340,21 @@ async function handleUatWorkflowResult({
 
   const results = [];
   for (const issueNumber of issueNumbers) {
-    await fetchIssue(owner, repo, issueNumber, token);
-    await reopenIssue(owner, repo, issueNumber, token);
+    const issue = await api.fetchIssue(owner, repo, issueNumber, token);
+    if (isPlanControlIssue(issue)) {
+      results.push({ issueNumber, status: 'skipped-plan-control' });
+      console.log(
+        `Issue #${issueNumber}: plan control issue left unchanged (UAT notify does not reopen it)`,
+      );
+      continue;
+    }
+
+    await api.reopenIssue(owner, repo, issueNumber, token);
 
     if (conclusion === 'success') {
       if (projectsPat && projectId && statusFieldId) {
-        const refreshedIssue = await fetchIssue(owner, repo, issueNumber, token);
-        await updateProjectStatus({
+        const refreshedIssue = await api.fetchIssue(owner, repo, issueNumber, token);
+        await api.updateProjectStatus({
           issue: refreshedIssue,
           projectId,
           statusFieldId,
@@ -321,7 +363,7 @@ async function handleUatWorkflowResult({
         });
       }
 
-      await upsertMarkerComment({
+      await api.upsertMarkerComment({
         owner,
         repo,
         issueNumber,
@@ -342,15 +384,15 @@ Validate on UAT, then move the issue to **Done** and close when complete.`,
       continue;
     }
 
-    await setLabels(owner, repo, issueNumber, ['question'], ['human-reviewed'], token);
-    await assignIssue(owner, repo, issueNumber, ASSIGNEE, token);
+    await api.setLabels(owner, repo, issueNumber, ['question'], ['human-reviewed'], token);
+    await api.assignIssue(owner, repo, issueNumber, ASSIGNEE, token);
 
     const infraNote =
       gateFailureClass === 'infra_only'
         ? '\n\n**Infra-only failure** (WAF/deploy transport) — queue not frozen; later merges may still promote.'
         : '';
 
-    await upsertMarkerComment({
+    await api.upsertMarkerComment({
       owner,
       repo,
       issueNumber,
@@ -447,6 +489,7 @@ if (require.main === module) {
 
 module.exports = {
   parseLinkedIssues,
+  isPlanControlIssue,
   uatTagName,
   parseUatTag,
   handleMergedPr,

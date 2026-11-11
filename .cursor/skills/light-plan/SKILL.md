@@ -79,6 +79,8 @@ Re-read this section before opening that PR, and again before any user-facing me
 
 Done when that last row has happened. A later message that only says `/babysit-plus` or "merge it" still owes the Pre-UAT watch and the issue close. If this conversation is woken by a CI subscription, the first action is the matching row — the wake is not an owner question.
 
+That close is the end of the programme. Pre-UAT is the gate; do not wait for Deploy UAT notify, and do not reopen the tracking issue so it can sit in UAT. Product issues keep that reopen path (`docs/agent-efficiency/github-issue-workflow.md`).
+
 Do not end the turn while the release PR is open or Pre-UAT / issue close is unfinished, except [§Stop and ask](#stop-and-ask). Never ask the owner to merge, to run `/babysit-uat`, or to pick the work up in another session.
 
 ## Recovery
