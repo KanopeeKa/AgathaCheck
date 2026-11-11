@@ -99,7 +99,12 @@ async function filesUnchangedOnMain(client, headSha, files) {
   for (const file of files) {
     const headShaBlob = headShas.get(file);
     const mainShaBlob = mainShas.get(file);
-    if (headShaBlob && mainShaBlob && headShaBlob === mainShaBlob) unchanged.add(file);
+    if (headShaBlob && mainShaBlob && headShaBlob === mainShaBlob) {
+      unchanged.add(file);
+      continue;
+    }
+    // Integrations and main may both delete the same path; trees omit absent blobs (null).
+    if (headShaBlob == null && mainShaBlob == null) unchanged.add(file);
   }
   return unchanged;
 }

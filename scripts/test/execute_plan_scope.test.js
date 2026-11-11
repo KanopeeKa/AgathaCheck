@@ -261,6 +261,12 @@ test('release skips files unchanged on main; protected files that differ stay pr
   assert.equal(noopProtected.conclusion, 'success');
 });
 
+test('sync-resolve skips symmetric deletes via unchangedOnMain', () => {
+  const deleted = 'flutter_app/lib/features/frozen/removed.dart';
+  const r = evaluate([deleted], 'sync-resolve', null, { unchangedOnMain: new Set([deleted]) });
+  assert.equal(r.conclusion, 'success');
+});
+
 test('RUNNING worker gate: classify unchanged protected separately from diff', () => {
   assert.equal(verdict('.github/workflows/ci.yml', 'release'), 'protected');
 });
