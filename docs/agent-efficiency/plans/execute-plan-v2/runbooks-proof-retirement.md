@@ -3,7 +3,7 @@ title: Execute-plan v2 — owner runbooks, proof run, retirement
 owner: Kanopee
 audience: both
 status: active
-last_updated: 2026-11-02
+last_updated: 2026-11-11
 tags: [agent, execute-plan, autonomy, runbook]
 ---
 # Execute-plan v2 — owner runbooks, proof run, retirement
@@ -100,7 +100,7 @@ allows squash and merge commits). `do_not_enforce_on_create` lets the approve wo
 **`main` — edit ruleset 18979034 "Main protection":**
 `gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 > main-ruleset.json`; in the
 `required_status_checks` rule add `{ "context": "execute-plan-scope", "integration_id": 15368 }`;
-keep `strict_required_status_checks_policy: true` (the driver runs `update-branch`), reviews 0 and
+keep `strict_required_status_checks_policy: false` (a clean behind PR may merge; light-plan does not catch integration up to `main`). The execute-plan driver still runs `update-branch` when it observes `behind`. Reviews 0 and
 `copilot_code_review`; set `required_review_thread_resolution: true` in the `pull_request` rule so
 review threads must be resolved before auto-merge. `require_extra_approval_for_unattributed_changes`
 is currently `true`: keep it unless WP8 step 2 shows it blocks bot PRs, then set it to `false`.

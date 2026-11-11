@@ -3,13 +3,13 @@ title: Parallel programmes — landing order and coordination
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-04T21:45:00Z
+last_updated: 2026-11-11T21:00:00Z
 tags: [agent-efficiency, execute-plan, coordination, integration-branches]
 ---
 
 # Parallel programmes — landing order and coordination
 
-**As of 2026-10-05 (`main`).** **WEIGHT** programme (W0–C) landed ([#1627](https://github.com/KanopeeKa/AgathaCheck/pull/1627)); remedial follow-up `weight-unify-remedial-eb55` may run in parallel with other programmes. **CARE gap-close** (`care-requirements-gap-close-c1a7`) is batching to `main` via integration PR [#1527](https://github.com/KanopeeKa/AgathaCheck/pull/1527) after all phases merged on the integration branch. Land **one commit at a time** and wait for pre-UAT green on that SHA before the next merge (mid-run merges waste the in-flight pre-UAT run). Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and the **rebase rules** that keep everyone's work from being redone. Every programme's plan must link here and follow §4–§6.
+**As of 2026-10-05 (`main`).** **WEIGHT** programme (W0–C) landed ([#1627](https://github.com/KanopeeKa/AgathaCheck/pull/1627)); remedial follow-up `weight-unify-remedial-eb55` may run in parallel with other programmes. **CARE gap-close** (`care-requirements-gap-close-c1a7`) is batching to `main` via integration PR [#1527](https://github.com/KanopeeKa/AgathaCheck/pull/1527) after all phases merged on the integration branch. Land **one commit at a time** and wait for pre-UAT green on that SHA before the next merge (mid-run merges waste the in-flight pre-UAT run). Their `allowed_paths` overlap on the same files. This page sets **which programme owns which area when**, the **order in which they land on `main`**, and how a release meets `main` ([merge-policy](../../.cursor/rules/merge-policy.mdc)). Every programme's plan must link here and follow §4–§6.
 
 **Slots 0a–0c closed (2026-09-30):** slot **0c** closed when pre-UAT passed on `3ca7bd4` ([#1464](https://github.com/KanopeeKa/AgathaCheck/pull/1464), [run 36776956776](https://github.com/KanopeeKa/AgathaCheck/actions/runs/36776956776); includes server B2 via [#1462](https://github.com/KanopeeKa/AgathaCheck/pull/1462) @ `985f2ca`). Slot **0b** on `eee5cb1b` ([#1454](https://github.com/KanopeeKa/AgathaCheck/pull/1454)). Slot **0a** on `238ca5f8` via [#1456](https://github.com/KanopeeKa/AgathaCheck/pull/1456) and [#1458](https://github.com/KanopeeKa/AgathaCheck/pull/1458). **Next People landing:** slot **4** (`people-server-7f3b`) after CARE A+B (2b) and ARCH E (3a) are on `main`. **Out-of-order:** [#1455](https://github.com/KanopeeKa/AgathaCheck/pull/1455) (`e32fff71`, TEST 1a / shard manifest) merged before 0b; treat as an early partial of slot **2a**, not as slot 1 (ARCH D).
 
@@ -142,12 +142,7 @@ flowchart LR
    - `Landed: <programme/slice> @ <merge sha>`;
    - the areas touched (§3 names);
    - any migrations added.
-3. **Rebase on every landing.** Each programme rebases its integration branch on `main` (or merges `main` in, per its merge policy):
-   - at the start of the next phase after a broadcast;
-   - at least daily for long-lived branches;
-   - immediately before its own `main` PR.
-
-   After the rebase: full `./scripts/pre-push.sh`, plus the pre-UAT shards for the areas it touches, before the next phase PR.
+3. **Do not catch the integration branch up to `main`.** Merge integration → `main`. When that PR is `MERGEABLE`, squash-merge it even if the branch is behind. When it conflicts, resolve the conflict on that release. See [merge-policy](../../.cursor/rules/merge-policy.mdc). This replaces the earlier “rebase on every landing” rule, which raced every other open light-plan.
 4. **Stay in your area.** Don't edit files in an area another in-flight programme owns (§3). File the need as a requirement on the owner instead.
 5. **Migrations by name, numbered at landing.** Plans reference migrations by name (`db/migrations/*_<name>.sql`). The number is the next free one on `main` when the integration → `main` PR is opened; renumber on rebase if taken. Update `db/schema/migration-manifest.json` and the canonical schema in the same PR. CARE keeps `083` because it lands first among the migration-bearing slices.
 6. **Shared E2E files are append-only outside their owner's window.** `shard-files.mjs`, `support/api.ts`, smoke tags and the BDD priority map change in one programme's landing at a time. Others add entries; they don't restructure.
