@@ -133,7 +133,9 @@ void main() {
           ),
           notificationPreferencesProvider.overrideWith(
             () => TestNotificationPreferencesNotifier(
-              NotificationPreferences(v2ExplainerDismissedAt: _dismissedExplainer),
+              NotificationPreferences(
+                v2ExplainerDismissedAt: _dismissedExplainer,
+              ),
             ),
           ),
           petListProvider.overrideWith(() => TestPetListNotifier()),
@@ -148,7 +150,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final l = AppLocalizations.of(tester.element(find.byType(NotificationPanel)))!;
+    final l = AppLocalizations.of(
+      tester.element(find.byType(NotificationPanel)),
+    )!;
 
     await tester.tap(find.text(l.markAllRead));
     await tester.pump();
@@ -159,7 +163,8 @@ void main() {
   });
 }
 
-class _MarkAllReadFailingNotificationsNotifier extends TestNotificationsNotifier {
+class _MarkAllReadFailingNotificationsNotifier
+    extends TestNotificationsNotifier {
   _MarkAllReadFailingNotificationsNotifier(super.notifications);
 
   @override

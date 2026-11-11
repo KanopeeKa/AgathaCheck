@@ -15,14 +15,14 @@ Future<void> performMarkAllRead(
     await ref.read(notificationsProvider.notifier).markAllAsRead(scope: scope);
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.notificationsMarkedRead)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.notificationsMarkedRead)));
   } catch (_) {
     if (!context.mounted) return;
     final l = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.notificationsMarkReadFailed)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.notificationsMarkReadFailed)));
   }
 }

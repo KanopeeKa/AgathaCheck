@@ -324,7 +324,8 @@ void main() {
   });
 }
 
-class _MarkAllReadFailingNotificationsNotifier extends TestNotificationsNotifier {
+class _MarkAllReadFailingNotificationsNotifier
+    extends TestNotificationsNotifier {
   _MarkAllReadFailingNotificationsNotifier(super.notifications);
 
   @override
