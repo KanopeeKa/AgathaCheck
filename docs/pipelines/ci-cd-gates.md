@@ -3,7 +3,7 @@ title: CI/CD gates
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-02
+last_updated: 2026-11-11
 tags: [ci, gates, pipeline]
 ---
 # CI/CD gate contract
@@ -173,8 +173,7 @@ by running `flutter test` under `test/features/<domain>/`.
 #### Accepted trade-off: no CI re-run on merge to `main`
 
 Auto-promotion (`promote-uat.yml`) does **not** re-run CI on the merge commit.
-See [promotion-contract.md](./promotion-contract.md). PR gates + strict up-to-date merge
-are the trust boundary.
+See [promotion-contract.md](./promotion-contract.md). PR gates are the pre-merge trust boundary. The combined tree is checked by Pre-UAT on the merge SHA. Ruleset 18979034 must leave "require branches to be up to date" off.
 
 #### Atomic branch-protection migration (`ci-gate`)
 
@@ -320,7 +319,7 @@ After Phase 6 merged (#168), add the startup smoke check using the **exact** str
 
 1. Open **Settings → Branches** → edit the rule for **`main`** (or **Add rule**).
 2. Enable **Require status checks to pass before merging**.
-3. Enable **Require branches to be up to date before merging** (recommended).
+3. Leave **Require branches to be up to date before merging** off (`strict_required_status_checks_policy: false`). A clean behind PR may merge. See [promotion-contract.md](./promotion-contract.md).
 4. In **Status checks that are required**, search for and add (see **Atomic branch-protection migration** above — add all four before removing legacy):
    - `startup-smoke / PR startup smoke` ← **new (Phase 6)**
    - Flutter parallel checks:

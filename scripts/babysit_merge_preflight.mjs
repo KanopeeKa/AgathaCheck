@@ -10,8 +10,10 @@
  * Exit codes:
  *   0 — clear to merge (or claim/release succeeded)
  *   1 — branch behind base; rebase once then re-run
+ *       (integration head + unknown mergeability: recheck, do not rebase)
  *   2 — wait (another PR holds merge-lease or FIFO yield)
  *   3 — error / do-not-merge
+ *   4 — integration head conflicts with its base; resolve on the release, do not rebase
  */
 import { spawnSync } from 'node:child_process';
 import path from 'node:path';
@@ -39,7 +41,7 @@ Options:
   --json            Emit machine-readable JSON
   -h, --help        Show this help
 
-Exit codes: 0 clear, 1 rebase, 2 wait, 3 error`);
+Exit codes: 0 clear, 1 rebase (integration head: recheck, do not rebase), 2 wait, 3 error, 4 integration conflict`);
 }
 
 function usageError(msg) {
@@ -198,6 +200,8 @@ function loadContext(prRef) {
   const evaluation = evaluateMergePreflight({
     prNumber: pr.number,
     behindBase,
+    headRefName: pr.headRefName,
+    mergeable: pr.mergeable,
     leaseHolder,
     competingGreenPrs,
     baseHot,
@@ -280,6 +284,8 @@ function main() {
         evaluation = evaluateMergePreflight({
           prNumber: ctx.pr.number,
           behindBase: ctx.behindBase,
+          headRefName: ctx.pr.headRefName,
+          mergeable: ctx.pr.mergeable,
           leaseHolder: ctx.leaseHolder,
           competingGreenPrs: ctx.competingGreenPrs,
           baseHot: ctx.baseHot,

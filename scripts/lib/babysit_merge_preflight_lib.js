@@ -92,10 +92,17 @@ function isLeaseStale(isoOrMs, nowMs, staleMinutes = DEFAULT_LEASE_STALE_MINUTES
   return nowMs - ms >= staleMinutes * 60 * 1000;
 }
 
+/** `cursor/*-integration-*` — protected, non-fast-forward, not rebased onto main. */
+function isIntegrationHead(headRefName) {
+  return typeof headRefName === 'string' && /^cursor\/.+-integration-/.test(headRefName);
+}
+
 /**
  * @param {{
  *   prNumber: number,
  *   behindBase?: boolean,
+ *   headRefName?: string,
+ *   mergeable?: string,
  *   leaseHolder?: object|null,
  *   competingGreenPrs?: object[],
  *   baseHot?: boolean,
@@ -109,6 +116,8 @@ function evaluateMergePreflight(input) {
   const {
     prNumber,
     behindBase = false,
+    headRefName = '',
+    mergeable = '',
     leaseHolder = null,
     competingGreenPrs = [],
     baseHot = false,
@@ -116,6 +125,7 @@ function evaluateMergePreflight(input) {
     force = false,
     leaseStale = false,
   } = input;
+  const integrationHead = isIntegrationHead(headRefName);
 
   if (hasDoNotMerge) {
     return {
@@ -126,7 +136,26 @@ function evaluateMergePreflight(input) {
     };
   }
 
-  if (behindBase) {
+  // A clean integration → main release merges while behind. Catching the
+  // integration branch up to main races every other open programme.
+  if (integrationHead && mergeable === 'CONFLICTING') {
+    return {
+      allowed: false,
+      exitCode: 4,
+      reason: 'integration_conflict',
+      action: 'resolve_on_release',
+    };
+  }
+
+  if (behindBase && !(integrationHead && mergeable === 'MERGEABLE')) {
+    if (integrationHead) {
+      return {
+        allowed: false,
+        exitCode: 1,
+        reason: 'integration_mergeability_unknown',
+        action: 'recheck_mergeable',
+      };
+    }
     return {
       allowed: false,
       exitCode: 1,
@@ -184,6 +213,7 @@ module.exports = {
   DEFAULT_LEASE_STALE_MINUTES,
   MERGE_LEASE_LABEL,
   evaluateMergePreflight,
+  isIntegrationHead,
   findCompetingGreenPrs,
   findLeaseHolder,
   isBaseHot,

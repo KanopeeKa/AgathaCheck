@@ -136,7 +136,7 @@ sync_base() {
   local base_branch=$(echo "$PR_DATA" | jq -r '.baseRefName')
   local head_branch=$(echo "$PR_DATA" | jq -r '.headRefName')
   
-  # Use existing babysit sync script
+  # Use existing babysit sync script (babysit_sync_base skips --push on cursor/*-integration-*)
   if [[ -f "$REPO_ROOT/scripts/babysit_sync_base.sh" ]]; then
     if ./scripts/babysit_sync_base.sh --pr "$PR_NUMBER" --push; then
       echo -e "${GREEN}  Synced successfully${NC}"
@@ -147,6 +147,10 @@ sync_base() {
     fi
   else
     echo -e "${YELLOW}  babysit_sync_base.sh not found, manual sync${NC}"
+    if [[ "$head_branch" =~ ^cursor/.+-integration- ]]; then
+      echo -e "${YELLOW}  integration head $head_branch — skip rebase onto $base_branch${NC}"
+      return 0
+    fi
     git fetch origin "$base_branch"
     if git rebase "origin/$base_branch" 2>/dev/null; then
       if [[ "$DRY_RUN" == false ]]; then

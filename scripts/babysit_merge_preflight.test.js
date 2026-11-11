@@ -67,6 +67,45 @@ assert.equal(isLeaseStale('2026-09-22T11:30:00.000Z', NOW, 45), false);
   assert.equal(result.allowed, false);
   assert.equal(result.exitCode, 1);
   assert.equal(result.reason, 'behind_base');
+  assert.equal(result.action, 'rebase');
+}
+
+{
+  const result = evaluateMergePreflight({
+    prNumber: 2269,
+    behindBase: true,
+    headRefName: 'cursor/execute-plan-process-integration-prc1-3ca5',
+    mergeable: 'MERGEABLE',
+  });
+  assert.equal(result.allowed, true);
+  assert.equal(result.exitCode, 0);
+  assert.equal(result.reason, 'clear');
+}
+
+{
+  const result = evaluateMergePreflight({
+    prNumber: 2269,
+    behindBase: true,
+    headRefName: 'cursor/execute-plan-process-integration-prc1-3ca5',
+    mergeable: 'CONFLICTING',
+  });
+  assert.equal(result.allowed, false);
+  assert.equal(result.exitCode, 4);
+  assert.equal(result.reason, 'integration_conflict');
+  assert.equal(result.action, 'resolve_on_release');
+}
+
+{
+  const result = evaluateMergePreflight({
+    prNumber: 2269,
+    behindBase: true,
+    headRefName: 'cursor/execute-plan-process-integration-prc1-3ca5',
+    mergeable: 'UNKNOWN',
+  });
+  assert.equal(result.allowed, false);
+  assert.equal(result.exitCode, 1);
+  assert.equal(result.reason, 'integration_mergeability_unknown');
+  assert.equal(result.action, 'recheck_mergeable');
 }
 
 {
