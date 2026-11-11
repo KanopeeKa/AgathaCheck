@@ -72,6 +72,7 @@ class NotificationPanelHeader extends StatelessWidget {
                 button: true,
                 enabled: onMarkAllRead != null,
                 label: l.markAllRead,
+                excludeSemantics: true,
                 child: TextButton.icon(
                   style: TextButton.styleFrom(
                     minimumSize: _minTouch,
