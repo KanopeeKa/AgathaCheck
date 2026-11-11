@@ -41,7 +41,7 @@ Options:
   --json            Emit machine-readable JSON
   -h, --help        Show this help
 
-Exit codes: 0 clear, 1 rebase, 2 wait, 3 error`);
+Exit codes: 0 clear, 1 rebase (integration head: recheck, do not rebase), 2 wait, 3 error, 4 integration conflict`);
 }
 
 function usageError(msg) {

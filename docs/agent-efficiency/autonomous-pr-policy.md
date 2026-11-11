@@ -288,7 +288,9 @@ Run merge coordination first (§Merge coordination):
 
 ```bash
 ./scripts/babysit_merge_preflight.sh --pr <url> --claim
-./scripts/babysit_sync_base.sh --pr <url> --push    # when behind; skip if up to date (a push → wait for CI green)
+# When preflight exit 1 (action rebase): babysit_sync_base.sh --pr <url> --push once, then --claim again.
+# Integration head (`cursor/*-integration-*`): do not --push; MERGEABLE while BEHIND is OK. Exit 4 → merge base into release.
+./scripts/babysit_sync_base.sh --pr <url> --push    # only when behind and head is not an integration release; skip if up to date
 node scripts/babysit_pr_reviews.js gate --pr <url>  # must exit 0 — after the last push; 2 → release the lease, back to triage
 gh pr merge <url> --squash
 ./scripts/babysit_merge_preflight.sh --pr <url> --release

@@ -71,13 +71,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+HEAD_BRANCH="$(git branch --show-current)"
 if [[ -n "$PR" ]]; then
   if ! command -v gh >/dev/null 2>&1; then
     echo "babysit_sync_base: gh is required for --pr" >&2
     exit 2
   fi
-  BASE="$(gh pr view "$PR" --json baseRefName -q .baseRefName)"
+  PR_JSON="$(gh pr view "$PR" --json baseRefName,headRefName)"
+  BASE="$(echo "$PR_JSON" | jq -r '.baseRefName')"
+  HEAD_BRANCH="$(echo "$PR_JSON" | jq -r '.headRefName')"
 fi
+
+is_integration_head() {
+  [[ "$1" =~ ^cursor/.+-integration- ]]
+}
 
 REMOTE_BASE="origin/$BASE"
 git fetch origin "$BASE" --quiet
@@ -99,6 +106,11 @@ echo "babysit_sync_base: behind $REMOTE_BASE by $BEHIND commit(s) ($AHEAD ahead)
 
 if [[ "$CHECK_ONLY" == true ]] || [[ "$REBASE" == false ]]; then
   exit 1
+fi
+
+if is_integration_head "$HEAD_BRANCH"; then
+  echo "babysit_sync_base: integration head $HEAD_BRANCH — skip rebase onto $REMOTE_BASE"
+  exit 0
 fi
 
 if [[ -n "$(git status --porcelain)" ]]; then
