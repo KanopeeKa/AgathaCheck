@@ -249,6 +249,20 @@ test('sync-resolve PR treats files merged from main (identical to main) as no-op
   assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
 });
 
+test('sync-resolve PR skips paths deleted on both head and main', async () => {
+  const deletedOnBoth = 'flutter_app/lib/features/frozen/removed_screen.dart';
+  const { client } = setup({
+    files: [deletedOnBoth, 'server/bin/server.js'],
+    extra: blobShaTreeRoutes({
+      headRef: syncResolve.headSha,
+      headBlobs: { 'server/bin/server.js': 'same' },
+      mainBlobs: { 'server/bin/server.js': 'same' },
+    }),
+  });
+  const res = await runScopeCheck(client, syncResolve);
+  assert.deepEqual([res.conclusion, res.title], ['success', 'ok']);
+});
+
 test('sync-resolve PR still fails a protected file that differs from main', async () => {
   const f = 'scripts/lib/execute_plan_state.js';
   const { client } = setup({

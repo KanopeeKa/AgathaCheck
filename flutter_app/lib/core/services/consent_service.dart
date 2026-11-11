@@ -58,13 +58,13 @@ class ConsentService extends StateNotifier<ConsentState> {
     );
   }
 
-  Future<void> acceptAll() async {
+  Future<bool> acceptAll() async {
     final timestamp = DateTime.now().toIso8601String();
-    await _prefs.setBool(_keyHasResponded, true);
-    await _prefs.setBool(_keyEssential, true);
-    await _prefs.setBool(_keyAnalytics, true);
-    await _prefs.setBool(_keyMarketing, true);
-    await _prefs.setString(_keyTimestamp, timestamp);
+    if (!await _prefs.setBool(_keyHasResponded, true)) return false;
+    if (!await _prefs.setBool(_keyEssential, true)) return false;
+    if (!await _prefs.setBool(_keyAnalytics, true)) return false;
+    if (!await _prefs.setBool(_keyMarketing, true)) return false;
+    if (!await _prefs.setString(_keyTimestamp, timestamp)) return false;
     state = ConsentState(
       hasResponded: true,
       essentialConsent: true,
@@ -72,6 +72,7 @@ class ConsentService extends StateNotifier<ConsentState> {
       marketingConsent: true,
       consentTimestamp: timestamp,
     );
+    return true;
   }
 
   Future<bool> savePreferences({
