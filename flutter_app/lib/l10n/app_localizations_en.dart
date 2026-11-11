@@ -5566,6 +5566,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dataExported => 'Your data has been exported';
 
   @override
+  String get dataExportUnavailable =>
+      'This device cannot save an export file. Use the web app to download your data.';
+
+  @override
+  String get dataExportCancelled =>
+      'Export cancelled. Your data was not saved.';
+
+  @override
+  String get dataExportFailed => 'Could not export your data. Try again.';
+
+  @override
   String get consentPreferences => 'Privacy Preferences';
 
   @override

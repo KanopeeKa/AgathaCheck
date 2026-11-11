@@ -9823,6 +9823,24 @@ abstract class AppLocalizations {
   /// **'Your data has been exported'**
   String get dataExported;
 
+  /// No description provided for @dataExportUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This device cannot save an export file. Use the web app to download your data.'**
+  String get dataExportUnavailable;
+
+  /// No description provided for @dataExportCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Export cancelled. Your data was not saved.'**
+  String get dataExportCancelled;
+
+  /// No description provided for @dataExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export your data. Try again.'**
+  String get dataExportFailed;
+
   /// No description provided for @consentPreferences.
   ///
   /// In en, this message translates to:

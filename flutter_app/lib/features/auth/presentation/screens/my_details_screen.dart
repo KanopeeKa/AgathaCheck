@@ -2,12 +2,13 @@ import 'dart:convert';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'export_data_stub.dart' if (dart.library.html) 'export_data_web.dart';
+import 'export_data_stub.dart'
+    if (dart.library.html) 'export_data_web.dart'
+    if (dart.library.io) 'export_data_io.dart';
 
 import '../../../../core/providers/api_base_url_provider.dart';
 import '../../../../core/utils/resolve_static_asset_url.dart';
@@ -237,25 +238,34 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
     final token = ref.read(authProvider).accessToken;
     if (token == null) return;
 
+    if (!isUserDataExportDeliveryAvailable) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.dataExportUnavailable)),
+        );
+      }
+      return;
+    }
+
     try {
       final authRepository = ref.read(authRepositoryProvider);
       final data = await authRepository.exportData(token);
       final jsonStr = const JsonEncoder.withIndent('  ').convert(data);
-      final bytes = utf8.encode(jsonStr);
-
-      if (kIsWeb) {
-        await exportUserDataWebOnly(bytes);
-      }
+      final bytes = Uint8List.fromList(utf8.encode(jsonStr));
+      final delivered = await deliverUserDataExport(bytes);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            delivered ? l10n.dataExported : l10n.dataExportCancelled,
+          ),
+        ),
+      );
+    } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.dataExported)));
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.dataExportFailed)),
+        );
       }
     }
   }
