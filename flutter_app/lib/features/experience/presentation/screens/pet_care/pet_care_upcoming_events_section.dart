@@ -84,10 +84,11 @@ class PetCareUpcomingEventsSection extends ConsumerWidget {
         onAction: onAddEvent,
       );
     }
-    return CareAgendaCollection(
+    return CareListSurfaceCollection(
       key: const Key('pet_care_dashboard_care_block'),
       entries: entries,
       source: CareCommandSource.dashboard,
+      layout: CareListSurfaceLayout.dashboardTodayOnly,
       petNames: {for (final pet in pets) pet.id: pet.name},
       empty: PetCareIllustratedEmptyState(
         key: const Key('pet_care_dashboard_empty_care_clear'),
@@ -96,20 +97,6 @@ class PetCareUpcomingEventsSection extends ConsumerWidget {
         actionLabel: l.allCare,
         actionIcon: Icons.calendar_month_outlined,
         onAction: () => context.go('/pc/events'),
-      ),
-      header: (agenda) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Semantics(
-          identifier: 'care_agenda_orientation',
-          label: careAgendaOrientation(l, agenda),
-          child: ExcludeSemantics(
-            child: Text(
-              careAgendaOrientation(l, agenda),
-              key: const Key('care_agenda_orientation'),
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-          ),
-        ),
       ),
     );
   }

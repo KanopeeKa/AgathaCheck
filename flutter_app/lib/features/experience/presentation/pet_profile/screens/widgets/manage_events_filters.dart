@@ -12,10 +12,11 @@ enum ManageEventsRecurringFilter { all, recurring, oneTime }
 /// Open/closed/due filter for the manage-events unified list.
 enum ManageEventsStatusFilter { all, open, closed, dueOverdue }
 
-/// Default status filter for the global `/g/events` and `/o/events` lists.
-const defaultGlobalEventsFilters = ManageEventsFilters(
-  statuses: {ManageEventsStatusFilter.dueOverdue},
-);
+/// Default event filters for global All care and org event lists.
+///
+/// Status and skipped are fixed (all statuses, show skipped); pet scope uses
+/// address-bar chips on `/pc/events`.
+const defaultGlobalEventsFilters = ManageEventsFilters();
 
 /// Combined filter state for manage-events list screens.
 ///

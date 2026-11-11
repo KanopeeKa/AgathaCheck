@@ -1800,6 +1800,40 @@
           }
         }
       },
+      "CompletionToday": {
+        "type": "object",
+        "required": [
+          "occurrence_id",
+          "scheduled_date",
+          "completed_on"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "occurrence_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scheduled_date": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "scheduled_time": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "completed_on": {
+            "$ref": "#/components/schemas/CalendarDate"
+          },
+          "time": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\d{2}:\\d{2}$"
+          }
+        }
+      },
       "OpenOccurrence": {
         "type": "object",
         "required": [
@@ -2033,6 +2067,13 @@
                 "type": "null"
               }
             ]
+          },
+          "completions_today": {
+            "description": "Every occurrence with completed_on equal to as_of.date (pet home calendar), earliest slot first — multi-line Today cards on All care",
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompletionToday"
+            }
           }
         }
       },

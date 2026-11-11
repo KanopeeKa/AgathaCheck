@@ -22,6 +22,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
+import '../../../../../helpers/care_schedule_entries.dart';
 import '../../../../../helpers/fakes.dart';
 
 export 'package:flutter_test/flutter_test.dart';
@@ -135,17 +136,18 @@ Widget buildEventsScreen({
   List<HealthEntry>? entries,
   HealthEntriesNotifier Function()? notifierFactory,
   List<Pet>? shellPets,
+  String initialLocation = '/pc/events',
 }) {
   final pets = shellPets ?? testAllShellPets;
   final router = GoRouter(
-    initialLocation: '/pc/events',
+    initialLocation: initialLocation,
     routes: [
       GoRoute(
         path: '/pc/events',
         builder: (context, state) => ExperienceShellScaffold(
           experience: AppExperience.petCare,
           currentLocation: state.uri.path,
-          screenTitle: 'All Actions',
+          screenTitle: 'All care',
           backPath: '/pc/home',
           contextualActions: [
             Builder(
@@ -192,24 +194,35 @@ Widget buildEventsScreen({
   );
 }
 
-/// Bare [GlobalEventsList] widget (no router) — for layout/action tests.
+/// Bare [GlobalEventsList] widget with a minimal `/pc/events` router.
 Widget buildListScreen({
   required List<Pet> pets,
   required HealthEntriesNotifier Function() notifierFactory,
+  String initialLocation = '/pc/events',
 }) {
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: [
+      GoRoute(
+        path: '/pc/events',
+        builder: (_, __) => Scaffold(body: GlobalEventsList(shellPets: pets)),
+      ),
+    ],
+  );
+
   return ProviderScope(
     overrides: [
       petListProvider.overrideWith(() => TestPetListNotifier(pets)),
       healthEntriesNotifierProvider.overrideWith(notifierFactory),
       ...guardianEventsTestOverrides,
     ],
-    child: MaterialApp(
+    child: MaterialApp.router(
       theme: AppTheme.lightTheme.copyWith(
         splashFactory: NoSplash.splashFactory,
       ),
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(body: GlobalEventsList(shellPets: pets)),
+      routerConfig: router,
     ),
   );
 }
@@ -238,26 +251,20 @@ Widget buildScreenWithPetError() {
 // Private default entries
 // ---------------------------------------------------------------------------
 
-final _ownedDefaultEntry = HealthEntry(
+final _ownedDefaultEntry = scheduledEntry(
   id: 'entry-owned',
   petId: 'pet-owned',
   name: 'Heartgard',
-  type: HealthEntryType.medication,
-  dosage: '1 tablet',
-  frequency: HealthFrequency.monthly,
-  startDate: DateTime(2025, 1, 1),
-  nextDueDate: DateTime.now().add(const Duration(days: 3)),
+  dueInDays: 30,
+  careFamily: 'parasite_prevention',
 );
 
-final _fosterDefaultEntry = HealthEntry(
+final _fosterDefaultEntry = scheduledEntry(
   id: 'entry-foster',
   petId: 'pet-foster',
   name: 'Flea treatment',
-  type: HealthEntryType.preventive,
-  dosage: '',
-  frequency: HealthFrequency.monthly,
-  startDate: DateTime(2025, 1, 1),
-  nextDueDate: DateTime.now().subtract(const Duration(days: 2)),
+  dueInDays: -2,
+  careFamily: 'parasite_prevention',
 );
 
 final _sharedDefaultEntry = HealthEntry(

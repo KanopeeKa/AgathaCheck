@@ -926,6 +926,36 @@ abstract class AppLocalizations {
   /// **'No closed care yet.'**
   String get allCareClosedCareEmpty;
 
+  /// No description provided for @globalEventsPausedCareSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused care'**
+  String get globalEventsPausedCareSection;
+
+  /// No description provided for @globalEventsClosedCareSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed care'**
+  String get globalEventsClosedCareSection;
+
+  /// No description provided for @globalEventsLifecycleSection.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} ({count})'**
+  String globalEventsLifecycleSection(String title, int count);
+
+  /// No description provided for @globalEventsShowSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Show {title}'**
+  String globalEventsShowSection(String title);
+
+  /// No description provided for @globalEventsHideSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide {title}'**
+  String globalEventsHideSection(String title);
+
   /// No description provided for @careItemClosedByYou.
   ///
   /// In en, this message translates to:
@@ -2405,7 +2435,7 @@ abstract class AppLocalizations {
   /// No description provided for @allCare.
   ///
   /// In en, this message translates to:
-  /// **'All Actions'**
+  /// **'All care'**
   String get allCare;
 
   /// No description provided for @careForPet.
@@ -2423,7 +2453,7 @@ abstract class AppLocalizations {
   /// No description provided for @careNavLabel.
   ///
   /// In en, this message translates to:
-  /// **'Actions'**
+  /// **'Care'**
   String get careNavLabel;
 
   /// No description provided for @peopleNavLabel.

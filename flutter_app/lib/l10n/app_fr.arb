@@ -184,6 +184,27 @@
     }
   },
   "allCareClosedCareEmpty": "Aucun soin fermé pour le moment.",
+  "globalEventsPausedCareSection": "Soins en pause",
+  "globalEventsClosedCareSection": "Soins fermés",
+  "globalEventsLifecycleSection": "{title} ({count})",
+  "@globalEventsLifecycleSection": {
+    "placeholders": {
+      "title": { "type": "String" },
+      "count": { "type": "int" }
+    }
+  },
+  "globalEventsShowSection": "Afficher {title}",
+  "@globalEventsShowSection": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "globalEventsHideSection": "Masquer {title}",
+  "@globalEventsHideSection": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
   "careItemClosedByYou": "Fermé par vous",
   "careItemEndedStatus": "Terminé",
   "eventFilterClosed": "Fermé",

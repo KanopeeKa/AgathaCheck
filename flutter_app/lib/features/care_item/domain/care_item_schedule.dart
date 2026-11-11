@@ -19,9 +19,11 @@ class CareItemSchedule {
     this.repeatsDailyOrMore = false,
     this.intervalDays,
     this.lastDone,
+    List<CompletionToday> completionsToday = const [],
   }) : openOccurrences = List.unmodifiable(
          [...openOccurrences]..sort((a, b) => a.compareTo(b)),
-       );
+       ),
+       completionsToday = List.unmodifiable(completionsToday);
 
   final String entryId;
   final String petId;
@@ -58,11 +60,33 @@ class CareItemSchedule {
   /// Latest completion, for "done today" rows.
   final LastDone? lastDone;
 
+  /// Slots marked done on [asOf.date] (pet home calendar); quiet Today card lines.
+  final List<CompletionToday> completionsToday;
+
   bool get isActive => status == 'active';
 
   /// Done on the item's today (pet home calendar).
   bool get doneToday => lastDone?.completedOn == asOf.date;
   bool get isPaused => status == 'paused';
+}
+
+/// One occurrence completed on the pet's today (list read `completions_today`).
+class CompletionToday {
+  const CompletionToday({
+    required this.occurrenceId,
+    required this.scheduledDate,
+    this.scheduledTime,
+    required this.completedOn,
+    this.time,
+  });
+
+  final String occurrenceId;
+  final DateTime scheduledDate;
+  final String? scheduledTime;
+  final DateTime completedOn;
+
+  /// When it was marked, `HH:mm` in the pet's home zone.
+  final String? time;
 }
 
 /// The latest completion of a care item.
