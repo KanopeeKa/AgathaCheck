@@ -23,6 +23,7 @@ import {
 import {
   collectionFilterDimensionTrigger,
   dashboardSectionGroup,
+  filterChipByName,
   flutterGotoUrl,
   reachAuthenticatedHome,
   refreshFlutterAccessibility,
@@ -255,12 +256,12 @@ test.describe('Guardian dashboard', () => {
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
 
     await expect(
-      page.getByRole('button', { name: /^All pets$|^Tous les animaux$/i }),
+      filterChipByName(page, /^All pets$|^Tous les animaux$/i),
     ).toBeVisible();
     for (const label of ['OwnedPet', 'FosterPet']) {
-      await expect(page.getByRole('button', { name: label, exact: true })).toBeVisible();
+      await expect(filterChipByName(page, new RegExp(`^${label}$`))).toBeVisible();
     }
-    await page.getByRole('button', { name: 'OwnedPet', exact: true }).click();
+    await filterChipByName(page, /^OwnedPet$/).click();
     await refreshFlutterAccessibility(page);
     await expect(page.url()).toContain(`pet=${owned.id}`);
 
