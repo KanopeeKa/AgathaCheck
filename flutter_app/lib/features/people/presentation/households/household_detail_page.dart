@@ -13,8 +13,8 @@ import '../../domain/entities/household.dart';
 import '../../domain/entities/household_invite.dart';
 import '../../domain/entities/roster.dart';
 import '../../domain/repositories/people_repository.dart';
-import '../add/add_person_step_finalize.dart';
 import 'household_invite_member_sheet.dart';
+import 'household_rename_dialog.dart';
 import 'household_member_removal_dialog.dart';
 import 'household_tier_labels.dart';
 
