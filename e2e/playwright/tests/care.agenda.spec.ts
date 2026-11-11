@@ -161,11 +161,8 @@ test.describe('Care agenda', () => {
 
       await page.goto(flutterGotoUrl(`/pc/events?pet=${pet.id}`));
       await enableFlutterAccessibility(page);
-      await waitForFlutterRoutePattern(
-        page,
-        new RegExp(`/pc/events.*pet=${pet.id}`),
-        60_000,
-      );
+      await waitForFlutterRoutePattern(page, /^\/pc\/events$/, 60_000);
+      await expect(page.url()).toContain(`pet=${pet.id}`);
       const closedSection = page.locator(
         '[flt-semantics-identifier="global_events_closed_care"]',
       );

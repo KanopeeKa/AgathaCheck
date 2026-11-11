@@ -254,15 +254,15 @@ test.describe('Guardian dashboard', () => {
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
 
-    const petTrigger = collectionFilterDimensionTrigger(page, /^Pets(\s+\(\d+\))?$/i);
-    await expect(petTrigger).toBeVisible();
-    await petTrigger.click();
-    await refreshFlutterAccessibility(page);
-    for (const label of ['All pets', 'OwnedPet', 'FosterPet']) {
-      await expect(page.getByRole('checkbox', { name: label, exact: true })).toBeVisible();
+    await expect(
+      page.getByRole('button', { name: /^All pets$|^Tous les animaux$/i }),
+    ).toBeVisible();
+    for (const label of ['OwnedPet', 'FosterPet']) {
+      await expect(page.getByRole('button', { name: label, exact: true })).toBeVisible();
     }
-    await page.keyboard.press('Escape');
+    await page.getByRole('button', { name: 'OwnedPet', exact: true }).click();
     await refreshFlutterAccessibility(page);
+    await expect(page.url()).toContain(`pet=${owned.id}`);
 
     const moreTrigger = collectionFilterDimensionTrigger(
       page,
