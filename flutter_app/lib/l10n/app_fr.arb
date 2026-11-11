@@ -910,6 +910,8 @@
   "externalLinkOpenFailed": "Impossible d'ouvrir ce lien. Copiez-le pour l'ouvrir dans votre navigateur :",
   "subscriptionPurchaseFailed": "L'achat n'a pas abouti. Réessayez ou restaurez un achat existant.",
   "subscriptionRestoreFailed": "Impossible de restaurer les achats. Réessayez dans un instant.",
+  "subscriptionNothingToRestore": "Aucun achat n'a été trouvé pour ce compte.",
+  "subscriptionPurchasePending": "Votre achat est en cours de traitement. Si l'accès n'apparaît pas bientôt, essayez Restaurer les achats.",
   "subscriptionFeatureUnlimitedTitle": "AgathaTrack Illimité",
   "subscriptionFeatureProfiles": "Profils d'animaux illimités",
   "subscriptionFeatureHealth": "Suivi de santé complet",
