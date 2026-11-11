@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import 'package:pet_profile_app/core/utils/external_link_launcher.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/app_logo_title.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
@@ -122,57 +121,23 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     final l = AppLocalizations.of(context)!;
     final uri = Uri.tryParse(url);
     if (uri == null) {
-      _showManagementFallback(url, l);
+      if (mounted) {
+        showExternalLinkFallback(
+          context,
+          url: url,
+          dialogTitle: l.manageSubscription,
+          failureMessage: l.subscriptionManagementOpenFailed,
+        );
+      }
       return;
     }
-    try {
-      final launched = await launchUrl(
-        uri,
-        mode: LaunchMode.externalApplication,
-      );
-      if (!launched && mounted) {
-        _showManagementFallback(url, l);
-      }
-    } catch (_) {
-      if (mounted) _showManagementFallback(url, l);
-    }
-  }
-
-  void _showManagementFallback(String url, AppLocalizations l) {
-    showDialog<void>(
-      context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: Text(l.manageSubscription),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(l.subscriptionManagementOpenFailed),
-              const SizedBox(height: 12),
-              SelectableText(url),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () async {
-                await Clipboard.setData(ClipboardData(text: url));
-                if (dialogContext.mounted) {
-                  Navigator.of(dialogContext).pop();
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l.peopleCopiedToClipboard)),
-                  );
-                }
-              },
-              child: Text(l.copy),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text(l.ok),
-            ),
-          ],
-        );
-      },
+    if (!mounted) return;
+    await launchExternalLink(
+      context,
+      uri: uri,
+      displayUrl: url,
+      dialogTitle: l.manageSubscription,
+      failureMessage: l.subscriptionManagementOpenFailed,
     );
   }
 
