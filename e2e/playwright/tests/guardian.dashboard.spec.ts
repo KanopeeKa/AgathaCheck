@@ -70,7 +70,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectNoPendingDashboardBanner();
   });
 
-  test('Care preview separates Due and Soon', async ({ page }) => {
+  test('Care dashboard preview shows Today only', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const user = await seededGuardian(page);
     const pet = await createPet(baseURL(), user.accessToken, 'TodayPet');
@@ -87,7 +87,9 @@ test.describe('Guardian dashboard', () => {
     await dashboard.open();
     await dashboard.expectTodayCareRegions();
     await dashboard.expectCareVisible('Urgent Care');
-    await dashboard.expectCareVisible('Soon Care');
+    await expect(semanticsByName(page, /Soon Care/i).first()).not.toBeVisible({
+      timeout: 5_000,
+    });
   });
 
   test('My Pets preview is capped at four with an All Pets destination', async ({ page }) => {
@@ -122,7 +124,9 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Overdue Care');
     await dashboard.expectCareVisible('Today Care');
     await dashboard.expectCarePriorityOrder(['Overdue Care', 'Today Care']);
-    await dashboard.expectCareVisible('Upcoming Care');
+    await expect(semanticsByName(page, /Upcoming Care/i).first()).not.toBeVisible({
+      timeout: 5_000,
+    });
     const careTab = page
       .getByRole('button', {
         name: /^Care(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
@@ -133,6 +137,9 @@ test.describe('Guardian dashboard', () => {
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await expect(page).toHaveURL(/#\/pc\/events/);
+    const agenda = new CareAgendaPage(page);
+    await agenda.showUpcomingCare();
+    await agenda.expectRowVisible('Upcoming Care');
     await dashboard.goBackToDashboard();
   });
 
