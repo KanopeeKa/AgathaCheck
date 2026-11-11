@@ -311,7 +311,10 @@ check run that call it arrive in a later work package (build spec:
    summary names the main-target side-PR route (runbooks §7.5); no file is evaluated.
 2c. Categories `release` and `sync-resolve`: a file whose blob at the PR head equals the blob on the
    `main` tip is skipped (it is `main`'s own content — a merged side fix, or `main` merged in by a
-   sync resolve). Files the PR changes relative to `main` (e.g. resolved conflicts) are still evaluated.
+   sync resolve). Category **`sync-resolve` only**: a path **absent on both** the PR head and the
+   `main` tip is also skipped (symmetric deletion already landed on `main`), except the plan's own
+   `.agents/plans/<id>.md` / `<id>.snapshot.json` (still checked for drift on release). Files the PR
+   changes relative to `main` (e.g. resolved conflicts) are still evaluated.
 3. Per file, first match wins:
    1. The plan's own `.agents/plans/<id>.md` / `<id>.snapshot.json` → allowed only in the
       `release` PR when their bytes equal the approved content; otherwise `drift`.
