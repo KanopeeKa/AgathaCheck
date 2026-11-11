@@ -2513,6 +2513,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subscriptionPeriodPerYear => 'per year';
 
   @override
+  String get subscriptionPeriodPerWeek => 'per week';
+
+  @override
+  String get subscriptionPeriodLifetime => 'one-time purchase';
+
+  @override
+  String get subscriptionPeriodBillingPeriod => 'per billing period';
+
+  @override
+  String subscriptionCadenceDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'every $count days',
+      one: 'per day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionCadenceWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'every $count weeks',
+      one: 'per week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionCadenceMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'every $count months',
+      one: 'per month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionCadenceYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'every $count years',
+      one: 'per year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get subscriptionOneTimeDisclosure =>
+      'One-time purchase. Access continues for the lifetime of the product; no automatic renewal.';
+
+  @override
+  String get subscriptionCancelDisclosureWeb =>
+      'Cancel from your AgathaTrack account subscription settings before the next billing date to avoid being charged.';
+
+  @override
+  String get subscriptionIntroPeriodUnknown =>
+      'the introductory period shown at checkout';
+
+  @override
+  String get subscriptionFallbackLifetime => 'Lifetime';
+
+  @override
   String get subscriptionFallbackMonthly => 'Monthly';
 
   @override
