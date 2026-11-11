@@ -90,63 +90,69 @@ void main() {
     expect(rolesValidForAdd({ContactRole.vet}, requiresRoles: true), isTrue);
   });
 
-  testWidgets('household invite failure keeps contact and retries invite only', (
-    tester,
-  ) async {
-    final fakePeople = _CountingPeopleRepository();
-    final fakeHouseholds = _FailingInviteHouseholdsRepository();
-    await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          peopleRepositoryProvider.overrideWithValue(fakePeople),
-          householdsRepositoryProvider.overrideWithValue(fakeHouseholds),
-          addPersonPetsProvider.overrideWith((ref) async => const []),
-        ],
-        child: MaterialApp(
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
-          supportedLocales: AppLocalizations.supportedLocales,
-          home: const AddPersonFlow(),
+  testWidgets(
+    'household invite failure keeps contact and retries invite only',
+    (tester) async {
+      final fakePeople = _CountingPeopleRepository();
+      final fakeHouseholds = _FailingInviteHouseholdsRepository();
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            peopleRepositoryProvider.overrideWithValue(fakePeople),
+            householdsRepositoryProvider.overrideWithValue(fakeHouseholds),
+            addPersonPetsProvider.overrideWith((ref) async => const []),
+          ],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: const AddPersonFlow(),
+          ),
         ),
-      ),
-    );
-    await tester.pumpAndSettle();
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('people_add_tile_household')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('people_add_tile_household')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
 
-    await tester.enterText(
-      find.byKey(const Key('people_add_name_field')),
-      'Alex',
-    );
-    await tester.enterText(find.byType(TextFormField).at(2), 'alex@example.com');
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continue'));
-    await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('people_add_name_field')),
+        'Alex',
+      );
+      await tester.enterText(
+        find.byType(TextFormField).at(2),
+        'alex@example.com',
+      );
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Continue'));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Invite to a household'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Save person'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.text('Invite to a household'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Save person'));
+      await tester.pumpAndSettle();
 
-    expect(fakePeople.createContactCalls, 1);
-    expect(fakeHouseholds.inviteCalls, 1);
-    expect(
-      find.text('Contact saved. The household invitation was not sent.'),
-      findsOneWidget,
-    );
+      expect(fakePeople.createContactCalls, 1);
+      expect(fakeHouseholds.inviteCalls, 1);
+      expect(
+        find.text('Contact saved. The household invitation was not sent.'),
+        findsOneWidget,
+      );
 
-    fakeHouseholds.failInvite = false;
-    await tester.tap(find.byKey(const Key('people_add_retry_household_invite')));
-    await tester.pumpAndSettle();
+      fakeHouseholds.failInvite = false;
+      await tester.tap(
+        find.byKey(const Key('people_add_retry_household_invite')),
+      );
+      await tester.pumpAndSettle();
 
-    expect(fakePeople.createContactCalls, 1);
-    expect(fakeHouseholds.inviteCalls, 2);
-  });
+      expect(fakePeople.createContactCalls, 1);
+      expect(fakeHouseholds.inviteCalls, 2);
+    },
+  );
 }
 
 class _FailingInviteHouseholdsRepository extends FakeHouseholdsRepository {
