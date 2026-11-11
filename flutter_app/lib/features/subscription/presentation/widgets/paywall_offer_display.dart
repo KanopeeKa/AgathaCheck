@@ -250,7 +250,10 @@ class PaywallOfferDisplay {
     );
   }
 
-  static String _cadenceLabel(AppLocalizations l, PaywallOfferProductFacts facts) {
+  static String _cadenceLabel(
+    AppLocalizations l,
+    PaywallOfferProductFacts facts,
+  ) {
     if (facts.isLifetimeBilling) return l.subscriptionPeriodLifetime;
     if (facts.isYearlyBilling) return l.subscriptionPeriodPerYear;
     if (facts.isMonthlyBilling) return l.subscriptionPeriodPerMonth;
