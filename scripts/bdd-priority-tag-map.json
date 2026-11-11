@@ -489,5 +489,10 @@
     "CD-2 Care name link opens Care details": "P1",
     "CD-3 After-it's-done overdue completes inline on the leaf without a date sheet": "P1",
     "CD-4 Neighbour chevron opens the adjacent occurrence on the same route": "P1"
+  },
+  "trust_surfaces.feature": {
+    "Bell panel opens notification settings from the shell": "P0",
+    "Bell panel opens the full inbox from the shell": "P0",
+    "Reject optional on the consent banner dismisses and persists the choice": "P0"
   }
 }
