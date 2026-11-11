@@ -219,3 +219,6 @@ Flutter web exposes an accessibility tree. Prefer, in order:
 3. `getByText('…')` for visible copy from `app_en.arb`
 
 Add `Semantics(identifier: …)` in Flutter only when the tree is insufficient.
+
+Before clicking a known identifier, call `expectSingleSemanticsNode(page, id)` from
+`playwright/support/flutter.ts` so duplicate semantics trees fail in PR E2E instead of Pre-UAT.
