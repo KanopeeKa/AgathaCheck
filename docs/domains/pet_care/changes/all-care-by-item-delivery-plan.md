@@ -7,7 +7,6 @@ status_since: 2026-11-10
 folds_into: docs/domains/pet_care/features/care-item-evolution.md
 plan: all-care-by-item-c455
 last_updated: 2026-11-11
-tags: [pet_care, care_item, execute-plan]
 ---
 
 # All care by care item
