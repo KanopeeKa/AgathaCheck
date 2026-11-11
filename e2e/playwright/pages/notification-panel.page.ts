@@ -3,10 +3,8 @@ import { expect } from '@playwright/test';
 import {
   enableFlutterAccessibility,
   expectAppBarTitle,
-  flutterRoutePath,
   reachAuthenticatedHome,
   refreshFlutterAccessibility,
-  waitForFlutterRoutePattern,
 } from '../support/flutter';
 import { NotificationsPage } from './notifications.page';
 
