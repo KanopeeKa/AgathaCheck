@@ -885,6 +885,24 @@ export function postPetMutationShellLocator(page: Page) {
     .first();
 }
 
+/** Locator for a Flutter web semantics identifier (may match 0..n nodes). */
+export function semanticsIdentifierLocator(page: Page, identifier: string) {
+  return page.locator(`[flt-semantics-identifier="${identifier}"]`);
+}
+
+/**
+ * Assert exactly one semantics node for [identifier] before interacting (duplicate-tree guard).
+ */
+export async function expectSingleSemanticsNode(
+  page: Page,
+  identifier: string,
+  options?: { timeout?: number },
+): Promise<Locator> {
+  const locator = semanticsIdentifierLocator(page, identifier);
+  await expect(locator).toHaveCount(1, options);
+  return locator.first();
+}
+
 /** Flutter MergeSemantics nodes may surface as button, checkbox, tab, or group (3.44 web). */
 export function semanticsByName(page: Page, pattern: string | RegExp) {
   const name =
