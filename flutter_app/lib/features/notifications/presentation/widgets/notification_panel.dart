@@ -7,6 +7,7 @@ import '../../domain/entities/app_notification.dart';
 import '../../domain/services/notification_inbox_v2_rules.dart';
 import '../providers/notification_inbox_session.dart';
 import '../providers/notification_providers.dart';
+import '../utils/mark_all_read_action.dart';
 import '../utils/mark_all_read_eligibility.dart';
 import '../utils/notification_navigation.dart';
 import 'notification_inbox_list.dart';
@@ -155,12 +156,6 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
 
   Future<void> _markAllRead() async {
     final tab = ref.read(notificationInboxSessionTabProvider);
-    await ref.read(notificationsProvider.notifier).markAllAsRead(scope: tab);
-    if (mounted) {
-      final l = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l.notificationsMarkedRead)));
-    }
+    await performMarkAllRead(context, ref, scope: tab);
   }
 }
