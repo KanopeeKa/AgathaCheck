@@ -17,6 +17,7 @@ import {
   enableFlutterAccessibility,
   flutterGotoUrl,
   refreshFlutterAccessibility,
+  waitForFlutterRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
