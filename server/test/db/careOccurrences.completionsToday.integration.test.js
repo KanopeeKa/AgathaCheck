@@ -1,7 +1,7 @@
 /**
  * `completions_today` on care item list/detail reads (pet home calendar).
  */
-import { afterAll, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, describe, expect, it } from '@jest/globals';
 
 import { assertMatchesSchema } from '../../lib/openapi/assertDto.js';
 import { loadPetCareCriticalSpec, responseSchema } from '../../lib/openapi/petCareCriticalSpec.js';
