@@ -73,6 +73,10 @@ An **owner** may change files in an area; everyone else waits until the owner's 
 
 ## 4. Landing order
 
+**Execute-plan v2:** a plan's phases cannot `wait for` another programme's merge or landing slot
+mid-flight. `init` warns when plan prose looks like cross-plan coordination — split work into
+separate `plan_id`s and use this table instead ([plan-template.md](./plan-template.md)).
+
 Landings into `main` happen **one at a time**. Each is followed by pre-UAT E2E green on its merge SHA (`/babysit-uat`) before the next one lands. Items marked **(disjoint)** may swap: whichever is green first lands first. Development may start earlier on each programme's own branch, as long as it respects §3.
 
 | # | Landing on `main` | Must already be on `main` | Develops in parallel with |

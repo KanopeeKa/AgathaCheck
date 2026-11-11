@@ -1,6 +1,10 @@
 import type { Page } from '@playwright/test';
 import { expect } from '@playwright/test';
-import { fillTextbox, refreshFlutterAccessibility } from '../support/flutter';
+import {
+  expectSingleSemanticsNode,
+  fillTextbox,
+  refreshFlutterAccessibility,
+} from '../support/flutter';
 import { WeightTrackingPage } from './weight-tracking.page';
 
 /**
@@ -54,6 +58,7 @@ export class WeightHubPage {
   }
 
   async setCountsAsSwitch(on: boolean): Promise<void> {
+    await expectSingleSemanticsNode(this.page, 'record_weight_counts_as');
     const switchEl = this.countsAsSwitch();
     await switchEl.waitFor({ timeout: 15_000 });
     const checked = await switchEl.isChecked();

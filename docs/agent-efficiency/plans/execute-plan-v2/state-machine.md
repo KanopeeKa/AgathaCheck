@@ -33,8 +33,8 @@ Times are ISO-8601 UTC strings. `null` means "does not exist". Example = the sce
   "main": { "head_sha": "aaaa000000000000000000000000000000000001", "preuat_queued_for_head": false },
   "integration": { "exists": true, "head_sha": "bbbb000000000000000000000000000000000001", "behind_main_by": 0 },
   "phases": [
-    { "id": "1", "branch_exists": false, "pr": null },
-    { "id": "2", "branch_exists": false, "pr": null }
+    { "id": "1", "branch_exists": false, "merged_into_integration": false, "pr": null },
+    { "id": "2", "branch_exists": false, "merged_into_integration": false, "pr": null }
   ],
   "sync": { "open_pr": null, "resolve_pr": null, "resolve_prs_since_epoch": 0 },
   "release": { "pr": null },
@@ -162,7 +162,9 @@ PRs. D2 `uat != null` → **U-rules**. D3 release PR open → **PR-ladder** on i
 draft action `implement` is not used — a release PR is never draft). D4 all phases merged →
 **S-rules**. D5 otherwise → **P-rules**.
 
-**P — phases.** P1 current phase = first phase whose `pr.merged_at` is null. P2 `pr == null` and
+**P — phases.** P1 current phase = first phase where `merged_into_integration` is false and
+`pr.merged_at` is null (`observe` sets the flag when a merged PR exists on the phase head even if a
+newer open duplicate PR exists — #2259). P2 `pr == null` and
 `branch_exists == false`: when `integration.head_sha` is null (integration branch deleted and no
 ref to seed from) → STOP `integration-missing`; else driver `create-phase-branch` (from
 `integration.head_sha`). P3 `pr == null` and branch exists → agent `implement` (L-rules). P4 `pr`
@@ -184,7 +186,8 @@ method `merge` (scope is always green for sync PRs). S2 `release.pr == null` and
 1c. Label `execute-plan-blocked` or body marker `<!-- execute-plan-blocked: … -->` (after 1b, before
    draft/CI rules) → STOP `worker-blocked` with detail from the marker text, or a default when the label
    alone is present. Workers may add only this label when reporting an unblockable failure (contracts §3.6).
-2. `draft` → the draft action (agent, L-rules), unless rule 1b applies.
+2. `draft` → the draft action (agent, L-rules), unless rule 1b applies. Phase `implement` when
+   `merged_into_integration` → `wait(phase-merged)` (no launch; #2259).
 3. Scope check `reason ∈ {drift, protected, forbidden}` → STOP `drift`.
 3b. Scope check `failure` with reason `plan-stopped` (left by an earlier `enforce-stop`; the plan is
    running, D1) → head already in `status.dispatched.scope_republish` after the epoch ? STOP
@@ -332,6 +335,7 @@ WP5 writes U):
 | `p-check-missing-republished-stop.json` | PR-ladder 10a | stop `check-missing` |
 | `p-check-missing-ci-hard-stop.json` | PR-ladder 10a | stop `check-missing` (2 h without activity on the head; CI is never republished) |
 | `p-merged-next-phase.json` | P1–P2 | phase 2 / driver `create-phase-branch` |
+| `p-merged-duplicate-open-no-relaunch.json` | P1, P3.5 | phase 2 / driver `create-phase-branch` (no duplicate `implement` launch) |
 | `r-release-merged-integ-deleted.json` | D3, observe | `release:merged` / driver `wait` (`preuat`) when integration branch deleted |
 | `p-integ-deleted-stop-create.json` | P2 | stop `integration-missing` (no `create-phase-branch` with null `from_sha`) |
 | `s-open-release-integ-deleted.json` | S2, observe | all phases merged, integration deleted / driver `open-release-pr` |

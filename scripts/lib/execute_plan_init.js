@@ -11,6 +11,7 @@ const { execFileSync } = require('child_process');
 const path = require('path');
 const { ExecutePlanError, V2_DEFAULTS } = require('./execute_plan_constants');
 const { buildSnapshotFromPlan, parsePlanMarkdown } = require('./execute_plan_snapshot_v2');
+const { warnCrossPlanWaitPhrases } = require('./execute_plan_plan_warnings');
 const {
   ownPlanFilePaths,
   extraInitBranchFiles,
@@ -87,6 +88,7 @@ async function runInit({ client, planId, windowDays = V2_DEFAULTS.window_days, d
   }
 
   const planMarkdown = fsImpl.readFileSync(path.join(cwd, planRel), 'utf8');
+  warnCrossPlanWaitPhrases(planMarkdown);
   const parsed = parsePlanMarkdown(planMarkdown);
   const build = (controlIssue) => buildSnapshotFromPlan({ planId, planMarkdown, controlIssue, now, windowDays });
 
