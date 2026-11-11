@@ -77,8 +77,7 @@ if [[ -n "$PR" ]]; then
     echo "babysit_sync_base: gh is required for --pr" >&2
     exit 2
   fi
-  BASE="$(gh pr view "$PR" --json baseRefName,headRefName --jq .baseRefName)"
-  HEAD_BRANCH="$(gh pr view "$PR" --json baseRefName,headRefName --jq .headRefName)"
+  IFS=$'\t' read -r BASE HEAD_BRANCH < <(gh pr view "$PR" --json baseRefName,headRefName --jq '[.baseRefName, .headRefName] | @tsv')
 fi
 
 is_integration_head() {
