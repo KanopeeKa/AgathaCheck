@@ -16,8 +16,7 @@ import 'care_list/global_events_collapsible_section.dart';
 import 'care_list/global_events_entry_partitions.dart';
 import 'care_list/global_events_pet_chip_bar.dart';
 import 'care_list/global_events_pet_query.dart';
-import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_list/care_list_collection.dart';
-import 'package:pet_profile_app/features/pet_care/presentation/widgets/care_list/care_list_skeleton.dart';
+import '../../../../pet_care/pet_care.dart';
 import 'pet_care_due_events_screen.dart';
 
 // ---------------------------------------------------------------------------
