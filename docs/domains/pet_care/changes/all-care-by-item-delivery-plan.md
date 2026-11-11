@@ -2,8 +2,11 @@
 title: All care by care item — delivery plan
 owner: Product / Documentation
 audience: both
-status: active
-last_updated: 2026-11-10
+status: in-delivery
+status_since: 2026-11-10
+folds_into: docs/domains/pet_care/features/care-item-evolution.md
+plan: all-care-by-item-c455
+last_updated: 2026-11-11
 tags: [pet_care, care_item, execute-plan]
 ---
 
@@ -12,7 +15,7 @@ tags: [pet_care, care_item, execute-plan]
 **Programme:** execute-plan `all-care-by-item-c455`  
 **Outcome:** One All care screen (`/pc/events`). Each care item is a card whose lines are its care dates, grouped into Today, Upcoming, Paused care, and Closed care, with pet filtering via chips.
 
-**Navigation (locked):** bottom tab **Care** (FR **Soins**); screen title **All care** (FR **Tous les soins**). Away-plan list rows unchanged. `/o/events` shares the card component; **not** a Pre-UAT release gate.
+**Navigation (target — not shipped until canonical sync):** bottom tab **Care** (FR **Soins**); screen title **All care** (FR **Tous les soins**). Amends locked D38 rows in `terminology.md` during phases 1–2; until merge, live labels remain **Actions** / **All Actions** per D38. Away-plan list rows unchanged. `/o/events` shares the card component; **not** a Pre-UAT release gate.
 
 ---
 
@@ -55,7 +58,7 @@ Removed: Morning/Afternoon/Evening, Due soon (7d), collapsed Upcoming toggle, sa
 
 Per product review (2026-11-10): card header (family icon, title, `pet · category · schedule`, chevron); date lines with pill left and tick in a fixed right column; paused/closed header-only cards with grey pills per #2215.
 
-Line rules: single overdue → dated Overdue + tick; 2+ overdue → `{n} not recorded` + chevron (neutral grey); today lines in time order; next future line when no open today line remains; tick uses D-CIE-030 with **list line** carve-out (tick completes that line when the line names the date).
+Line rules: single overdue open slot → dated Overdue + tick; **Fixed-schedule** items only: two or more **started** open slots (D-CIE-034 / CARE-ITEM-R-008) → neutral `{n} not recorded` count line + chevron (no dated overdue lines), same Not recorded stack rules as CSM; non–Fixed-schedule overdue slots keep dated Overdue lines. Today lines in time order; next future line when no open today line remains; tick uses D-CIE-030 with **list line** carve-out.
 
 Loading: skeleton (phase 4). Filtered empty: **No care matches these filters** + **Clear filters**.
 
@@ -83,8 +86,8 @@ Per care item, additive list **completionsToday**: `{ occurrenceId, scheduledTim
 ## 12. Supersedes (canonical updates)
 
 - `care-item-evolution.md`: CARE-ITEM-R-003, R-004, R-012; D-CIE-025, D-CIE-026, D-CIE-035; D-CIE-029 (lists); D-CIE-030 line-tick carve-out; D-CIE-038 for card list order.
-- `care-status-model.md`: R-021, R-024 naming; UX surfaces for in-list Paused/Closed.
-- `terminology.md` D38: tab **Care**, screen **All care**, link copy alignment.
+- `care-status-model.md`: R-021, R-024 (naming and surfaces); R-026, R-027, R-028 (header-only paused/closed rows on global and pet lists when folded); UX surfaces for in-list Paused/Closed.
+- `terminology.md` D38: tab **Care**, screen **All care**, link copy alignment (phase 2).
 
 ## 13. Proof on UAT
 
