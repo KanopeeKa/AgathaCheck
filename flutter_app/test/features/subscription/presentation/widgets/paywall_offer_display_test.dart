@@ -91,6 +91,36 @@ void main() {
       expect(display.autoRenewLine, l.subscriptionAutoRenewDisclosure);
     });
 
+    test('lifetime omits cancel line', () {
+      const lifetime = PaywallOfferProductFacts(
+        identifier: 'lifetime',
+        title: 'Lifetime',
+        priceString: '\$199.00',
+        price: 199,
+        packageType: PackageType.lifetime,
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(lifetime, l);
+
+      expect(display.cancelLine, isEmpty);
+    });
+
+    test('ISO period wins over conflicting package type', () {
+      const quarterly = PaywallOfferProductFacts(
+        identifier: 'q',
+        title: 'Quarterly',
+        priceString: '\$15.00',
+        price: 15,
+        subscriptionPeriodIso: 'P3M',
+        packageType: PackageType.annual,
+      );
+
+      final display = PaywallOfferDisplay.fromProductFacts(quarterly, l);
+
+      expect(display.cadenceLabel, l.subscriptionCadenceMonths(3));
+      expect(display.cadenceLabel, isNot(l.subscriptionPeriodPerYear));
+    });
+
     test('lifetime shows one-time disclosure and cadence', () {
       const lifetime = PaywallOfferProductFacts(
         identifier: 'lifetime',
