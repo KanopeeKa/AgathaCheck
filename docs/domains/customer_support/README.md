@@ -55,4 +55,4 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 ## Tests and documentation
 
-BDD, Jest, and E2E coverage are **TBD** until each phase ships. Acceptance criteria in feature docs cite `TBD — phase issue` until wired.
+BDD, Jest, and E2E coverage are **TBD** until each phase ships. Acceptance criteria cite `none — #<phase-issue>` until BDD/Jest/E2E are wired (see [plans.md](changes/plans.md)).

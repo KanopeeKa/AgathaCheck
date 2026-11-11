@@ -37,8 +37,8 @@ Roadmap: [support-roadmap.md §5](../changes/support-roadmap.md#5-phase-2--obser
 
 | Given / When / Then | Requirement | Coverage |
 | ------------------- | ----------- | -------- |
-| Given a failed save operation When support opens linked ticket Then correlated FE error and BE log references are reachable | SUPPORT-OBSERVABILITY-R-001, R-007 | TBD — phase 2 issue |
-| Given a log export When scanned Then prohibited fields are absent per policy | SUPPORT-OBSERVABILITY-R-004, R-008 | TBD — phase 2 issue |
+| Given a failed save operation When support opens linked ticket Then correlated FE error and BE log references are reachable | SUPPORT-OBSERVABILITY-R-001, R-007 | none — #2272 |
+| Given a log export When scanned Then prohibited fields are absent per policy | SUPPORT-OBSERVABILITY-R-004, R-008 | none — #2272 |
 
 ## Out of scope (Phase 2)
 

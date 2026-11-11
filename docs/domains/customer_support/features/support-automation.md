@@ -34,8 +34,8 @@ Roadmap: [support-roadmap.md §8](../changes/support-roadmap.md#8-phase-5--autom
 
 | Given / When / Then | Requirement | Coverage |
 | ------------------- | ----------- | -------- |
-| Given eligible GitHub issue When label applied by policy Then agent run starts with scoped credentials | SUPPORT-AUTOMATION-R-001, R-002 | TBD — phase 5 issue |
-| Given deploy success for fix When validation passes Then affected tickets move to released and notify users | SUPPORT-AUTOMATION-R-006, R-007 | TBD — phase 5 issue |
+| Given eligible GitHub issue When label applied by policy Then agent run starts with scoped credentials | SUPPORT-AUTOMATION-R-001, R-002 | none — #2275 |
+| Given deploy success for fix When validation passes Then affected tickets move to released and notify users | SUPPORT-AUTOMATION-R-006, R-007 | none — #2275 |
 
 ## Still open
 

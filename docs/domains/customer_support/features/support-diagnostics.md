@@ -37,8 +37,8 @@ Roadmap: [support-roadmap.md §6](../changes/support-roadmap.md#6-phase-3--tempo
 
 | Given / When / Then | Requirement | Coverage |
 | ------------------- | ----------- | -------- |
-| Given active diagnostics When five minutes elapse Then collection stops client- and server-side | SUPPORT-DIAGNOSTICS-R-004 | TBD — phase 3 issue |
-| Given completed session When staff opens ticket report Then timeline excludes non-session unrelated activity | SUPPORT-DIAGNOSTICS-R-009 | TBD — phase 3 issue |
+| Given active diagnostics When five minutes elapse Then collection stops client- and server-side | SUPPORT-DIAGNOSTICS-R-004 | none — #2273 |
+| Given completed session When staff opens ticket report Then timeline excludes non-session unrelated activity | SUPPORT-DIAGNOSTICS-R-009 | none — #2273 |
 
 ## Decision log
 

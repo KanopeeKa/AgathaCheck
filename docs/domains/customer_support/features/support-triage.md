@@ -33,5 +33,5 @@ Roadmap: [support-roadmap.md §7](../changes/support-roadmap.md#7-phase-4--ai-tr
 
 | Given / When / Then | Requirement | Coverage |
 | ------------------- | ----------- | -------- |
-| Given new bug ticket with error ref When triage runs Then classification and optional duplicate suggestion are stored | SUPPORT-TRIAGE-R-001, R-003 | TBD — phase 4 issue |
-| Given approved investigation When GitHub issue created Then ticket stores issue id and issue body has no email/conversation dump | SUPPORT-TRIAGE-R-004 | TBD — phase 4 issue |
+| Given new bug ticket with error ref When triage runs Then classification and optional duplicate suggestion are stored | SUPPORT-TRIAGE-R-001, R-003 | none — #2274 |
+| Given approved investigation When GitHub issue created Then ticket stores issue id and issue body has no email/conversation dump | SUPPORT-TRIAGE-R-004 | none — #2274 |
