@@ -25,19 +25,17 @@ Feature: Help / FAQ
   Scenario: Help page shows all feature sections
     When the user views the Help screen
     Then the user should see FAQ sections for:
-      | section                |
-      | Account & Login        |
-      | Pet Profiles           |
-      | Health Tracking        |
-      | Weight Tracking        |
-      | Veterinarian Management|
-      | Sharing                |
-      | Organizations          |
-      | Family Events          |
-      | Notifications          |
-      | Subscriptions          |
-      | PDF Reports            |
-      | Language / Localization |
+      | section                   |
+      | Account & Authentication  |
+      | Pet Profiles              |
+      | Health Tracking           |
+      | Weight Tracking           |
+      | Veterinarian Management   |
+      | Pet Sharing               |
+      | Notifications             |
+      | Reports                   |
+      | Subscription              |
+      | Language & Accessibility  |
 
   @P2
   Scenario: Expanding a FAQ section
@@ -53,7 +51,7 @@ Feature: Help / FAQ
 
   @P2
   Scenario: Multiple sections can be expanded
-    When the user expands "Account & Login" and "Health Tracking"
+    When the user expands "Account & Authentication" and "Health Tracking"
     Then both sections should be visible with their Q&A content
 
   # ── Scrolling ────────────────────────────────────────────────
