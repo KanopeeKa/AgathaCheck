@@ -58,6 +58,8 @@ EN/FR labels for the People hub, pet profile grouping, and Today desk (see [`peo
 | Filters | All · Household · Carers · Professionals | Tous · Foyer · Proches · Pros | |
 | Pet profile section title | People around {pet} | Autour de {pet} | |
 | Pet profile — household group | At home | À la maison | One household per pet on profile |
+| Pet profile — carers group | Trusted carers | Proches & pet-sitters | |
+| Pet profile — professionals group | Pet professionals | Ses pros | |
 
 ### Customer support vs directory contacts
 
@@ -68,8 +70,6 @@ EN/FR labels for the People hub, pet profile grouping, and Today desk (see [`peo
 | Contact (Account menu) | Contact | Account utility that will route to the **support contact hub** (not the People directory). Today: `mailto:contact@agathatrack.com`. |
 
 Do not use "contact" alone in engineering docs without specifying **directory** vs **support**.
-| Pet profile — carers group | Trusted carers | Proches & pet-sitters | |
-| Pet profile — professionals group | Pet professionals | Ses pros | |
 
 Additional rows (add flow, access labels, danger zone) remain in [`vocabulary.md`](../domains/people/features/vocabulary.md) until a follow-up terminology pass.
 

@@ -33,5 +33,11 @@ Roadmap: [support-roadmap.md §7](../changes/support-roadmap.md#7-phase-4--ai-tr
 
 | Given / When / Then | Requirement | Coverage |
 | ------------------- | ----------- | -------- |
-| Given new bug ticket with error ref When triage runs Then classification and optional duplicate suggestion are stored | SUPPORT-TRIAGE-R-001, R-003 | none — #2274 |
+| Given new bug ticket with error ref When triage runs Then classification and optional duplicate suggestion are stored | SUPPORT-TRIAGE-R-001, SUPPORT-TRIAGE-R-003 | none — #2274 |
 | Given approved investigation When GitHub issue created Then ticket stores issue id and issue body has no email/conversation dump | SUPPORT-TRIAGE-R-004 | none — #2274 |
+
+## Decision log
+
+| ID | Decision | Rationale | Status | Date | PR |
+| ---- | -------- | --------- | ------ | ---- | -- |
+| SUPPORT-TRIAGE-D-001 | Phase 4 prepares engineering issues only | Avoid automated code changes before Phase 5 gates | Live | 2026-11-11 | TBD |

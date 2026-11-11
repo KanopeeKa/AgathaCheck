@@ -1,10 +1,11 @@
 ---
 title: Customer support — plans index
 owner: Documentation Team
-audience: both
-status: active
-last_updated: 2026-11-11
+status: in-delivery
+status_since: 2026-11-11
 tags: [domain, customer_support, plans]
+folds_into: docs/domains/customer_support/features/support-ticketing.md
+plan: customer-support-phases
 ---
 
 # Customer support — plans index

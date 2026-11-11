@@ -3,10 +3,10 @@ title: Contact, support and automated bug resolution roadmap
 owner: Product / Documentation
 audience: both
 status: proposed
+status_since: 2026-11-11
 last_updated: 2026-11-11
 tags: [customer_support, roadmap, support]
-domain: customer_support
-related_prs: []
+folds_into: docs/domains/customer_support/features/support-ticketing.md
 ---
 
 # Contact, support and automated bug resolution roadmap

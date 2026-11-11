@@ -48,10 +48,10 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 
 | Given / When / Then | Requirement | Coverage |
 | ------------------- | ----------- | -------- |
-| Given a signed-in user on the contact hub When they submit a valid bug report Then a ticket reference is shown and email acknowledgement is queued | SUPPORT-TICKETING-R-005, R-015 | none — #2271 |
-| Given a user opens their ticket When support posts a reply Then the user sees the message in-app | SUPPORT-TICKETING-R-010, R-014 | none — #2271 |
+| Given a signed-in user on the contact hub When they submit a valid bug report Then a ticket reference is shown and email acknowledgement is queued | SUPPORT-TICKETING-R-005, SUPPORT-TICKETING-R-015 | none — #2271 |
+| Given a user opens their ticket When support posts a reply Then the user sees the message in-app | SUPPORT-TICKETING-R-010, SUPPORT-TICKETING-R-014 | none — #2271 |
 | Given user A When they request ticket ids belonging to user B Then the API returns forbidden/not found | SUPPORT-TICKETING-R-009 | none — #2271 |
-| Given partnerships route When selected Then mailto or copy uses partnerships address not support queue | SUPPORT-TICKETING-R-002, R-004 | none — #2271 |
+| Given partnerships route When selected Then mailto or copy uses partnerships address not support queue | SUPPORT-TICKETING-R-002, SUPPORT-TICKETING-R-004 | none — #2271 |
 
 ## States & data
 
