@@ -23,6 +23,7 @@ import {
 import {
   collectionFilterDimensionTrigger,
   dashboardSectionGroup,
+  filterChipByName,
   flutterGotoUrl,
   reachAuthenticatedHome,
   refreshFlutterAccessibility,
@@ -122,7 +123,15 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Today Care');
     await dashboard.expectCarePriorityOrder(['Overdue Care', 'Today Care']);
     await dashboard.expectCareVisible('Upcoming Care');
-    await dashboard.openEvents();
+    const careTab = page
+      .getByRole('button', {
+        name: /^Care(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
+      })
+      .or(page.getByRole('tab', { name: /^Care$|^Soins$/i }))
+      .first();
+    await careTab.click();
+    await refreshFlutterAccessibility(page);
+    await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await expect(page).toHaveURL(/#\/pc\/events/);
     await dashboard.goBackToDashboard();
   });
@@ -229,7 +238,7 @@ test.describe('Guardian dashboard', () => {
     await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
-    await expect(page.getByText('All Actions', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/^All care$|^Tous les soins$/i).first()).toBeVisible();
     await expect(page.getByRole('tab')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /Add an event/i })).toBeVisible();
     await expect(semanticsByName(page, /Due Med/i).first()).toBeVisible();
@@ -245,16 +254,22 @@ test.describe('Guardian dashboard', () => {
     await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
+    await expect(semanticsByName(page, /Owned Entry/i).first()).toBeVisible();
+    await expect(semanticsByName(page, /Foster Entry/i).first()).toBeVisible();
 
-    const petTrigger = collectionFilterDimensionTrigger(page, /^Pets(\s+\(\d+\))?$/i);
-    await expect(petTrigger).toBeVisible();
-    await petTrigger.click();
-    await refreshFlutterAccessibility(page);
-    for (const label of ['All pets', 'OwnedPet', 'FosterPet']) {
-      await expect(page.getByRole('checkbox', { name: label, exact: true })).toBeVisible();
+    await expect(
+      filterChipByName(page, /^All pets$|^Tous les animaux$/i),
+    ).toBeVisible();
+    for (const label of ['OwnedPet', 'FosterPet']) {
+      await expect(filterChipByName(page, new RegExp(`^${label}$`))).toBeVisible();
     }
-    await page.keyboard.press('Escape');
+    await filterChipByName(page, /^OwnedPet$/).click();
     await refreshFlutterAccessibility(page);
+    await expect(async () => {
+      expect(page.url()).toContain(`pet=${owned.id}`);
+    }).toPass({ timeout: 15_000 });
+    await expect(semanticsByName(page, /Owned Entry/i).first()).toBeVisible();
+    await expect(semanticsByName(page, /Foster Entry/i).first()).toBeHidden();
 
     const moreTrigger = collectionFilterDimensionTrigger(
       page,

@@ -66,6 +66,7 @@ CareItemSchedule careItemScheduleFromJson(Map<String, dynamic> json) {
     repeatsDailyOrMore: _repeatsDailyOrMore(json),
     intervalDays: _intervalDays(json),
     lastDone: _lastDone(json['last_done']),
+    completionsToday: _completionsToday(json['completions_today']),
   );
 }
 
@@ -108,6 +109,29 @@ LastDone? _lastDone(Object? raw) {
     completedOn: parseCalendarDate(raw['completed_on']),
     time: _time(raw['time']),
   );
+}
+
+List<CompletionToday> _completionsToday(Object? raw) {
+  if (raw is! List<dynamic>) return const [];
+  return raw
+      .map((e) {
+        if (e is! Map<String, dynamic>) return null;
+        final id = e['occurrence_id'] as String?;
+        final completedOn = parseCalendarDate(e['completed_on']);
+        final scheduledDate = parseCalendarDate(e['scheduled_date']);
+        if (id == null || completedOn == null || scheduledDate == null) {
+          return null;
+        }
+        return CompletionToday(
+          occurrenceId: id,
+          scheduledDate: scheduledDate,
+          scheduledTime: _time(e['scheduled_time']),
+          completedOn: completedOn,
+          time: _time(e['time']),
+        );
+      })
+      .whereType<CompletionToday>()
+      .toList();
 }
 
 String? _entryDoseLine(Map<String, dynamic> entry) {
