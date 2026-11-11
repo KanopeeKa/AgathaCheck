@@ -8,6 +8,7 @@ import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_dashboard_section_header.dart';
 import 'package:pet_profile_app/core/widgets/pet_care_illustrated_empty_state.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
+import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 
 /// Pet-scoped `{Pet}'s care` section: the agenda (D-CIE-025) for one pet.
@@ -22,6 +23,13 @@ class PetCareSection extends ConsumerStatefulWidget {
 }
 
 class _PetCareSectionState extends ConsumerState<PetCareSection> {
+  void _openAllCareForPet() {
+    final returnTo = petDetailBackPath(context, widget.petId);
+    context.push(
+      globalAllCareLocation(petIds: {widget.petId}, returnTo: returnTo),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
@@ -75,22 +83,23 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
               titleMaxLines: 2,
             ),
             const SizedBox(height: 10),
-            CareAgendaCollection(
+            CareListSurfaceCollection(
               entries: entries,
               source: CareCommandSource.agenda,
+              layout: CareListSurfaceLayout.petProfileCappedUpcoming,
               empty: PetCareIllustratedEmptyState(
                 key: const Key('pet_care_section_empty'),
                 title: l.petCareEmptyCareClearTitle,
                 body: l.homeNoDueEvents,
                 actionLabel: l.viewAllCare,
                 actionIcon: Icons.calendar_month_outlined,
-                onAction: () => context.push('/pet/${widget.petId}/events'),
+                onAction: _openAllCareForPet,
               ),
             ),
             PetCareDashboardSectionLink(
               linkKey: const Key('pet_care_view_all'),
               label: l.viewAllCare,
-              onPressed: () => context.push('/pet/${widget.petId}/events'),
+              onPressed: _openAllCareForPet,
             ),
           ],
         ),

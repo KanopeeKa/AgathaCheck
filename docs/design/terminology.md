@@ -150,9 +150,9 @@ Keep these EN/FR labels distinct in copy and l10n:
 | Per-pet plan screen | {Pet}'s away plan | Plan d'absence de {Pet} | `careContextSeePetAwayPlan`, pet away plan app bar keys |
 | Hub — own trips | Your absences | Vos absences | `careContextHubYourAbsences` |
 | Hub — co-visible trips | Other people's absences | Absences des autres | `careContextHubOtherPeoplesAbsences` |
-| Full due list link | All Actions | Tous les soins | `allCare` |
-| Global queue screen (`/pc/events`) | All Actions | Tous les soins | `allCare` |
-| Bottom nav | Actions | Soins | `careNavLabel` |
+| Full due list link | All care | Tous les soins | `allCare` |
+| Global queue screen (`/pc/events`) | All care | Tous les soins | `allCare` |
+| Bottom nav | Care | Soins | `careNavLabel` |
 | Profile operational section | {Pet}'s care | Soins pour {petName} | `careForPet` |
 | Profile preview trailing link | View all care | Voir tous les soins | `viewAllCare` |
 | Pet-scoped All care list | All care | Tous les soins de {petName} | `allCareTitle` |

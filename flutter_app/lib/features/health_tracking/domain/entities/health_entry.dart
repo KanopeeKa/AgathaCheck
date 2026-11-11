@@ -196,6 +196,10 @@ class HealthEntry {
   OpenOccurrence? get leadingOpenOccurrence =>
       schedule == null ? null : leadingOccurrence(schedule!);
 
+  /// Occurrences completed on the pet's today (`completions_today` on list reads).
+  List<CompletionToday> get completionsToday =>
+      schedule?.completionsToday ?? const [];
+
   /// Whether this entry needs attention: overdue, not recorded, or a stack.
   bool get isOverdue {
     if (isCompleted) return false;

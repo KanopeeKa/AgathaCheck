@@ -31,6 +31,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Programme | Document | Notes |
 |-----------|----------|-------|
 | Care Item evolution | [care-item-evolution execute-plan](/.agents/plans/care-item-evolution.md) | Active delivery |
+| All care by care item | [all-care-by-item-delivery-plan.md](changes/all-care-by-item-delivery-plan.md) | Execute-plan all-care-by-item-c455 |
 | Care Foundation roadmap (v0.4) | [care-foundation-roadmap.md](changes/care-foundation-roadmap.md) | Phases A–E sequencing |
 | Care progression slices | [care-progression-delivery-plan.md](changes/care-progression-delivery-plan.md) | CP-0–CP-7; rules in canonical |
 | Away planning (AW) | [away-planning-delivery-plan.md](changes/away-planning-delivery-plan.md) | AW-EMERGENCY–AW-10 |
