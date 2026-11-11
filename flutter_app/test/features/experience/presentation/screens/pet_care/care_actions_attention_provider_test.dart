@@ -12,9 +12,6 @@ void main() {
       scheduledEntry(id: 'up', name: 'Groom', dueInDays: 14),
     ];
 
-    expect(
-      countCareListAttentionToday(entries, (e) => e.schedule),
-      2,
-    );
+    expect(countCareListAttentionToday(entries, (e) => e.schedule), 2);
   });
 }

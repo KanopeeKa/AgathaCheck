@@ -193,10 +193,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.bySemanticsIdentifier('care_list_stack_pill'),
-      findsOneWidget,
-    );
+    expect(find.bySemanticsIdentifier('care_list_stack_pill'), findsOneWidget);
     expect(find.text('2 not recorded'), findsOneWidget);
     await tester.tap(find.byKey(const Key('pet_care_action_done_pill')));
     await tester.pumpAndSettle();

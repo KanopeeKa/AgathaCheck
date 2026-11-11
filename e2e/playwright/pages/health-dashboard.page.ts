@@ -72,6 +72,8 @@ export class HealthDashboardPage {
       await this.emptyStateLocator()
         .or(this.guardianGlobalEventsLoadedLocator())
         .or(this.guardianGlobalEventsEntryLocator())
+        .or(this.page.locator('[flt-semantics-identifier="care_list_today"]'))
+        .or(this.page.locator('[flt-semantics-identifier="care_list_nothing_today"]'))
         .or(this.page.getByText(/Mark as done|Marquer comme fait/i))
         .or(this.page.getByRole('button', { name: /retry|try again|réessayer/i }))
         .or(this.page.getByText(/Error loading entries|Error loading pets/i))
