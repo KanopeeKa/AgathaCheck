@@ -240,9 +240,9 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
 
     if (!isUserDataExportDeliveryAvailable) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.dataExportUnavailable)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.dataExportUnavailable)));
       }
       return;
     }
@@ -263,9 +263,9 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
       );
     } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.dataExportFailed)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.dataExportFailed)));
       }
     }
   }
