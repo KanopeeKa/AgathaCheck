@@ -14,7 +14,8 @@ class PurchaseOutcome {
   const PurchaseOutcome.success(SubscriptionStatus status)
     : this._(PurchaseOutcomeKind.success, status);
 
-  const PurchaseOutcome.cancelled() : this._(PurchaseOutcomeKind.cancelled, null);
+  const PurchaseOutcome.cancelled()
+    : this._(PurchaseOutcomeKind.cancelled, null);
 
   const PurchaseOutcome.failed() : this._(PurchaseOutcomeKind.failed, null);
 
