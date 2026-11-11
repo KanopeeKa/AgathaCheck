@@ -20,6 +20,8 @@ Premium tier purchase and entitlement flows (RevenueCat today). Billing provider
 | **SUB-1** | Free and Unlimited tiers reflected in client `SubscriptionTier` + active flag. | delivered |
 | **SUB-2** | Paywall reachable from Account → Subscription. | delivered |
 | **SUB-3** | BDD `subscriptions.feature` documents intended purchase journeys. | delivered |
+| **SUB-4** | Purchase outcomes: success (entitlement active), cancelled (no message), failed (localized), pending (purchase completed but entitlement not yet active). | delivered |
+| **SUB-5** | Restore outcomes: restored (entitlement found), nothing to restore, failed; failed restore must not downgrade stored tier. | delivered |
 
 ## User journeys
 

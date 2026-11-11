@@ -1025,6 +1025,8 @@
   "externalLinkOpenFailed": "We couldn't open that link. Copy it to open in your browser:",
   "subscriptionPurchaseFailed": "Purchase didn't complete. Try again, or restore an existing purchase.",
   "subscriptionRestoreFailed": "We couldn't restore purchases. Try again in a moment.",
+  "subscriptionNothingToRestore": "No purchases were found for this account.",
+  "subscriptionPurchasePending": "Your purchase is processing. If access doesn't appear soon, try Restore purchases.",
   "subscriptionFeatureUnlimitedTitle": "AgathaTrack Unlimited",
   "subscriptionFeatureProfiles": "Unlimited pet profiles",
   "subscriptionFeatureHealth": "Full health tracking",

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import '../../domain/entities/subscription_operation_outcomes.dart';
 import '../../domain/entities/subscription_status.dart';
 
 class RevenueCatConfig {
@@ -97,37 +98,45 @@ class RevenueCatService {
     }
   }
 
-  Future<SubscriptionStatus> purchasePackage(Package package) async {
-    if (!_initialized) return SubscriptionStatus.free;
+  Future<PurchaseOutcome> purchasePackage(Package package) async {
+    if (!_initialized) return const PurchaseOutcome.failed();
 
     try {
       // ignore: deprecated_member_use
       final result = await Purchases.purchasePackage(package);
-      return _mapCustomerInfo(result.customerInfo);
+      final status = _mapCustomerInfo(result.customerInfo);
+      if (status.hasUnlimited) {
+        return PurchaseOutcome.success(status);
+      }
+      return const PurchaseOutcome.pendingUnconfirmed();
     } catch (e) {
       if (e is PlatformException) {
         final errorCode = PurchasesErrorHelper.getErrorCode(e);
         if (errorCode == PurchasesErrorCode.purchaseCancelledError) {
           debugPrint('RevenueCat: Purchase cancelled by user');
-        } else {
-          debugPrint('RevenueCat: Purchase error: $errorCode');
+          return const PurchaseOutcome.cancelled();
         }
+        debugPrint('RevenueCat: Purchase error: $errorCode');
       } else {
         debugPrint('RevenueCat: Purchase failed: $e');
       }
-      return await getSubscriptionStatus();
+      return const PurchaseOutcome.failed();
     }
   }
 
-  Future<SubscriptionStatus> restorePurchases() async {
-    if (!_initialized) return SubscriptionStatus.free;
+  Future<RestoreOutcome> restorePurchases() async {
+    if (!_initialized) return const RestoreOutcome.failed();
 
     try {
       final customerInfo = await Purchases.restorePurchases();
-      return _mapCustomerInfo(customerInfo);
+      final status = _mapCustomerInfo(customerInfo);
+      if (status.hasUnlimited) {
+        return RestoreOutcome.restored(status);
+      }
+      return const RestoreOutcome.nothingToRestore();
     } catch (e) {
       debugPrint('RevenueCat: Restore failed: $e');
-      return SubscriptionStatus.free;
+      return const RestoreOutcome.failed();
     }
   }
 

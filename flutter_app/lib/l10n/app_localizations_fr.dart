@@ -2634,6 +2634,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de restaurer les achats. Réessayez dans un instant.';
 
   @override
+  String get subscriptionNothingToRestore =>
+      'Aucun achat n\'a été trouvé pour ce compte.';
+
+  @override
+  String get subscriptionPurchasePending =>
+      'Votre achat est en cours de traitement. Si l\'accès n\'apparaît pas bientôt, essayez Restaurer les achats.';
+
+  @override
   String get subscriptionFeatureUnlimitedTitle => 'AgathaTrack Illimité';
 
   @override

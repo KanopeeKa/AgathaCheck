@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:pet_profile_app/features/auth/auth.dart';
 import '../../data/services/revenuecat_service.dart';
+import '../../domain/entities/subscription_operation_outcomes.dart';
 import '../../domain/entities/subscription_status.dart';
 
 final revenueCatServiceProvider = Provider<RevenueCatService>((ref) {
@@ -70,10 +72,31 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionStatus> {
     if (mounted) state = SubscriptionStatus.free;
   }
 
-  Future<void> restorePurchases() async {
+  Future<RestoreOutcome> restorePurchases() async {
+    final previous = state;
     final service = _ref.read(revenueCatServiceProvider);
-    final status = await service.restorePurchases();
-    if (mounted) state = status;
+    final outcome = await service.restorePurchases();
+    if (!mounted) return outcome;
+    switch (outcome.kind) {
+      case RestoreOutcomeKind.restored:
+        state = outcome.status!;
+      case RestoreOutcomeKind.nothingToRestore:
+      case RestoreOutcomeKind.failed:
+        state = previous;
+    }
+    return outcome;
+  }
+
+  Future<PurchaseOutcome> purchasePackage(Package package) async {
+    final service = _ref.read(revenueCatServiceProvider);
+    final outcome = await service.purchasePackage(package);
+    if (!mounted) return outcome;
+    if (outcome.kind == PurchaseOutcomeKind.success) {
+      state = outcome.status!;
+    } else if (outcome.kind == PurchaseOutcomeKind.pendingUnconfirmed) {
+      await refresh();
+    }
+    return outcome;
   }
 }
 

@@ -2603,6 +2603,14 @@ class AppLocalizationsEn extends AppLocalizations {
       'We couldn\'t restore purchases. Try again in a moment.';
 
   @override
+  String get subscriptionNothingToRestore =>
+      'No purchases were found for this account.';
+
+  @override
+  String get subscriptionPurchasePending =>
+      'Your purchase is processing. If access doesn\'t appear soon, try Restore purchases.';
+
+  @override
   String get subscriptionFeatureUnlimitedTitle => 'AgathaTrack Unlimited';
 
   @override

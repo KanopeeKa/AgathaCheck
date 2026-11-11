@@ -4571,6 +4571,18 @@ abstract class AppLocalizations {
   /// **'We couldn\'t restore purchases. Try again in a moment.'**
   String get subscriptionRestoreFailed;
 
+  /// No description provided for @subscriptionNothingToRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'No purchases were found for this account.'**
+  String get subscriptionNothingToRestore;
+
+  /// No description provided for @subscriptionPurchasePending.
+  ///
+  /// In en, this message translates to:
+  /// **'Your purchase is processing. If access doesn\'t appear soon, try Restore purchases.'**
+  String get subscriptionPurchasePending;
+
   /// No description provided for @subscriptionFeatureUnlimitedTitle.
   ///
   /// In en, this message translates to:
