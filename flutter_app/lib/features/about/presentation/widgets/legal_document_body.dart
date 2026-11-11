@@ -70,11 +70,7 @@ class LegalDocumentBody extends StatelessWidget {
     }
   }
 
-  void _showLinkFallback(
-    BuildContext context,
-    String url,
-    AppLocalizations l,
-  ) {
+  void _showLinkFallback(BuildContext context, String url, AppLocalizations l) {
     showDialog<void>(
       context: context,
       builder: (dialogContext) {
