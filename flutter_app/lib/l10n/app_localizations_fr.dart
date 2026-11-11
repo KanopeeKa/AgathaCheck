@@ -5367,6 +5367,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get consentManagePreferences => 'Gérer les préférences';
 
   @override
+  String get consentRejectOptional => 'Refuser l\'optionnel';
+
+  @override
+  String get consentBannerSaving => 'Enregistrement de votre choix';
+
+  @override
   String get consentSettings => 'Préférences de confidentialité';
 
   @override

@@ -1981,6 +1981,8 @@
   "consentBannerMessage": "We use essential cookies and services to make AgathaTrack work. We'd also like to set optional cookies for analytics and marketing to improve your experience. You can manage your preferences at any time.",
   "consentAcceptAll": "Accept All",
   "consentManagePreferences": "Manage Preferences",
+  "consentRejectOptional": "Reject Optional",
+  "consentBannerSaving": "Saving your privacy choice",
   "consentSettings": "Privacy Preferences",
   "consentPreferencesDescription": "Choose which types of data processing you consent to. Essential services are always active as they are required for the app to function.",
   "consentEssential": "Essential",

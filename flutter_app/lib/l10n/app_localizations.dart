@@ -9325,6 +9325,18 @@ abstract class AppLocalizations {
   /// **'Manage Preferences'**
   String get consentManagePreferences;
 
+  /// No description provided for @consentRejectOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Optional'**
+  String get consentRejectOptional;
+
+  /// No description provided for @consentBannerSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your privacy choice'**
+  String get consentBannerSaving;
+
   /// No description provided for @consentSettings.
   ///
   /// In en, this message translates to:
