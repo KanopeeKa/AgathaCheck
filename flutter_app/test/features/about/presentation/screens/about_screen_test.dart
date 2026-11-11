@@ -28,7 +28,12 @@ void main() {
     expect(find.text(l10n.appTitle), findsOneWidget);
     expect(find.text(l10n.appTagline), findsOneWidget);
     expect(find.text(l10n.appVersion), findsOneWidget);
+    expect(find.text(l10n.legalInformation), findsNothing);
+    expect(find.text(l10n.legalDocumentsIntro), findsNothing);
     expect(find.text(l10n.termsOfService), findsNothing);
+    expect(find.text(l10n.privacyPolicy), findsNothing);
+    expect(find.text(l10n.legalNotice), findsNothing);
+    expect(find.text(l10n.dataProcessingAddendum), findsNothing);
     expect(find.text(l10n.viewAllLegalDocuments), findsNothing);
   });
 }
