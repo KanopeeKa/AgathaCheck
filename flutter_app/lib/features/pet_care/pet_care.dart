@@ -14,6 +14,7 @@ export 'presentation/providers/care_temporal_grouping_providers.dart';
 export 'progression/domain/entities/care_pending_moment.dart';
 export 'presentation/providers/pet_care_presentation_providers.dart';
 export 'presentation/widgets/care_agenda/care_agenda_collection.dart';
+export 'presentation/widgets/care_agenda/care_list_surface_collection.dart';
 export 'presentation/widgets/care_list/care_list_collection.dart';
 export 'presentation/widgets/care_list/care_list_skeleton.dart';
 export 'presentation/widgets/away_context_icon_chip.dart';

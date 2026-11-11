@@ -91,9 +91,7 @@ Widget _wrap({
 }
 
 void main() {
-  testWidgets('renders the agenda: Today, Due soon and a collapsed Upcoming', (
-    tester,
-  ) async {
+  testWidgets('renders care_list Today and capped Upcoming', (tester) async {
     final entries = [
       scheduledEntry(id: 'overdue', name: 'Flea', dueInDays: -2),
       scheduledEntry(id: 'today', name: 'Brush', dueInDays: 0),
@@ -106,18 +104,31 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text("Buddy's care"), findsOneWidget);
-    expect(find.byKey(const Key('care_agenda_today')), findsOneWidget);
-    expect(find.byKey(const Key('care_agenda_due_soon')), findsOneWidget);
-    expect(find.byKey(const Key('care_agenda_upcoming')), findsOneWidget);
+    expect(find.bySemanticsIdentifier('care_list_today'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('care_list_upcoming'), findsOneWidget);
     expect(find.text('Flea'), findsOneWidget);
     expect(find.text('Brush'), findsOneWidget);
     expect(find.text('Groom'), findsOneWidget);
-    expect(find.text('Rabies'), findsNothing);
-    expect(find.text('Upcoming (1)'), findsOneWidget);
-
-    await tester.tap(find.byKey(const Key('care_agenda_upcoming')));
-    await tester.pumpAndSettle();
     expect(find.text('Rabies'), findsOneWidget);
+  });
+
+  testWidgets('hides Upcoming past the five-card cap until expanded', (
+    tester,
+  ) async {
+    final entries = [
+      scheduledEntry(id: 'today', name: 'Brush', dueInDays: 0),
+      for (var i = 0; i < 6; i++)
+        scheduledEntry(id: 'up-$i', name: 'Later $i', dueInDays: 10 + i),
+    ];
+    await tester.pumpWidget(
+      _wrap(notifier: _FakeHealthEntriesNotifier(entries), requests: []),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Later 5'), findsNothing);
+    await tester.tap(find.byKey(const Key('care_list_upcoming')));
+    await tester.pumpAndSettle();
+    expect(find.text('Later 5'), findsOneWidget);
   });
 
   testWidgets('shows the empty state when there is no care', (tester) async {
@@ -182,7 +193,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_agenda_stack_pill')), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('care_list_stack_pill'),
+      findsOneWidget,
+    );
     expect(find.text('2 not recorded'), findsOneWidget);
     await tester.tap(find.byKey(const Key('pet_care_action_done_pill')));
     await tester.pumpAndSettle();
