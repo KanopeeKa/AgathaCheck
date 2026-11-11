@@ -83,4 +83,28 @@ void main() {
     expect(find.text(l.consentBannerTitle), findsOneWidget);
     expect(find.text(l.consentPreferencesSaveFailed), findsOneWidget);
   });
+
+  testWidgets('accept all failure keeps banner with error', (tester) async {
+    final prefs = _MemoryPrefs(setBoolHook: (_, __) async => false);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+        child: const MaterialApp(
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: Scaffold(body: ConsentBanner()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final l = AppLocalizations.of(tester.element(find.byType(ConsentBanner)))!;
+    await tester.tap(find.text(l.consentAcceptAll));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text(l.consentBannerTitle), findsOneWidget);
+    expect(find.text(l.consentPreferencesSaveFailed), findsOneWidget);
+  });
 }
