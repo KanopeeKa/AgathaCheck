@@ -254,6 +254,8 @@ test.describe('Guardian dashboard', () => {
     await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
+    await expect(semanticsByName(page, /Owned Entry/i).first()).toBeVisible();
+    await expect(semanticsByName(page, /Foster Entry/i).first()).toBeVisible();
 
     await expect(
       filterChipByName(page, /^All pets$|^Tous les animaux$/i),
@@ -263,7 +265,11 @@ test.describe('Guardian dashboard', () => {
     }
     await filterChipByName(page, /^OwnedPet$/).click();
     await refreshFlutterAccessibility(page);
-    await expect(page.url()).toContain(`pet=${owned.id}`);
+    await expect(async () => {
+      expect(page.url()).toContain(`pet=${owned.id}`);
+    }).toPass({ timeout: 15_000 });
+    await expect(semanticsByName(page, /Owned Entry/i).first()).toBeVisible();
+    await expect(semanticsByName(page, /Foster Entry/i).first()).toBeHidden();
 
     const moreTrigger = collectionFilterDimensionTrigger(
       page,
