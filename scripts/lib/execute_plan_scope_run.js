@@ -11,7 +11,13 @@ const { PullFilesOverflow } = require('./execute_plan_github');
 const { computeApprovalHash, findControlComments } = require('./execute_plan_approval');
 const { acceptedAuthorizationIds } = require('./execute_plan_ack');
 const { loadSnapshotAtRef } = require('./execute_plan_snapshot_v2');
-const { categorizePull, evaluateDiff, BUNDLE_BUDGET_FILE, validateBundleBudgetRatchet } = require('./execute_plan_scope');
+const {
+  categorizePull,
+  evaluateDiff,
+  BUNDLE_BUDGET_FILE,
+  validateBundleBudgetRatchet,
+  ownPlanFiles,
+} = require('./execute_plan_scope');
 const { findOwnerScopeAckReview } = require('./execute_plan_scope_ack');
 const { deriveControl } = require('./execute_plan_control');
 const { planIdFromRefs, findControlIssue, labelNames } = require('./execute_plan_plans');
@@ -88,8 +94,12 @@ async function verifyOwnPlanFiles(client, snapshot, headSha, files) {
   return true;
 }
 
-/** Files in the PR whose blob matches `main` tip (release no-ops; side fixes and sync merges already on main). */
-async function filesUnchangedOnMain(client, headSha, files) {
+/**
+ * Files in the PR whose blob matches `main` tip (release no-ops; side fixes and sync merges already on main).
+ * @param {{ allowSymmetricDelete?: boolean, neverSkip?: Set<string> }} opts
+ */
+async function filesUnchangedOnMain(client, headSha, files, opts = {}) {
+  const { allowSymmetricDelete = false, neverSkip = new Set() } = opts;
   const unchanged = new Set();
   if (!files.length) return unchanged;
   const [headShas, mainShas] = await Promise.all([
@@ -97,14 +107,15 @@ async function filesUnchangedOnMain(client, headSha, files) {
     client.getFileShasAtRef(files, 'main'),
   ]);
   for (const file of files) {
+    if (neverSkip.has(file)) continue;
     const headShaBlob = headShas.get(file);
     const mainShaBlob = mainShas.get(file);
     if (headShaBlob && mainShaBlob && headShaBlob === mainShaBlob) {
       unchanged.add(file);
       continue;
     }
-    // Integrations and main may both delete the same path; trees omit absent blobs (null).
-    if (headShaBlob == null && mainShaBlob == null) unchanged.add(file);
+    // sync-resolve only: both integration and main already deleted the same path (trees omit absent blobs).
+    if (allowSymmetricDelete && headShaBlob == null && mainShaBlob == null) unchanged.add(file);
   }
   return unchanged;
 }
@@ -203,8 +214,12 @@ async function runScopeCheck(client, { prNumber, headSha, headRef, baseRef, head
     ? await verifyOwnPlanFiles(client, snapshot, headSha, files)
     : false;
   // Release and sync-resolve PRs carry `main`'s own commits: files identical to `main` are not plan changes.
+  const neverSkipOnMain = new Set(ownPlanFiles(snapshot));
   const unchangedOnMain = category === 'release' || category === 'sync-resolve'
-    ? await filesUnchangedOnMain(client, headSha, files)
+    ? await filesUnchangedOnMain(client, headSha, files, {
+        allowSymmetricDelete: category === 'sync-resolve',
+        neverSkip: neverSkipOnMain,
+      })
     : new Set();
   const evaluation = evaluateDiff({
     files, snapshot, category, phaseId, ownPlanFilesVerified, stopped, unchangedOnMain, scopeAckReview,

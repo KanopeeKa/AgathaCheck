@@ -311,4 +311,5 @@ module.exports = {
   categorizePull,
   classifyPath,
   evaluateDiff,
+  ownPlanFiles,
 };
