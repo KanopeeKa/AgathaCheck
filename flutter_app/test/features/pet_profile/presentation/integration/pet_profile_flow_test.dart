@@ -8,9 +8,7 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/experience/data/pet_care_onboarding_store.dart';
-import 'package:pet_profile_app/features/experience/data/org_onboarding_store.dart';
 import 'package:pet_profile_app/features/experience/domain/services/experience_eligibility.dart';
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
@@ -39,11 +37,6 @@ final petsOverride = getAllPetsUseCaseProvider.overrideWith(
 );
 final authOverride = authProvider.overrideWith((ref) => FakeAuthNotifier());
 
-class _EmptyPendingOrgInvitesNotifier extends PendingOrgInvitesNotifier {
-  @override
-  Future<List<PendingOrgInvite>> build() async => const [];
-}
-
 void main() {
   group('Pet Profile Integration Flow', () {
     late SharedPreferences prefs;
@@ -51,7 +44,6 @@ void main() {
     setUp(() async {
       SharedPreferences.setMockInitialValues({
         PetCareOnboardingStore.completedKey: true,
-        OrgOnboardingStore.completedKey: true,
       });
       prefs = await SharedPreferences.getInstance();
     });
@@ -62,10 +54,6 @@ void main() {
       authOverride,
       petsOverride,
       fakePetRepositoryOverride,
-      organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
-      pendingOrgInvitesProvider.overrideWith(
-        _EmptyPendingOrgInvitesNotifier.new,
-      ),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
       healthEntriesNotifierProvider.overrideWith(
         () => FakeHealthEntriesNotifier(),

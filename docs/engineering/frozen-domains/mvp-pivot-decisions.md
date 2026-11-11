@@ -3,13 +3,15 @@ title: MVP pivot decisions (frozen domains)
 owner: Documentation Team
 audience: both
 status: locked
-last_updated: 2026-09-07
+last_updated: 2026-11-10
 tags: [engineering, frozen-domains, decisions]
 ---
 
 # MVP pivot decisions (D-MVP)
 
-Locked by execute-plan `frozen-domains-freeze-ab54`. Supersedes active Shelter/Fostering navigation decisions where noted — historical rows remain in domain docs for context.
+Locked by execute-plan `frozen-domains-freeze-ab54`. Product code was **deleted** in November 2026 (`frozen-domains-removal-3f9c`); these decisions remain the record of **why** the MVP is Pet Care-only. See [README.md](README.md) for removal scope.
+
+Supersedes active Shelter/Fostering navigation decisions where noted — historical rows remain in domain docs for context.
 
 | ID | Decision | Supersedes (examples) |
 |----|----------|------------------------|

@@ -9,7 +9,7 @@ tags: [domain,shelter,frozen]
 
 # Shelter
 
-> **FROZEN (2026-09):** Not in MVP; not maintained. Rehydration: [/docs/engineering/frozen-domains/rehydration-runbook.md](/docs/engineering/frozen-domains/rehydration-runbook.md).
+> **Removed (2026-11):** Shelter product code was deleted from the app. Domain docs here are archival. Recovery tag and scope: [frozen-domains removal record](/docs/engineering/frozen-domains/README.md).
 
 Shelter identity, discovery, people & permissions, member privacy, branding — custody data model (not transfer workflows). Product-facing term **Shelter** replaces legacy "Organisation" in docs; code paths remain `organization` until a dedicated migration.
 

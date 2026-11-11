@@ -4,7 +4,7 @@
  * Scenario: Care that needs a weight opens Care date from Mark as done
  * Scenario: Several dates to sort out open the care item
  * Scenario: Upcoming care can be marked as done early
- * care_close.feature (@frozen): Closed care link and list — see closed care list test below
+ * Closed care link and list — see closed care list test below
  */
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { CareAgendaPage } from '../pages/care-agenda.page';

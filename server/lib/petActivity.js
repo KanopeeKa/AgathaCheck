@@ -64,18 +64,6 @@ export const PET_ACTIVITY_HOOK_MANIFEST = Object.freeze([
     eventType: 'foster_session',
     minCalls: 3,
   },
-  {
-    id: 'placement-action-router',
-    file: 'server/routes/organizations/placements/actionRouter.js',
-    eventType: 'foster_session',
-    minCalls: 1,
-  },
-  {
-    id: 'foster-placement-accept-decline',
-    file: 'server/routes/fosterPlacements.js',
-    eventType: 'foster_session',
-    minCalls: 2,
-  },
 ]);
 
 export function sanitizePetActivityMetadata(eventType, metadata = {}) {

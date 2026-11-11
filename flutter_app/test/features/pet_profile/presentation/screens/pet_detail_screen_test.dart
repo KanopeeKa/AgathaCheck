@@ -11,7 +11,6 @@ import 'package:pet_profile_app/features/experience/domain/services/experience_e
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_cache_freshness.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -143,7 +142,6 @@ void main() {
         ),
         petListProvider.overrideWith(() => _PetDetailPetListNotifier([pet])),
         allPetsIncludingOrgProvider.overrideWith((ref) async => [pet]),
-        organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
         healthEntriesNotifierProvider.overrideWith(
           FakeHealthEntriesNotifier.new,
         ),
@@ -309,9 +307,6 @@ void main() {
           petListFetchMetadataProvider.overrideWith(
             () => _StaleMetadataNotifier(),
           ),
-          organizationListProvider.overrideWith(
-            FakeOrganizationListNotifier.new,
-          ),
           healthEntriesNotifierProvider.overrideWith(
             FakeHealthEntriesNotifier.new,
           ),
@@ -397,9 +392,6 @@ void main() {
             }),
           ),
           allPetsIncludingOrgProvider.overrideWith((ref) async => [ownedPet]),
-          organizationListProvider.overrideWith(
-            FakeOrganizationListNotifier.new,
-          ),
           healthEntriesNotifierProvider.overrideWith(
             FakeHealthEntriesNotifier.new,
           ),

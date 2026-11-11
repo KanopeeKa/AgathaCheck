@@ -8,7 +8,7 @@ cd "$ROOT/server"
 export ENABLE_FROZEN_DOMAINS=true
 
 if [[ -f jest.config.frozen.cjs ]]; then
-  npx jest -c jest.config.frozen.cjs --env=node --forceExit
+  npx jest -c jest.config.frozen.cjs --env=node --forceExit --passWithNoTests
 else
   echo 'jest.config.frozen.cjs not found — frozen server tests unavailable.'
   exit 1

@@ -8,7 +8,6 @@ import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../auth/auth.dart';
 import '../config/drawer_menu_config.dart';
-import '../widgets/account_organisation_settings_section.dart';
 import '../widgets/experience_shell_scaffold.dart';
 import '../../domain/entities/app_experience.dart';
 
@@ -60,15 +59,6 @@ class AccountScreen extends ConsumerWidget {
                   previewBuilder: (context) => Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text(
-                        l.accountOrgSettingsTitle,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const AccountOrganisationSettingsSection(embedded: true),
-                      const SizedBox(height: 8),
                       _AccountRow(
                         key: const Key('account_pet_tags'),
                         icon: Icons.label_outline,

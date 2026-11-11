@@ -43,7 +43,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - Terminology: `docs/design/terminology.md`
 - **People (Contacts) shipped (2026-10-05):** typed `features/people` façade, boundary architecture tests, pet relationships as source of truth; legacy `features/vet` client removed; integration E2E in `people-integration.spec.ts`. Docs: `docs/domains/people/README.md`, labels in `docs/design/terminology.md` § People directory.
 - Principles (visual, deep only): `docs/design/principles.md`
-- Frozen Shelter branding: `docs/engineering/frozen-domains/shelter-branding.md`
+- Frozen domains removal (2026-11): [frozen-domains-removal-2026-11.md](frozen-domains-removal-2026-11.md)
 - Theme: `flutter_app/lib/core/theme/app_theme.dart` → `docs/design/tokens.md` (Phase 0)
 
 ## Domain semantics (memories)
@@ -59,7 +59,7 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [Pet Care mobile completion](guardian-mobile-completion.md) — compact dashboard completion keeps a reversible list-level preview while the server remains authoritative (legacy filename).
 - [Care dose selection compatibility](care-dose-selection-compatibility.md) — pair single-date dashboard confirmation with same-day multi-dose selection when verifying legacy routing.
 - [Canonical product name](canonical-product-name.md) — use AgathaTrack in current product UI and copy; AgathaCheck is the legacy name.
-- [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — Shelter is the canonical teal mode; evolve prior references screen by screen.
+- [Shelter terminology and evolving design](shelter-terminology-and-evolving-design.md) — pointer to active vocabulary; Shelter workspace removed from product.
 - [JWT secret dev/test fallback](jwt-secret-dev-fallback.md) — keep the prod-gated 'default_secret' fallback; CI/Jest sign tokens with it and workflows set no secret.
 - [Error-leak redaction patterns](error-leak-redaction-patterns.md) — grep err.message + e.toString() + $e + details on the backend; one pattern misses sites. Also: `/security-error-audit` skill.
 - [Localization & enum .label](localization-enum-labels.md) — "fully localize" must also map enum `.label` getters (dropdowns/displays) to ARB keys, not just inline literals.
@@ -73,12 +73,12 @@ Institutional knowledge for cloud agents. Domain workflows live in **Skills** (`
 - [UAT live E2E & deploy triage](uat-live-e2e-triage.md) — migrations/ownership, auth bypass, **`E2E=1` required on UAT Node**, API seed-before-login, 500/401/429 symptom map; full runbook `docs/e2e/uat-live-operations-runbook.md`.
 - [UAT deploy tiers (pre-E2E pipeline)](../../docs/e2e/uat-deploy-tiers.md) — pre-uat-e2e → promote → light deploy; nightly live WAF E2E advisory
 - [UAT WAF + queue lessons (Jul 2026)](../../docs/e2e/uat-waf-queue-lessons.md) — WAF helpers for `uat-live-e2e.yml` only; **CI IP whitelist not available**
-- [Frozen domains (Shelter/Fostering)](../../docs/engineering/frozen-domains/README.md) — MVP is Pet Care only; frozen code stays in Git; `check_frozen_domain_boundaries.sh` blocks active imports; tag `frozen-domains-baseline-2026-09` after freeze
+- [Frozen domains removal record](../../docs/engineering/frozen-domains/README.md) — Shelter/Fostering code removed Nov 2026; tag `pre-frozen-domains-removal-2026-11` for recovery; boundary script + `manifest.json` kept until owner CI PR
 
 ## Quick references
 
 - **Active codebase programme gates (2026-10-06, Batch K):** Mandatory `withTransaction` for active server mutations (`server/test/architecture/transactionOwnership.test.js`); cross-feature imports enforced by `node scripts/check_feature_imports.js` rules **R1–R8** (acyclic graph — metrics SCC **0**); Flutter/server **coverage ratchets** and domain threshold in `docs/engineering/active-codebase-baseline/`; file size blocking includes `server/lib` + `server/services` with `scripts/file-size-allowlist.json`. Review closure: `docs/architecture/reviews/active-codebase-review.md` (`status: implemented`).
-- **Experience program:** earlier references and file names using “Organisation” or “Guardian” (workspace) are legacy; interpret through **Pet Care** / **Shelter** (D38) and evolve screens deliberately. See [pet_care README](/docs/domains/pet_care/README.md).
+- **Experience program:** Pet Care is the only active workspace; “Organisation”, “Guardian”, and “Shelter” in code or docs are legacy naming — see [terminology.md](/docs/design/terminology.md) and [pet_care README](/docs/domains/pet_care/README.md).
 - **Execute-plan v2** — liveness and integrity are mechanisms (`tick`, driver, scope check); spec and shipped proof run: [execute-plan-v2.md](../../docs/agent-efficiency/plans/execute-plan-v2.md) · [proof-run-results.md](../../docs/agent-efficiency/plans/execute-plan-v2/proof-run-results.md)
 - **Execute-plan integration PR branch names** — PRs **into** `cursor/<plan>-integration-*` must be `cursor/<plan>-p<n>`, `main` (sync), or `cursor/<plan>-sync-<n>` (sync-resolve). Any other head (e.g. `cursor/unblock-pr-*`) is scope `unsupported` (#2029). To merge `main` plus an in-plan file fix while release is open, use **sync-resolve** (`#2084` skips files identical to `main`); do not open ad-hoc integration PRs.
 - Domain map: `docs/architecture/index.md`

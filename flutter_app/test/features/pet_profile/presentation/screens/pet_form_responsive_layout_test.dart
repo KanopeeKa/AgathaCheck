@@ -4,8 +4,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/core/providers/api_base_url_provider.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
 import 'package:pet_profile_app/features/people/application/people_providers.dart';
@@ -15,11 +13,6 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../../../helpers/fakes.dart';
 import '../providers/pet_list_notifier_test.dart';
-
-class _OrgsNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => const [];
-}
 
 class _EmptyRosterNotifier extends RosterNotifier {
   @override
@@ -38,7 +31,6 @@ Widget _wrapAddForm({double width = 320}) {
     overrides: [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
       petRepositoryProvider.overrideWithValue(RecordingPetRepository()),
-      organizationListProvider.overrideWith(_OrgsNotifier.new),
       apiBaseUrlProvider.overrideWithValue('http://test.local'),
       allPetsIncludingOrgProvider.overrideWith((ref) async => <Pet>[]),
     ],

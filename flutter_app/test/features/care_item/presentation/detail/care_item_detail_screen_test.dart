@@ -17,7 +17,6 @@ import 'package:pet_profile_app/features/health_tracking/presentation/providers/
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/health_providers.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/providers/occurrence_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/care_progression_providers.dart';
 import 'package:pet_profile_app/features/pet_profile/presentation/providers/pet_providers.dart';
@@ -73,7 +72,6 @@ void main() {
     return [
       authProvider.overrideWith((ref) => FakeAuthNotifier()),
       allPetsIncludingOrgProvider.overrideWith(petsFuture),
-      organizationListProvider.overrideWith(FakeOrganizationListNotifier.new),
       healthEntriesNotifierProvider.overrideWith(
         healthEntries ?? () => _TestHealthEntriesNotifier([entry]),
       ),

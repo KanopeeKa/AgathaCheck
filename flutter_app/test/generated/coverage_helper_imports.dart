@@ -55,7 +55,6 @@ import 'package:pet_profile_app/features/health_tracking/domain/entities/recurre
 import 'package:pet_profile_app/features/health_tracking/domain/entities/reschedule_occurrence_result.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/failures/health_document_failure.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/health_entry_series_closed.dart';
-import 'package:pet_profile_app/features/health_tracking/domain/health_events_scope.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/models/care_temporal_buckets.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/occurrence_missed.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/occurrence_scheduling.dart';
@@ -121,7 +120,6 @@ import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_access_
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_cache_freshness.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_list_fetch_result.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_report_supplement.dart';
-import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_species.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_timeline_segment.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet_viewer_role.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/profile_fact_status.dart';

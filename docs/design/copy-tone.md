@@ -20,7 +20,7 @@ This document defines **how AgathaTrack sounds** when it communicates with pet p
 - CIM behaviour → [`care-intelligence.md`](../domains/pet_care/features/care-intelligence.md)
 - Progression behaviour → [`care-progression.md`](../domains/pet_care/features/care-progression.md)
 
-Shelter and Fostering are frozen domains — not inputs into current brand, tone, or terminology. Preserved Shelter branding rules: [`shelter-branding.md`](../engineering/frozen-domains/shelter-branding.md).
+Shelter and Fostering are removed from the active product — not inputs into current brand, tone, or terminology. Historical product context: [`frozen-domains/README.md`](../engineering/frozen-domains/README.md).
 
 ## Brand position
 

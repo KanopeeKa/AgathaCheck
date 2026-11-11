@@ -3,6 +3,7 @@ import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:pet_profile_app/core/experience/app_experience.dart';
 import 'package:pet_profile_app/core/router/shell_return_navigation.dart';
 import 'package:pet_profile_app/core/utils/calendar_date_picker.dart';
 import 'package:pet_profile_app/core/widgets/app_logo_title.dart';

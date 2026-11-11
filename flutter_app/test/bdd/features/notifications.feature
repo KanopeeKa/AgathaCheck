@@ -117,13 +117,6 @@ Feature: Notifications
     When the user taps the notification
     Then the user should be navigated to "Bella"'s detail screen
 
-  @P1
-  @frozen
-  Scenario: Tapping an organisation notification navigates to org detail
-    Given a notification exists for organisation "Happy Paws Clinic"
-    When the user taps the notification
-    Then the user should be navigated to the "Happy Paws Clinic" detail screen
-
   # ── Notification Settings ────────────────────────────────────
 
   @P1
@@ -143,15 +136,6 @@ Feature: Notifications
     Given notifications for "Bella" are muted
     When the user unmutes notifications for "Bella"
     Then notifications for "Bella" should appear in the list again
-
-  # ── Organisation Notifications ───────────────────────────────
-
-  @P2
-  @frozen
-  Scenario: Organisation-related notifications display org icon
-    Given a notification related to organisation "Happy Paws Clinic" exists
-    When the user views the notifications screen
-    Then the notification should display an organisation icon
 
   # ── Unified bell / panel (navigation reversal, phase-1-navigation.md) ────
 
