@@ -74,21 +74,32 @@ class PaywallOfferProductFacts {
       identifier.contains('lifetime') ||
       identifier.contains('life_time');
 
-  bool get isYearlyBilling =>
-      !isLifetimeBilling &&
-      (subscriptionPeriodIso == 'P1Y' ||
-          packageType == PackageType.annual ||
-          _idOrTypeContainsYearly);
+  bool get isYearlyBilling {
+    if (isLifetimeBilling) return false;
+    final parsed = _parseSubscriptionPeriodIso(subscriptionPeriodIso);
+    if (parsed != null) {
+      return parsed.unit == _IsoPeriodUnit.year && parsed.count == 1;
+    }
+    return packageType == PackageType.annual || _idOrTypeContainsYearly;
+  }
 
-  bool get isMonthlyBilling =>
-      !isLifetimeBilling &&
-      (subscriptionPeriodIso == 'P1M' ||
-          packageType == PackageType.monthly ||
-          _idOrTypeContainsMonthly);
+  bool get isMonthlyBilling {
+    if (isLifetimeBilling) return false;
+    final parsed = _parseSubscriptionPeriodIso(subscriptionPeriodIso);
+    if (parsed != null) {
+      return parsed.unit == _IsoPeriodUnit.month && parsed.count == 1;
+    }
+    return packageType == PackageType.monthly || _idOrTypeContainsMonthly;
+  }
 
-  bool get isWeeklyBilling =>
-      !isLifetimeBilling &&
-      (subscriptionPeriodIso == 'P1W' || packageType == PackageType.weekly);
+  bool get isWeeklyBilling {
+    if (isLifetimeBilling) return false;
+    final parsed = _parseSubscriptionPeriodIso(subscriptionPeriodIso);
+    if (parsed != null) {
+      return parsed.unit == _IsoPeriodUnit.week && parsed.count == 1;
+    }
+    return packageType == PackageType.weekly;
+  }
 
   bool get _idOrTypeContainsYearly =>
       identifier.contains('yearly') || identifier.contains('annual');
@@ -231,7 +242,9 @@ class PaywallOfferDisplay {
       );
     }
 
-    final cancelLine = billingOnWeb
+    final cancelLine = facts.isLifetimeBilling
+        ? ''
+        : billingOnWeb
         ? l.subscriptionCancelDisclosureWeb
         : l.subscriptionCancelDisclosure;
 

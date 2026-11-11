@@ -55,9 +55,14 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionStatus> {
   }
 
   Future<void> refresh() async {
+    final previous = state;
     final service = _ref.read(revenueCatServiceProvider);
     final status = await service.getSubscriptionStatus();
-    if (mounted) state = status;
+    if (!mounted) return;
+    if (previous.hasUnlimited && !status.hasUnlimited) {
+      return;
+    }
+    state = status;
   }
 
   Future<void> loginUser(String userId) async {
@@ -81,6 +86,7 @@ class SubscriptionNotifier extends StateNotifier<SubscriptionStatus> {
       case RestoreOutcomeKind.restored:
         state = outcome.status!;
       case RestoreOutcomeKind.nothingToRestore:
+        state = SubscriptionStatus.free;
       case RestoreOutcomeKind.failed:
         state = previous;
     }

@@ -100,13 +100,15 @@ class PaywallOfferingCard extends StatelessWidget {
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                offer.cancelLine,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+              if (offer.cancelLine.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  offer.cancelLine,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              ),
+              ],
               if (offer.trialLine != null) ...[
                 const SizedBox(height: 4),
                 Text(

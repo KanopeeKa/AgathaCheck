@@ -13,10 +13,12 @@ class StubRevenueCatService implements RevenueCatService {
   StubRevenueCatService({
     this.restoreOutcome = const RestoreOutcome.failed(),
     this.purchaseOutcome = const PurchaseOutcome.failed(),
+    this.subscriptionStatus = SubscriptionStatus.free,
   });
 
   final RestoreOutcome restoreOutcome;
   final PurchaseOutcome purchaseOutcome;
+  SubscriptionStatus subscriptionStatus;
 
   @override
   bool get isInitialized => true;
@@ -33,7 +35,7 @@ class StubRevenueCatService implements RevenueCatService {
 
   @override
   Future<SubscriptionStatus> getSubscriptionStatus() async =>
-      SubscriptionStatus.free;
+      subscriptionStatus;
 
   @override
   Future<List<Offering>> getOfferings() async => [];
@@ -75,6 +77,86 @@ void main() {
     expect(container.read(subscriptionStatusProvider).hasUnlimited, isTrue);
   });
 
+  test('nothing to restore clears active entitlement', () async {
+    const unlimited = SubscriptionStatus(
+      tier: SubscriptionTier.unlimited,
+      isActive: true,
+    );
+    final stub = StubRevenueCatService(
+      restoreOutcome: const RestoreOutcome.nothingToRestore(),
+    );
+
+    final container = ProviderContainer(
+      overrides: [
+        revenueCatServiceProvider.overrideWithValue(stub),
+        authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(subscriptionStatusProvider.notifier);
+    notifier.state = unlimited;
+
+    final outcome = await notifier.restorePurchases();
+
+    expect(outcome.kind, RestoreOutcomeKind.nothingToRestore);
+    expect(container.read(subscriptionStatusProvider).hasUnlimited, isFalse);
+  });
+
+  test('purchase success grants unlimited', () async {
+    const unlimited = SubscriptionStatus(
+      tier: SubscriptionTier.unlimited,
+      isActive: true,
+    );
+    final stub = StubRevenueCatService(
+      purchaseOutcome: PurchaseOutcome.success(unlimited),
+    );
+
+    final container = ProviderContainer(
+      overrides: [
+        revenueCatServiceProvider.overrideWithValue(stub),
+        authProvider.overrideWith((ref) => FakeAuthNotifier()),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(subscriptionStatusProvider.notifier);
+    final outcome = await notifier.purchasePackage(_monthlyPackage());
+
+    expect(outcome.kind, PurchaseOutcomeKind.success);
+    expect(container.read(subscriptionStatusProvider).hasUnlimited, isTrue);
+  });
+
+  test(
+    'pending purchase does not downgrade confirmed unlimited on stale refresh',
+    () async {
+      const unlimited = SubscriptionStatus(
+        tier: SubscriptionTier.unlimited,
+        isActive: true,
+      );
+      final stub = StubRevenueCatService(
+        purchaseOutcome: const PurchaseOutcome.pendingUnconfirmed(),
+        subscriptionStatus: SubscriptionStatus.free,
+      );
+
+      final container = ProviderContainer(
+        overrides: [
+          revenueCatServiceProvider.overrideWithValue(stub),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final notifier = container.read(subscriptionStatusProvider.notifier);
+      notifier.state = unlimited;
+
+      final outcome = await notifier.purchasePackage(_monthlyPackage());
+
+      expect(outcome.kind, PurchaseOutcomeKind.pendingUnconfirmed);
+      expect(container.read(subscriptionStatusProvider).hasUnlimited, isTrue);
+    },
+  );
+
   test('restored outcome updates state to unlimited', () async {
     const unlimited = SubscriptionStatus(
       tier: SubscriptionTier.unlimited,
@@ -97,5 +179,21 @@ void main() {
 
     expect(outcome.kind, RestoreOutcomeKind.restored);
     expect(container.read(subscriptionStatusProvider).hasUnlimited, isTrue);
+  });
+}
+
+Package _monthlyPackage() {
+  return Package.fromJson({
+    'identifier': '\$rc_monthly',
+    'packageType': 'MONTHLY',
+    'presentedOfferingContext': {'offeringIdentifier': 'default'},
+    'product': {
+      'identifier': 'monthly',
+      'description': 'Monthly',
+      'title': 'Monthly',
+      'price': 4.99,
+      'priceString': '\$4.99',
+      'currencyCode': 'USD',
+    },
   });
 }
