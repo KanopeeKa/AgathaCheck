@@ -49,6 +49,7 @@ Each product area has a one-screen index under `docs/domains/<domain>/` with jou
 | Fostering | [/docs/domains/fostering/README.md](/docs/domains/fostering/README.md) | Placements, adoption, custody transfers |
 | Subscription | [/docs/domains/subscription/README.md](/docs/domains/subscription/README.md) | Premium tiers (billing TBD) |
 | Help & about | [/docs/domains/help_about/README.md](/docs/domains/help_about/README.md) | FAQ and about screens |
+| Customer support | [/docs/domains/customer_support/README.md](/docs/domains/customer_support/README.md) | Contact hub, tickets, diagnostics programme (planned) |
 | Cross-domain | [/docs/domains/cross-domain/README.md](/docs/domains/cross-domain/README.md) | Programme contract, delivery index |
 | Documentation | [/docs/domains/documentation/README.md](/docs/domains/documentation/README.md) | Canonical doc standards and migration |
 

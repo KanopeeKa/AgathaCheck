@@ -61,6 +61,16 @@ EN/FR labels for the People hub, pet profile grouping, and Today desk (see [`peo
 | Pet profile — carers group | Trusted carers | Proches & pet-sitters | |
 | Pet profile — professionals group | Pet professionals | Ses pros | |
 
+### Customer support vs directory contacts
+
+| Concept | English | Notes |
+| --- | --- | --- |
+| Directory contact | Contact (People hub) | A person or organisation in the user's care network — vets, sitters, etc. API: `/api/people/contacts`. |
+| Support request / ticket | Support request · ticket | A customer message to AgathaTrack staff about the product — bugs, billing, privacy. Domain: [customer_support](/docs/domains/customer_support/README.md). |
+| Contact (Account menu) | Contact | Account utility that will route to the **support contact hub** (not the People directory). Today: `mailto:contact@agathatrack.com`. |
+
+Do not use "contact" alone in engineering docs without specifying **directory** vs **support**.
+
 Additional rows (add flow, access labels, danger zone) remain in [`vocabulary.md`](../domains/people/features/vocabulary.md) until a follow-up terminology pass.
 
 ## Legal, technical, and permission terms
