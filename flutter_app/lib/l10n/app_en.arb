@@ -963,6 +963,7 @@
   "noNotifications": "No notifications",
   "markAllRead": "Mark all as read",
   "notificationsMarkedRead": "All marked as read",
+  "notificationsMarkReadFailed": "Could not mark notifications as read. Try again.",
   "notificationOpenInbox": "Open full inbox",
   "notificationSettingsTooltip": "Notification settings",
   "dueSoonAlertsLabel": "Due Soon Alerts",
