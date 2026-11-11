@@ -1782,6 +1782,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get householdNameLabel => 'Household name';
 
   @override
+  String get householdNameRequired => 'Enter a household name';
+
+  @override
   String get householdOrganiserLabel => 'Organiser · Full access';
 
   @override
@@ -2586,6 +2589,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get subscriptionManagementOpenFailed =>
       'We couldn\'t open subscription management. Copy this link to open it in your browser:';
+
+  @override
+  String get externalLinkOpenFailed =>
+      'We couldn\'t open that link. Copy it to open in your browser:';
 
   @override
   String get subscriptionPurchaseFailed =>
@@ -8230,6 +8237,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petTagsNameHint => 'Tag name';
 
   @override
+  String get petTagNameRequired => 'Enter a tag name';
+
+  @override
+  String petTagUsageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Used by $count pets',
+      one: 'Used by 1 pet',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get petTagsMyTags => 'My tags';
 
   @override
@@ -8864,6 +8885,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleAddPersonSave => 'Save person';
+
+  @override
+  String get peopleContactSavedInviteFailed =>
+      'Contact saved. The household invitation was not sent.';
+
+  @override
+  String get peopleRetryHouseholdInvite => 'Retry invitation';
+
+  @override
+  String get peopleOpenSavedContact => 'Open contact';
 
   @override
   String get peopleAddRolesRequired => 'Choose at least one role to continue.';

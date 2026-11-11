@@ -1805,6 +1805,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get householdNameLabel => 'Household name';
 
   @override
+  String get householdNameRequired => 'Saisissez un nom de foyer';
+
+  @override
   String get householdOrganiserLabel => 'Organiser · Full access';
 
   @override
@@ -2617,6 +2620,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get subscriptionManagementOpenFailed =>
       'Impossible d\'ouvrir la gestion de l\'abonnement. Copiez ce lien pour l\'ouvrir dans votre navigateur :';
+
+  @override
+  String get externalLinkOpenFailed =>
+      'Impossible d\'ouvrir ce lien. Copiez-le pour l\'ouvrir dans votre navigateur :';
 
   @override
   String get subscriptionPurchaseFailed =>
@@ -8370,6 +8377,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petTagsNameHint => 'Nom de l\'étiquette';
 
   @override
+  String get petTagNameRequired => 'Saisissez un nom d\'étiquette';
+
+  @override
+  String petTagUsageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Utilisée pour $count animaux',
+      one: 'Utilisée pour 1 animal',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get petTagsMyTags => 'Mes étiquettes';
 
   @override
@@ -9008,6 +9029,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleAddPersonSave => 'Enregistrer';
+
+  @override
+  String get peopleContactSavedInviteFailed =>
+      'Contact enregistré. L\'invitation au foyer n\'a pas été envoyée.';
+
+  @override
+  String get peopleRetryHouseholdInvite => 'Réessayer l\'invitation';
+
+  @override
+  String get peopleOpenSavedContact => 'Ouvrir le contact';
 
   @override
   String get peopleAddRolesRequired =>

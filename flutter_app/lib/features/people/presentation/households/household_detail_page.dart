@@ -13,6 +13,7 @@ import '../../domain/entities/household.dart';
 import '../../domain/entities/household_invite.dart';
 import '../../domain/entities/roster.dart';
 import '../../domain/repositories/people_repository.dart';
+import '../add/add_person_step_finalize.dart';
 import 'household_invite_member_sheet.dart';
 import 'household_member_removal_dialog.dart';
 import 'household_tier_labels.dart';
@@ -125,31 +126,11 @@ class _HouseholdDetailBodyState extends ConsumerState<_HouseholdDetailBody> {
 
   Future<void> _rename() async {
     final l = AppLocalizations.of(context)!;
-    final name = await showDialog<String>(
-      context: context,
-      builder: (ctx) {
-        final controller = TextEditingController(text: widget.household.name);
-        return AlertDialog(
-          title: Text(l.peopleHouseholdRenameTitle),
-          content: TextField(
-            controller: controller,
-            decoration: InputDecoration(labelText: l.householdNameLabel),
-            autofocus: true,
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(l.cancel),
-            ),
-            FilledButton(
-              onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-              child: Text(l.save),
-            ),
-          ],
-        );
-      },
+    final name = await showHouseholdRenameDialog(
+      context,
+      initialName: widget.household.name,
     );
-    if (name == null || name.isEmpty) return;
+    if (name == null) return;
     setState(() => _busy = true);
     try {
       await ref

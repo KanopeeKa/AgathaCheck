@@ -907,6 +907,7 @@
   },
   "subscriptionManagementUnavailable": "La gestion de l'abonnement n'est pas disponible sur cet appareil.",
   "subscriptionManagementOpenFailed": "Impossible d'ouvrir la gestion de l'abonnement. Copiez ce lien pour l'ouvrir dans votre navigateur :",
+  "externalLinkOpenFailed": "Impossible d'ouvrir ce lien. Copiez-le pour l'ouvrir dans votre navigateur :",
   "subscriptionPurchaseFailed": "L'achat n'a pas abouti. Réessayez ou restaurez un achat existant.",
   "subscriptionRestoreFailed": "Impossible de restaurer les achats. Réessayez dans un instant.",
   "subscriptionFeatureUnlimitedTitle": "AgathaTrack Illimité",
@@ -3114,6 +3115,13 @@
   "petTagsLoadError": "Impossible de charger vos étiquettes",
   "petTagDeleteFailed": "Impossible de supprimer cette étiquette. Réessayez.",
   "petTagsNameHint": "Nom de l'étiquette",
+  "petTagNameRequired": "Saisissez un nom d'étiquette",
+  "petTagUsageCount": "{count, plural, =1{Utilisée pour 1 animal} other{Utilisée pour {count} animaux}}",
+  "@petTagUsageCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
   "petTagsMyTags": "Mes étiquettes",
   "petTagsFilterDimension": "Étiquettes",
   "petTagsMatchAny": "Au moins une",
@@ -3361,6 +3369,10 @@
   "peopleAddAppAccessSkip": "Pas maintenant",
   "peopleAddAppAccessContinue": "Inviter",
   "peopleAddPersonSave": "Enregistrer",
+  "peopleContactSavedInviteFailed": "Contact enregistré. L'invitation au foyer n'a pas été envoyée.",
+  "peopleRetryHouseholdInvite": "Réessayer l'invitation",
+  "peopleOpenSavedContact": "Ouvrir le contact",
+  "householdNameRequired": "Saisissez un nom de foyer",
   "peopleAddRolesRequired": "Choisissez au moins un rôle pour continuer.",
   "peopleAddStepWhoTitle": "Qui souhaitez-vous ajouter ?",
   "peopleAddStepProgress": "Étape {step} sur 5",
