@@ -77,6 +77,7 @@ Use **`composer-2.5` only** for steps §0–7 (sync, poll, triage, fixes, CI, me
    ./scripts/babysit_sync_base.sh --pr <url> --check
    ```
    When exit `1` (behind), rebase once: `./scripts/babysit_sync_base.sh --pr <url> --push`. Re-run `--check` before every push, before the CI wait loop, and after long automatic-review polls. See autonomous-pr-policy §Proactive base sync and §Merge coordination.
+   When the head ref matches `cursor/*-integration-*`, do not `--push`. A `MERGEABLE` release stays behind `main` and squash-merges. Preflight exit `4` means the release conflicts: one merge of the base into that head, then continue ([merge-policy](../../rules/merge-policy.mdc)).
 2. If execute-plan v2: confirm control issue approval via `tick` / driver status (not revoked; window valid).
 3. `gh pr view <url> --json state,isDraft,labels,headRefOid,baseRefName`
 4. **§Halt if:** `do-not-merge`, draft (when merge intended), revoked, or expired.
@@ -157,10 +158,10 @@ Follow `autonomous-pr-policy.md` §**CI retry budget** (red-push streak, same si
 
 **Push batching (Actions cost):** Accumulate fixes locally until `./scripts/pre-push-changed.sh` is green, then **one push** per logical batch — do not push after every single-file triage fix. Re-run pre-push after the batch, not after each file.
 
-1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --check` — if behind, `--push` once instead of waiting for a failure.
+1. **Before watching CI:** `./scripts/babysit_sync_base.sh --pr <url> --check` — if behind, `--push` once instead of waiting for a failure. Do not `--push` when the head is `cursor/*-integration-*`.
 2. Push the accumulated fix batch, then watch until required checks finish: `gh pr checks <url> --watch`. Pending or in progress means this step is not done. A one-shot `gh pr checks` or a fixed `sleep` does not finish it.
 3. **After every push**, `node scripts/babysit_pr_reviews.js wait --pr <url>` — new threads (human, re-requested Copilot) go back through §2–§4 in the same batch as CI fixes. CI green alone never ends the loop.
-4. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind).
+4. Rebase on latest base before counting unrelated failures (`--check` then `--push` when behind), except an integration head.
 5. Exhaust policy streak budget → halt; comment on PR + control issue (`**Needs you:**` or `/e2e-debug` handoff).
 
 ### 6. Exit checklist
@@ -183,15 +184,16 @@ When all merge gates pass (autonomous-pr-policy §Merge gates), **always squash-
 
 | Exit | Action |
 |------|--------|
-| `0` | Proceed |
-| `1` | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if checks re-triggered; `--claim` again |
+| `0` | Proceed. An integration head (`cursor/*-integration-*`) may be `BEHIND` and still `MERGEABLE`; do not rebase it. |
+| `1` | Action `rebase`: `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if checks re-triggered; `--claim` again. Action `recheck_mergeable`: fetch `mergeable` again; do not rebase an integration head. |
 | `2` | Another PR holds `merge-lease` or FIFO yield — subscribe and wait for the lease holder; this is not a halt (merge coordination); do not rebase yet |
 | `3` | Halt (`do-not-merge` or error) |
+| `4` | Integration head conflicts. One PR that merges the base into that head and resolves the conflict. Do not rebase. |
 
 Then sync, run the review gate, and merge:
 
 ```bash
-./scripts/babysit_sync_base.sh --pr <url> --push    # skip when already up to date; a push → wait for CI green
+./scripts/babysit_sync_base.sh --pr <url> --push    # when behind and the head is not an integration branch; skip if up to date (a push → wait for CI green)
 node scripts/babysit_pr_reviews.js gate --pr <url>  # last check before merge — after any push
 gh pr merge <url> --squash
 ./scripts/babysit_merge_preflight.sh --pr <url> --release

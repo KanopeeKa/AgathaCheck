@@ -3,7 +3,7 @@ title: Autonomous Pr Policy
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-08
+last_updated: 2026-11-11
 tags: [agent-efficiency, policy]
 ---
 # Autonomous PR policy (canonical)
@@ -96,7 +96,7 @@ Do **not** wait for CI to fail before rebasing when `main` (or the PR base branc
 | After long automatic-review poll | Same |
 | Immediately before merge (§7) | One authoritative `./scripts/babysit_sync_base.sh --pr <url> --push` after merge preflight `--claim` |
 
-Script: `scripts/babysit_sync_base.sh` — fetches `origin/<base>`, rebases when behind, optional `--push` with `--force-with-lease`. Use `--pr <url>` so integration-branch PRs rebase onto their declared base, not always `main`.
+Script: `scripts/babysit_sync_base.sh` — fetches `origin/<base>`, rebases when behind, optional `--push` with `--force-with-lease`. Use `--pr <url>` so the rebase uses the PR's base, not always `main`. A head ref matching `cursor/*-integration-*` is not rebased and is not caught up to `main` because it is behind ([merge-policy](../../.cursor/rules/merge-policy.mdc)).
 
 **Rebase-once-at-merge (babysit+):** During triage and CI fix loops (§0–§5), prefer `--check` only — rebase when behind, not on every poll. Defer the **single** authoritative rebase to immediately before merge (§Merge coordination).
 
@@ -109,8 +109,9 @@ Serialize merge attempts when multiple PRs reach the CI gate at the same time. D
 | When | Command |
 |------|---------|
 | Before merge (babysit+ §7) | `./scripts/babysit_merge_preflight.sh --pr <url> --claim` |
-| Preflight exit `1` (behind base) | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if required checks re-triggered; then `--claim` again |
+| Preflight exit `1` (behind base, action `rebase`) | `./scripts/babysit_sync_base.sh --pr <url> --push` once; re-run CI if required checks re-triggered; then `--claim` again. Action `recheck_mergeable` (integration head): fetch `mergeable` again; do not rebase. |
 | Preflight exit `2` (wait) | Subscribe (`cursor-subscriptions` → `subscribe_github_pr` on lease holder or `subscribe_github_ci` on base) and wait for the lease holder; this is not a halt (merge coordination) — do **not** rebase yet |
+| Preflight exit `4` (integration conflict) | One PR that merges the base into the integration head and resolves the conflict. Do not rebase. |
 | After successful merge | `./scripts/babysit_merge_preflight.sh --pr <url> --release` (no-op if PR closed) |
 | Stale lease (≥45 min, holder idle) | `--claim --force` |
 
@@ -130,7 +131,7 @@ Linux runner usage scales with **open PR count**, **pushes per PR**, and **jobs 
 
 See [pr-review-cost-efficiency.md](./pr-review-cost-efficiency.md) § GitHub Actions minutes.
 
-**§0–§5 sync:** `./scripts/babysit_sync_base.sh --pr <url> --check` at preflight and before push; `--push` only when `--check` exits `1` (behind). **§7:** `--claim` → one `--push` rebase if needed → review `gate` → `gh pr merge` → `--release`.
+**§0–§5 sync:** `./scripts/babysit_sync_base.sh --pr <url> --check` at preflight and before push; `--push` only when `--check` exits `1` (behind) and the head is not `cursor/*-integration-*`. **§7:** `--claim` → one `--push` rebase if needed (skip on an integration head) → review `gate` → `gh pr merge` → `--release`. A `MERGEABLE` integration release squash-merges while `BEHIND`.
 
 ---
 
@@ -287,7 +288,9 @@ Run merge coordination first (§Merge coordination):
 
 ```bash
 ./scripts/babysit_merge_preflight.sh --pr <url> --claim
-./scripts/babysit_sync_base.sh --pr <url> --push    # when behind; skip if up to date (a push → wait for CI green)
+# When preflight exit 1 (action rebase): babysit_sync_base.sh --pr <url> --push once, then --claim again.
+# Integration head (`cursor/*-integration-*`): do not --push; MERGEABLE while BEHIND is OK. Exit 4 → merge base into release.
+./scripts/babysit_sync_base.sh --pr <url> --push    # only when behind and head is not an integration release; skip if up to date
 node scripts/babysit_pr_reviews.js gate --pr <url>  # must exit 0 — after the last push; 2 → release the lease, back to triage
 gh pr merge <url> --squash
 ./scripts/babysit_merge_preflight.sh --pr <url> --release

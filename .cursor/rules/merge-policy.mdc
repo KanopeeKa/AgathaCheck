@@ -8,13 +8,16 @@ alwaysApply: true
 - `main` is the release trunk; keep it green.
 - **Single-agent / single-domain PRs** → `main` when CI green — **unless** an active `/execute-plan` snapshot or an active **`/light-plan`** programme sets work onto an integration branch (see below).
 - **Multi-agent sprints** → `cursor/sprint-<N>-<topic>-integration-13e3`; agents merge there; **one PR** to `main`. Use `/spawn-sprint-agents`.
-- **`/light-plan`** — integration `cursor/<slug>-integration-<suffix>`; phase and sync PRs merge-committed into integration via the skill's **light merge** (not **`/babysit-plus`**); **one release PR** integration → `main` via **`/babysit-uat`**. Agent merge for programme-owned PRs: [`AGENTS.md`](../../AGENTS.md) §Autonomy and merging. See [light-plan skill](../skills/light-plan/SKILL.md).
+- **`/light-plan`** — integration `cursor/<slug>-integration-<suffix>`; phase PRs merge-committed into integration via the skill's **light merge** (not **`/babysit-plus`**); **one release PR** integration → `main` via **`/babysit-uat`**. Do not catch that integration branch up to `main` unless the release conflicts. Agent merge for programme-owned PRs: [`AGENTS.md`](../../AGENTS.md) §Autonomy and merging. See [light-plan skill](../skills/light-plan/SKILL.md).
 - **`/execute-plan` (2+ phases, `autonomy: active`)** — read `base_branch` from `.agents/plans/<plan_id>.snapshot.json` (usually `cursor/<plan_id>-integration-<suffix>`). **Phase PRs target `base_branch`, not `main`.** Squash-merge via **`/babysit-plus`** into integration; **one release PR** integration → `main` via **`/babysit-uat`**. Do not use the single-agent→`main` default for intermediate phase PRs.
 
 ## Before every push
 
-1. `git fetch origin main && git rebase origin/main` (or onto integration parent). On an **integration** branch, sync `main` via PR and merge — **never rebase** integration (`non_fast_forward` ruleset).
-2. `./scripts/pre-push-changed.sh` during work; `./scripts/pre-push.sh` before final merge PR
+1. On a dev or agent branch, `git fetch` its parent and rebase onto it (`origin/main`, or the integration branch).
+2. On an integration branch (`cursor/*-integration-*`): do not rebase (`non_fast_forward`) and do not merge `main` in because the branch is behind. The release PR merges that branch into `main`. Squash-merge it when GitHub reports `MERGEABLE`, including when the state is `BEHIND`. Merge `main` into the integration branch only when that release is conflicted. Ruleset 18979034 must keep `strict_required_status_checks_policy` false so GitHub accepts that merge. A clean behind merge that GitHub rejects is that flag, not a conflict — do not open a sync PR.
+3. `./scripts/pre-push-changed.sh` during work; `./scripts/pre-push.sh` before the release PR
+
+`/execute-plan` still opens its own sync PR when the driver sees the integration branch behind `main` before release. Light-plan and babysit follow this section.
 
 ## Branch naming
 

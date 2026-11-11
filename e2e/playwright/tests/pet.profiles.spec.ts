@@ -426,11 +426,7 @@ test.describe('Pet profiles', () => {
 
     await loginAs(page, testUser);
     await page.goto(flutterGotoUrl(`/pet/${pet.id}/care-rhythms`));
-    await waitForFlutterRoutePattern(
-      page,
-      new RegExp(`/pet/${pet.id}/events(?:\\?|$)`),
-      30_000,
-    );
+    await waitForFlutterRoutePattern(page, /^\/pc\/events$/, 30_000);
 
     const detail = new PetDetailPage(page);
     await detail.expectAllCareLoaded('Bella');
