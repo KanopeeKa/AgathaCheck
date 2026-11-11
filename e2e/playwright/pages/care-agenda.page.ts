@@ -86,9 +86,9 @@ export class CareAgendaPage {
   }
 
   dateHeaderIdentifier(dateKey: string) {
-    return this.page.locator(
-      `[flt-semantics-identifier="care_agenda_date_${dateKey}"]`,
-    );
+    return this.page
+      .locator(`[flt-semantics-identifier="care_agenda_date_${dateKey}"]`)
+      .or(this.page.locator(`[flt-semantics-identifier="care_list_date_${dateKey}"]`));
   }
 
   coordinationBanner(dateKey: string) {
