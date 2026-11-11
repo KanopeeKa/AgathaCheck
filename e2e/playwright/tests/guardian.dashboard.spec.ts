@@ -1,7 +1,7 @@
 /**
  * @bdd guardian_dashboard.feature
  * Scenario: Today orientation prioritises attention above the management sections
- * Scenario: Care preview orders overdue, due today, and upcoming items
+ * Scenario: Care preview shows Today care on the dashboard
  * Scenario: My Pets preview is capped at four with an All Pets destination
  * Scenario: Care preview row opens Care details
  * Scenario: Care preview supports completion and undo
@@ -70,7 +70,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectNoPendingDashboardBanner();
   });
 
-  test('Care preview separates Due and Soon', async ({ page }) => {
+  test('Care preview shows Today care on the dashboard', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 812 });
     const user = await seededGuardian(page);
     const pet = await createPet(baseURL(), user.accessToken, 'TodayPet');
@@ -87,7 +87,7 @@ test.describe('Guardian dashboard', () => {
     await dashboard.open();
     await dashboard.expectTodayCareRegions();
     await dashboard.expectCareVisible('Urgent Care');
-    await dashboard.expectCareVisible('Soon Care');
+    await expect(semanticsByName(page, /Soon Care/i).first()).not.toBeVisible();
   });
 
   test('My Pets preview is capped at four with an All Pets destination', async ({ page }) => {

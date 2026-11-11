@@ -28,11 +28,11 @@ Feature: Pet Care dashboard
 
   @implemented
   @P0
-  Scenario: Care preview orders overdue, due today, and upcoming items
-    Given I am signed in as a guardian with overdue, due-today, and upcoming care
+  Scenario: Care preview shows Today care on the dashboard
+    Given I am signed in as a guardian with overdue and upcoming care
     When I view the Pet Care dashboard
-    Then the CARE ACTIONS preview should show those priorities in urgency order
-    And I should be able to open the full Events screen
+    Then the CARE ACTIONS preview should show overdue care in the Today section
+    And upcoming care should not appear in the dashboard preview
 
   @implemented
   @P0
