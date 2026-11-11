@@ -170,3 +170,8 @@ Detail: [runbooks-proof-retirement.md §7.5](./plans/execute-plan-v2/runbooks-pr
 - [ ] Window days chosen (default 7; max 14).
 
 After `init`: owner approves on the control issue; driver takes over — no babysit skills on plan PRs.
+
+**Cross-plan waits (warning at `init`):** v2 plans cannot pause a phase to wait on another programme's
+landing. `init` and snapshot validation print **warnings** (non-blocking) when plan prose matches
+cross-plan wait phrases — see [parallel-programmes.md](./parallel-programmes.md) §4 for landing order.
+Use separate `plan_id`s and the landing table instead of in-plan `wait for …` coordination.
