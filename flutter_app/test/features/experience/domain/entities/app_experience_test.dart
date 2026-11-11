@@ -3,14 +3,13 @@ import 'package:pet_profile_app/features/experience/domain/entities/app_experien
 
 void main() {
   group('AppExperienceWire', () {
-    test('wire values round-trip for petCare and organization', () {
+    test('wire values round-trip for petCare', () {
       expect(AppExperience.petCare.wire, 'pet_care');
-      expect(AppExperience.organization.wire, 'organization');
       expect(AppExperienceWire.fromWire('pet_care'), AppExperience.petCare);
-      expect(
-        AppExperienceWire.fromWire('organization'),
-        AppExperience.organization,
-      );
+    });
+
+    test('fromWire maps legacy organization wire to pet care', () {
+      expect(AppExperienceWire.fromWire('organization'), AppExperience.petCare);
     });
 
     test('fromWire dual-reads legacy guardian wire', () {
@@ -23,21 +22,14 @@ void main() {
       expect(AppExperienceWire.fromWire(null), isNull);
     });
 
-    test('homePath returns pet care and organization routes', () {
+    test('paths are Pet Care only even for deprecated organization enum', () {
       expect(AppExperience.petCare.homePath(), '/pc/home');
-      expect(AppExperience.organization.homePath(), '/o/orgs');
-      expect(
-        AppExperience.organization.homePath(orgId: 'org-abc'),
-        '/o/org-abc',
-      );
-      expect(AppExperience.organization.homePath(orgId: ''), '/o/orgs');
-    });
-
-    test('eventsPath and settingsPath are namespaced per experience', () {
+      expect(AppExperience.organization.homePath(), '/pc/home');
+      expect(AppExperience.organization.homePath(orgId: 'org-abc'), '/pc/home');
       expect(AppExperience.petCare.eventsPath, '/pc/events');
-      expect(AppExperience.organization.eventsPath, '/o/events');
+      expect(AppExperience.organization.eventsPath, '/pc/events');
       expect(AppExperience.petCare.settingsPath, '/pc/settings');
-      expect(AppExperience.organization.settingsPath, '/o/settings');
+      expect(AppExperience.organization.settingsPath, '/pc/settings');
     });
   });
 }

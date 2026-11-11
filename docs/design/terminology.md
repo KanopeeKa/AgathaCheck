@@ -3,7 +3,7 @@ title: AgathaTrack terminology
 owner: Documentation Team
 audience: product, design, engineering, content
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-11-10
 tags: [design, brand, copy, l10n]
 ---
 
@@ -11,7 +11,7 @@ tags: [design, brand, copy, l10n]
 
 Canonical relationship and role language for the **active Pet Care product**. Voice and register patterns are in [`copy-tone.md`](./copy-tone.md); product values are in [`true-north.md`](./true-north.md).
 
-Shelter and Fostering terminology for frozen domains is preserved separately — see [`frozen-domains`](../engineering/frozen-domains/README.md). Do not let frozen-domain vocabulary shape active Pet Care direction.
+Shelter, Fostering, organisation-workspace, and related terms are **not active product vocabulary** after the November 2026 code removal. They may appear in historical docs, legal rows, or retained API fields only. See the [removal record](../engineering/frozen-domains/README.md) and [`mvp-pivot-decisions.md`](../engineering/frozen-domains/mvp-pivot-decisions.md). Do not use frozen-domain words in new Pet Care UI or copy.
 
 ## Pet parent (preferred English relationship term)
 

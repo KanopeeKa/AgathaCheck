@@ -21,8 +21,6 @@ const CARE_OCCURRENCE_TRANSACTION_DEFERRED = new Set([]);
 
 const ALWAYS_ALLOWED = new Set([
   'lib/db/withTransaction.js',
-  'lib/fosterInvite.js',
-  'lib/orgPermissions.js',
   ...CARE_OCCURRENCE_TRANSACTION_DEFERRED,
 ]);
 

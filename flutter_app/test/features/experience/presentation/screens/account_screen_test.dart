@@ -9,18 +9,11 @@ import 'package:pet_profile_app/features/experience/domain/services/experience_e
 import 'package:pet_profile_app/features/experience/presentation/providers/experience_providers.dart';
 import 'package:pet_profile_app/features/experience/presentation/screens/account_screen.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
 import 'package:pet_profile_app/features/pet_profile/domain/entities/pet.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../../../helpers/fakes.dart';
-
-class _EmptyOrgListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => [];
-}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +51,6 @@ void main() {
         combinedUnreadNotificationCountProvider.overrideWith((ref) => 0),
         guardianUnreadNotificationCountProvider.overrideWith((ref) => 0),
         orgUnreadNotificationCountProvider.overrideWith((ref) => 0),
-        organizationListProvider.overrideWith(_EmptyOrgListNotifier.new),
         // removed activeExperienceProvider mock
         // removed resolvedExperienceProvider mock
       ],

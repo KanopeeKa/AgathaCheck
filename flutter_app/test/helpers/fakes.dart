@@ -17,8 +17,6 @@ import 'package:pet_profile_app/features/notifications/domain/services/notificat
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/subscription/data/services/revenuecat_service.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/organization.dart';
-import 'package:pet_profile_app/features/organization/presentation/providers/organization_providers.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 
@@ -149,11 +147,6 @@ class TestPetListNotifier extends PetListNotifier {
     state = AsyncValue.data([pet]);
     return pet.id;
   }
-}
-
-class FakeOrganizationListNotifier extends OrganizationListNotifier {
-  @override
-  Future<List<Organization>> build() async => const [];
 }
 
 class FakeHealthEntriesNotifier extends HealthEntriesNotifier {

@@ -1,6 +1,40 @@
 import { dateToIsoDate } from './calendarDate.js';
-import { hasPermissionForUser } from './orgPermissions.js';
+import {
+  ORG_ROLE_ADMIN,
+  ORG_ROLE_ASSOCIATE,
+  ORG_ROLE_SUPER_ADMIN,
+  normaliseRole,
+} from './orgRoles.js';
 import { userCanAccessPet, userOwnsPet } from './petAccess.js';
+
+async function hasPermissionForUser(pool, userId, organizationId, permissionKey) {
+  const { rows } = await pool.query(
+    `SELECT role FROM organization_users
+     WHERE organization_id = $1 AND user_id = $2 LIMIT 1`,
+    [organizationId, userId],
+  );
+  const role = rows[0]?.role;
+  if (!role || role.startsWith('pending_')) return false;
+
+  const { rows: overrides } = await pool.query(
+    `SELECT permission_key FROM organization_permissions
+     WHERE organization_id = $1 AND user_id = $2 AND revoked_at IS NULL`,
+    [organizationId, userId],
+  );
+  const overrideKeys = overrides.map((row) => row.permission_key);
+  if (overrideKeys.includes(permissionKey)) return true;
+
+  const normalised = normaliseRole(role);
+  if (permissionKey === 'view_org_pets') {
+    return normalised === ORG_ROLE_SUPER_ADMIN
+      || normalised === ORG_ROLE_ADMIN
+      || normalised === ORG_ROLE_ASSOCIATE;
+  }
+  if (permissionKey === 'manage_pets') {
+    return normalised === ORG_ROLE_SUPER_ADMIN || normalised === ORG_ROLE_ADMIN;
+  }
+  return false;
+}
 
 /** Allowlisted fields for associate / view-only org pet profile (Option B). */
 export function redactedOrgPetToMap(row) {

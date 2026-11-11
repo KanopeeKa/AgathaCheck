@@ -699,7 +699,7 @@ Scope excluded Shelter/Fostering implementation internals. No files changed and 
 **P2 — Dependency enforcement is solid for updates, uneven for policy.** Strengths: Dependabot covers server npm, E2E npm, and Flutter pub weekly (`.github/dependabot.yml:3-52`); CI uses `npm ci` and high-severity audit (`_reusable-test.yml:93-110,143-156`). Limits: ESLint covers only four policy paths (`eslint.config.js:4-9`; `scripts/validate_eslint.js:15-20`), and Flutter has unconstrained direct/dev dependencies (`flutter_app/pubspec.yaml:33,42-43`). Recommendation: expand lint via ratchet, document version-range policy, and add lockfile/fresh-resolution checks for Flutter.
 
 ### Strengths
-- Clear freeze contract and explicit active/frozen CI posture (`freeze-verification-2026-09.md:14-22`).
+- Clear freeze contract and explicit active/frozen CI posture (September 2026 freeze; removal record `docs/engineering/frozen-domains/README.md`).
 - Umbrella CI gate enumerates all blocking jobs (`.github/workflows/ci.yml:179-218`) and validates scoped skips centrally (`_reusable-ci-gate.yml:60-90`).
 - E2E manifest completeness is enforced with an explicit frozen allowlist (`e2e/scripts/validate-shard-manifest.mjs:18-51`); active shards are clearly enumerated (`shard-files.mjs:15-56`).
 - Test sharding fails on empty shards and missing coverage artifacts (`flutter_app/scripts/run_tests_ci_shard.sh:62-77,121-133`; `_reusable-flutter-test-shard.yml:70-82`).

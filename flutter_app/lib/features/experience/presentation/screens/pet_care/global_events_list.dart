@@ -8,35 +8,19 @@ import '../../../../care_item/care_item.dart';
 import '../../../../pet_care/pet_care.dart';
 import '../../../../pet_profile/pet_profile.dart';
 import '../../pet_profile/screens/widgets/manage_events_collection_filter.dart';
-import '../../pet_profile/screens/widgets/org_events_collection_filter.dart';
 import '../../pet_profile/screens/widgets/pet_care_global_events_filters.dart';
 import '../../pet_profile/widgets/pet_care_section/pet_care_action_row_builder.dart';
 import '../../pet_profile/widgets/pet_list/home_event_actions.dart';
 import 'pet_care_due_events_screen.dart';
-
-// ---------------------------------------------------------------------------
-// Scope
-// ---------------------------------------------------------------------------
-
-enum GlobalEventsListScope { guardian, organization }
-
-// ---------------------------------------------------------------------------
-// GlobalEventsList
-// ---------------------------------------------------------------------------
 
 /// Unified global events list with manage-events filters plus pet/cohort filters.
 ///
 /// Planned care uses the agenda (D-CIE-025) with server-confirmed Done
 /// (UIR-2); paused, ended and recorded-only items follow without a tick.
 class GlobalEventsList extends ConsumerStatefulWidget {
-  const GlobalEventsList({
-    super.key,
-    required this.shellPets,
-    this.scope = GlobalEventsListScope.guardian,
-  });
+  const GlobalEventsList({super.key, required this.shellPets});
 
   final List<Pet> shellPets;
-  final GlobalEventsListScope scope;
 
   @override
   ConsumerState<GlobalEventsList> createState() => _GlobalEventsListState();
@@ -45,32 +29,22 @@ class GlobalEventsList extends ConsumerStatefulWidget {
 class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
   PetCareGlobalEventsFilters _petCareFilters =
       const PetCareGlobalEventsFilters();
-  OrgGlobalEventsFilters _orgFilters = const OrgGlobalEventsFilters();
-
-  bool get _isOrg => widget.scope == GlobalEventsListScope.organization;
 
   Future<void> _invalidateBoth() async {
     await ref.read(healthEntriesNotifierProvider.notifier).refresh();
-    if (_isOrg) {
-      ref.invalidate(orgGlobalEventHistoriesProvider);
-    } else {
-      ref.invalidate(guardianGlobalEventHistoriesProvider);
-    }
+    ref.invalidate(guardianGlobalEventHistoriesProvider);
   }
-
-  // ---- build ---------------------------------------------------------------
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final entriesAsync = ref.watch(healthEntriesNotifierProvider);
-    final historiesAsync = _isOrg
-        ? ref.watch(orgGlobalEventHistoriesProvider)
-        : ref.watch(guardianGlobalEventHistoriesProvider);
-    final scopedPets = _isOrg
-        ? orgGlobalEventsPets(widget.shellPets, _orgFilters)
-        : guardianGlobalEventsPets(widget.shellPets, _petCareFilters);
+    final historiesAsync = ref.watch(guardianGlobalEventHistoriesProvider);
+    final scopedPets = guardianGlobalEventsPets(
+      widget.shellPets,
+      _petCareFilters,
+    );
 
     return ColoredBox(
       color: AppColorTokens.operationsDeskCanvas,
@@ -104,18 +78,11 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
                   ],
                 ),
               ),
-              if (!_isOrg)
-                PetCareGlobalEventsCollectionFilterBar(
-                  shellPets: widget.shellPets,
-                  filters: _petCareFilters,
-                  onChanged: (f) => setState(() => _petCareFilters = f),
-                )
-              else
-                OrgGlobalEventsCollectionFilterBar(
-                  shellPets: widget.shellPets,
-                  filters: _orgFilters,
-                  onChanged: (f) => setState(() => _orgFilters = f),
-                ),
+              PetCareGlobalEventsCollectionFilterBar(
+                shellPets: widget.shellPets,
+                filters: _petCareFilters,
+                onChanged: (f) => setState(() => _petCareFilters = f),
+              ),
               _buildBody(l, entriesAsync, historiesAsync, scopedPets),
             ],
           ),
@@ -149,14 +116,12 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
 
     final entries = entriesAsync.valueOrNull ?? [];
     final histories = historiesAsync.valueOrNull ?? {};
-    final visible = _isOrg
-        ? filterOrgGlobalEvents(entries, scopedPets, _orgFilters, histories)
-        : filterPetCareGlobalEvents(
-            entries,
-            scopedPets,
-            _petCareFilters,
-            histories,
-          );
+    final visible = filterPetCareGlobalEvents(
+      entries,
+      scopedPets,
+      _petCareFilters,
+      histories,
+    );
     if (visible.isEmpty) return _EmptyState(label: l.noEntriesYet);
 
     final agendaIds = buildCareAgenda<HealthEntry>(
@@ -183,7 +148,6 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
             const SizedBox(height: 8),
             KeyedSubtree(
               key: Key('global_events_row_${entry.id}'),
-              // Paused, ended, recorded only: no tick (DN-8).
               child: PetCareActionRowBuilder(
                 entry: entry,
                 l10n: l,
@@ -204,11 +168,6 @@ class _GlobalEventsListState extends ConsumerState<GlobalEventsList> {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Shared presentation helpers
-// ---------------------------------------------------------------------------
-
-/// Inline error icon + retryable action.
 class _ErrorRetryView extends StatelessWidget {
   const _ErrorRetryView({required this.message, required this.onRetry});
 

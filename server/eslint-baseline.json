@@ -1,6 +1,6 @@
 {
   "_comment": "ESLint ratchet for active server/lib, services and routes (J.2-1). Only shrinks: run --update-baseline after fixing a violation.",
-  "generated_at": "2026-10-07",
+  "generated_at": "2026-11-10",
   "violations": [
     {
       "file": "server/lib/care/awayPlan/presentation.js",
@@ -59,25 +59,11 @@
       "message": "'petNamesFromClient' is assigned a value but never used. Allowed unused args must match /^_/u."
     },
     {
-      "file": "server/lib/custodyTransfers.js",
-      "rule": "no-unused-vars",
-      "line": 357,
-      "column": 63,
-      "message": "'actorUserId' is defined but never used. Allowed unused args must match /^_/u."
-    },
-    {
       "file": "server/lib/email/branding.js",
       "rule": "no-undef",
       "line": 17,
       "column": 16,
       "message": "'URL' is not defined."
-    },
-    {
-      "file": "server/lib/fosterInvite.js",
-      "rule": "no-unused-vars",
-      "line": 142,
-      "column": 37,
-      "message": "'locale' is defined but never used. Allowed unused args must match /^_/u."
     },
     {
       "file": "server/lib/fosterProfiles.js",
@@ -92,27 +78,6 @@
       "line": 143,
       "column": 3,
       "message": "'actorUserId' is defined but never used. Allowed unused args must match /^_/u."
-    },
-    {
-      "file": "server/lib/orgMemberPrivacy.js",
-      "rule": "no-unused-vars",
-      "line": 10,
-      "column": 3,
-      "message": "'normaliseRole' is defined but never used."
-    },
-    {
-      "file": "server/lib/orgMemberPrivacy.js",
-      "rule": "no-unused-vars",
-      "line": 124,
-      "column": 3,
-      "message": "'subjectRole' is defined but never used. Allowed unused args must match /^_/u."
-    },
-    {
-      "file": "server/lib/orgMemberPrivacy.js",
-      "rule": "no-unused-vars",
-      "line": 65,
-      "column": 39,
-      "message": "'role' is defined but never used. Allowed unused args must match /^_/u."
     },
     {
       "file": "server/lib/orgPetTransfer.js",

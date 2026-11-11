@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'AgathaTrack keeps your pet\'s health organised — whether you care at home, in a shelter, or as part of a team.'**
+  /// **'AgathaTrack keeps your pet\'s care organised — at home and with the people you trust.'**
   String get appTagline;
 
   /// No description provided for @appDescription.
@@ -8728,7 +8728,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqAccountA4.
   ///
   /// In en, this message translates to:
-  /// **'Go to the user menu (your avatar in the top-right corner), then tap \"My Details\". From there you can edit your name, bio, profile photo, and change your password.'**
+  /// **'Open Account from the main menu, then tap My Details at the top of the page or under Profile. From there you can edit your name, bio, profile photo, and change your password.'**
   String get faqAccountA4;
 
   /// No description provided for @faqAccountQ5.
@@ -8740,7 +8740,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqAccountA5.
   ///
   /// In en, this message translates to:
-  /// **'Open the user menu (avatar icon in the top-right corner) and tap \"Logout\". You will be returned to the landing page.'**
+  /// **'Open Account from the main menu, scroll to Actions, and tap Log out. You return to the landing page.'**
   String get faqAccountA5;
 
   /// No description provided for @faqPetProfileTitle.
@@ -8848,7 +8848,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqHealthA2.
   ///
   /// In en, this message translates to:
-  /// **'You can add entries from two places: the pet\'s detail page (specific to that pet) or the global Health Dashboard (accessible from the medical icon in the top bar). Fill in the type, name, date, and optional details like frequency, notes, and photo attachments.'**
+  /// **'Add care from the pet\'s profile page or open All actions from the Pet Care home. Fill in the care type, name, date, and optional details like frequency, notes, and photo attachments.'**
   String get faqHealthA2;
 
   /// No description provided for @faqHealthQ3.
@@ -8860,7 +8860,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqHealthA3.
   ///
   /// In en, this message translates to:
-  /// **'The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by organisation to focus on specific groups of pets.'**
+  /// **'All actions is a single list of upcoming, due, and overdue care across your pets. Open it from the Pet Care home to review everything in one place, or focus on one pet from its profile.'**
   String get faqHealthA3;
 
   /// No description provided for @faqHealthQ4.
@@ -8956,7 +8956,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqVetA1.
   ///
   /// In en, this message translates to:
-  /// **'Go to the Veterinarians section (accessible from the stethoscope icon in the top bar). Tap the \"+\" button and fill in the clinic name, vet name, phone number, email, address, and website.'**
+  /// **'Open Account → People, or choose Vets from the Pet Care menu, then tap Add. Fill in the clinic name, vet name, phone number, email, address, and website.'**
   String get faqVetA1;
 
   /// No description provided for @faqVetQ2.
@@ -9022,7 +9022,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA3.
   ///
   /// In en, this message translates to:
-  /// **'Yes. Swipe left on a shared pet\'s card to hide it. Hidden pets will not appear in your pet list, health dashboard, or generate notifications. You can unhide them from the organisation\'s detail page under \"Hidden Shared Pets\".'**
+  /// **'Yes. From the pet\'s Sharing section, choose Hide from my pets. Hidden pets no longer appear in your pet list or care reminders. Ask the owner for a new share link if you want to follow the pet again.'**
   String get faqSharingA3;
 
   /// No description provided for @faqSharingQ4.
@@ -9034,7 +9034,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA4.
   ///
   /// In en, this message translates to:
-  /// **'Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.'**
+  /// **'Sharing gives someone view access while you keep full control. Transfer ownership moves a pet you own to another person\'s account; you may keep shared access unless they remove you.'**
   String get faqSharingA4;
 
   /// No description provided for @faqOrgTitle.
@@ -9184,7 +9184,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqNotificationsA2.
   ///
   /// In en, this message translates to:
-  /// **'Go to the Notifications screen (bell icon in the top bar) and tap the settings icon. From there you can customise which types of notifications you receive.'**
+  /// **'Open the full Notifications screen (when your layout shows a notifications icon in the app bar, tap it) and use the settings icon in the top bar. You can also open Notification settings from the For you tab when suggestions are turned off.'**
   String get faqNotificationsA2;
 
   /// No description provided for @faqNotificationsQ3.
@@ -9226,7 +9226,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqReportsA1.
   ///
   /// In en, this message translates to:
-  /// **'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, health issues, family events, notifications, and sharing details. The report is generated as a downloadable PDF.'**
+  /// **'Open a pet\'s profile, open the menu (⋯), and choose Download pet report. Pick the sections you want — profile, weight, care history, health issues, notifications, and sharing. The app generates a PDF you can save.'**
   String get faqReportsA1;
 
   /// No description provided for @faqReportsQ2.
@@ -9238,7 +9238,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqReportsA2.
   ///
   /// In en, this message translates to:
-  /// **'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for organisation pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.'**
+  /// **'Reports can include pet profile details (name, breed, age, ID), a weight chart and history table, care entries by type, recorded health issues, recent notifications and alerts, and sharing access details. You choose which sections to include before generating.'**
   String get faqReportsA2;
 
   /// No description provided for @faqSubscriptionTitle.
@@ -11742,6 +11742,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Action needed'**
   String get notificationActionNeeded;
+
+  /// No description provided for @pendingActionsUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No actions here'**
+  String get pendingActionsUnavailableTitle;
+
+  /// No description provided for @pendingActionsUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster, adoption and custody approvals are no longer handled on this page. Open your inbox for people updates and Agatha suggestions.'**
+  String get pendingActionsUnavailableBody;
+
+  /// No description provided for @pendingActionsOpenInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Open inbox'**
+  String get pendingActionsOpenInbox;
 
   /// No description provided for @notificationRead.
   ///

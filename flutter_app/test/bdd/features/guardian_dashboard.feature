@@ -68,29 +68,11 @@ Feature: Pet Care dashboard
 
   @implemented
   @P1
-  @frozen
-  Scenario: Pending foster placement surfaces as a notification, not a dashboard banner
-    Given an organisation has sent me a pending foster placement
-    When I view the Pet Care dashboard
-    Then I should not see a pending-placement banner on the dashboard
-    And I should see an unresolved administrative notification in the bell panel
-
-  @implemented
-  @P1
   Scenario: Global events screen shows unified list without tabs
     Given I am signed in as a guardian with pets, due health entries, and vets
     When I open the global events screen
     Then I should see an "Events" list without type tabs
     And I should see an "Add an event" action
-
-  @implemented
-  @P1
-  @frozen
-  Scenario: Global events screen supports pet and cohort filters
-    Given I am signed in as a guardian with owned and foster pets and health entries
-    When I open the global events screen
-    Then I should see cohort filters for my pets and foster pets
-    And I should be able to filter events by pet
 
   @implemented
   @P1
@@ -112,15 +94,6 @@ Feature: Pet Care dashboard
     Given I am signed in as a guardian with pets
     When I use the leading navigation at wide width
     Then I should reach the Today, Pets, Care, and Account destinations via the navigation sidebar
-
-  @implemented
-  @P1
-  @frozen
-  Scenario: Workspace toggle switches between Pet Care and Shelter when available
-    Given I am signed in as a guardian with shelter access
-    When I view the Pet Care dashboard
-    Then I should see the workspace toggle
-    And I should be able to switch to Shelter and back to Pet Care
 
   @implemented
   @P1

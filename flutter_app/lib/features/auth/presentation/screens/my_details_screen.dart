@@ -114,7 +114,7 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
           _passwordSuccess = true;
         });
         await Future.delayed(const Duration(seconds: 2));
-        if (mounted) context.go('/login');
+        if (mounted) context.go('/landing');
       }
     } catch (e) {
       if (mounted) {
@@ -167,7 +167,6 @@ class _MyDetailsScreenState extends ConsumerState<MyDetailsScreen> {
                   currentTimezone:
                       ref.watch(authProvider).user?.timezone ?? 'UTC',
                   onSubscription: () => context.push('/subscription'),
-                  onOrganizations: () => context.push('/organizations'),
                   onLocaleChanged: (value) {
                     ref.read(localeProvider.notifier).setLocale(Locale(value));
                     ref
