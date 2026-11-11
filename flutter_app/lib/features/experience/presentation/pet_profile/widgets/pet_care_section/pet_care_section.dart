@@ -83,9 +83,10 @@ class _PetCareSectionState extends ConsumerState<PetCareSection> {
               titleMaxLines: 2,
             ),
             const SizedBox(height: 10),
-            CareAgendaCollection(
+            CareListSurfaceCollection(
               entries: entries,
               source: CareCommandSource.agenda,
+              layout: CareListSurfaceLayout.petProfileCappedUpcoming,
               empty: PetCareIllustratedEmptyState(
                 key: const Key('pet_care_section_empty'),
                 title: l.petCareEmptyCareClearTitle,

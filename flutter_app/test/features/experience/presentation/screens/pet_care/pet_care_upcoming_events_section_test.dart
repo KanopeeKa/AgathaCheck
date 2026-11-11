@@ -79,7 +79,7 @@ Widget _wrap(
 }
 
 void main() {
-  testWidgets('shows the orientation line and rows for every pet', (
+  testWidgets('shows Today care_list cards for every pet, not Upcoming', (
     tester,
   ) async {
     final notifier = _Notifier(
@@ -92,17 +92,19 @@ void main() {
     await tester.pumpWidget(_wrap(notifier));
     await tester.pumpAndSettle();
 
-    expect(find.text('1 overdue · 1 due today'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('care_list_today'), findsOneWidget);
+    expect(find.bySemanticsIdentifier('care_list_upcoming'), findsNothing);
     expect(find.text('Flea'), findsOneWidget);
     expect(find.text('Brush'), findsOneWidget);
     expect(find.textContaining('Misty'), findsWidgets);
+    expect(find.text('Groom'), findsNothing);
     expect(
       find.byKey(const Key('pet_care_dashboard_care_view_all')),
       findsOneWidget,
     );
   });
 
-  testWidgets('nothing today: one reassuring line, then later care', (
+  testWidgets('nothing today: reassuring line only on dashboard', (
     tester,
   ) async {
     final notifier = _Notifier(
@@ -110,8 +112,8 @@ void main() {
     );
     await tester.pumpWidget(_wrap(notifier));
     await tester.pumpAndSettle();
-    expect(find.text('Nothing due today'), findsWidgets);
-    expect(find.text('Groom'), findsOneWidget);
+    expect(find.byKey(const Key('care_list_nothing_today')), findsOneWidget);
+    expect(find.text('Groom'), findsNothing);
   });
 
   testWidgets('no care at all: the illustrated empty state with Add', (

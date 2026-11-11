@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import 'package:pet_profile_app/features/notifications/notifications.dart';
 import 'package:pet_profile_app/features/pet_profile/pet_profile.dart';
+import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 
 import 'pet_care_due_events_screen.dart';
 
@@ -42,6 +42,5 @@ final careActionsAttentionCountProvider = Provider<int>((ref) {
     filters,
     historiesAsync.valueOrNull ?? {},
   );
-  final agenda = buildCareAgenda<HealthEntry>(visible, (e) => e.schedule);
-  return agenda.overdueCount + agenda.dueTodayCount;
+  return countCareListAttentionToday(visible, (e) => e.schedule);
 });
