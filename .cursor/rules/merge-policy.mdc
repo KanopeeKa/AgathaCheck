@@ -14,7 +14,7 @@ alwaysApply: true
 ## Before every push
 
 1. On a dev or agent branch, `git fetch` its parent and rebase onto it (`origin/main`, or the integration branch).
-2. On an integration branch (`cursor/*-integration-*`): do not rebase (`non_fast_forward`) and do not merge `main` in because the branch is behind. The release PR merges that branch into `main`. Squash-merge it when GitHub reports `MERGEABLE`, including when the state is `BEHIND`. Merge `main` into the integration branch only when that release is conflicted. `main`'s ruleset does not require the head to be up to date.
+2. On an integration branch (`cursor/*-integration-*`): do not rebase (`non_fast_forward`) and do not merge `main` in because the branch is behind. The release PR merges that branch into `main`. Squash-merge it when GitHub reports `MERGEABLE`, including when the state is `BEHIND`. Merge `main` into the integration branch only when that release is conflicted. Ruleset 18979034 must keep `strict_required_status_checks_policy` false so GitHub accepts that merge. A clean behind merge that GitHub rejects is that flag, not a conflict — do not open a sync PR.
 3. `./scripts/pre-push-changed.sh` during work; `./scripts/pre-push.sh` before the release PR
 
 `/execute-plan` still opens its own sync PR when the driver sees the integration branch behind `main` before release. Light-plan and babysit follow this section.

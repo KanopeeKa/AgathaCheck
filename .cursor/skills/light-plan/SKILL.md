@@ -72,7 +72,7 @@ Re-read this section before opening that PR, and again before any user-facing me
 |-----------|--------|
 | Required checks pending or running (Playwright, `ci-gate`, any other required check) | `gh pr checks <url> --watch` until every required check has finished. A fixed `sleep` or a one-shot `gh pr checks` does not finish the wait. |
 | A check failed | Fix inside `/babysit-uat`. Retry budget exhausted → §Stop and ask. |
-| `mergeable` is `MERGEABLE`, including `mergeStateStatus` `BEHIND`; checks green; review gate exit `0` | Squash-merge. Do not update integration from `main`. |
+| `mergeable` is `MERGEABLE`, including `mergeStateStatus` `BEHIND`; checks green; review gate exit `0` | Squash-merge. Do not update integration from `main`. If GitHub rejects the merge because the head is out of date, stop: ruleset 18979034 still has strict status checks. Do not open a sync PR. |
 | `mergeable` is `CONFLICTING`, or preflight exit `4` | One PR that merges `main` into integration and resolves the conflict. Light-merge it, then watch the release again. |
 | Release head moved because that conflict PR merged | Watch CI on the new head. |
 | Merged, Pre-UAT not yet green | `./scripts/babysit_uat_watch_preuat.sh <merge_sha> --json --timeout-min 90`. Failure → Phase 3–4, then watch again. |

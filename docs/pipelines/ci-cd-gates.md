@@ -173,7 +173,7 @@ by running `flutter test` under `test/features/<domain>/`.
 #### Accepted trade-off: no CI re-run on merge to `main`
 
 Auto-promotion (`promote-uat.yml`) does **not** re-run CI on the merge commit.
-See [promotion-contract.md](./promotion-contract.md). PR gates are the pre-merge trust boundary. The combined tree is checked by Pre-UAT on the merge SHA. The `main` ruleset does not require the head to be up to date.
+See [promotion-contract.md](./promotion-contract.md). PR gates are the pre-merge trust boundary. The combined tree is checked by Pre-UAT on the merge SHA. Ruleset 18979034 must leave "require branches to be up to date" off.
 
 #### Atomic branch-protection migration (`ci-gate`)
 

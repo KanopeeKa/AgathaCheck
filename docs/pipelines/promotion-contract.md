@@ -83,7 +83,7 @@ We rely on:
 - `ci-gate / CI passed` + `Analyze JavaScript` on the PR
 - Pre-UAT E2E on the merge SHA
 
-A PR may squash-merge while behind `main` when GitHub reports the merge clean (`MERGEABLE`). The `main` ruleset keeps `strict_required_status_checks_policy` **false**, so a clean release is not blocked for being behind. A conflict is resolved on that release before merge. A clean textual merge can still disagree semantically with commits that landed during CI; Pre-UAT on the merge SHA is that check.
+A PR may squash-merge while behind `main` when GitHub reports the merge clean (`MERGEABLE`). Ruleset 18979034 (`Main protection`) keeps `strict_required_status_checks_policy` **false**, so a clean release is not blocked for being behind. A conflict is resolved on that release before merge. If GitHub rejects a clean behind merge as out of date, that flag has been turned back on — do not catch the branch up to `main` to get past it. A clean textual merge can still disagree semantically with commits that landed during CI; Pre-UAT on the merge SHA is that check.
 
 Squash/rebase merge SHAs may differ from the last PR head SHA. Residual risk is
 **accepted** in exchange for fast auto-promotion. See [ci-cd-gates.md](./ci-cd-gates.md).
