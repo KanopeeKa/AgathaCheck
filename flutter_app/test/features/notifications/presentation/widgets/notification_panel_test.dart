@@ -5,6 +5,7 @@ import 'package:pet_profile_app/core/theme/app_theme.dart';
 import 'package:pet_profile_app/features/auth/presentation/providers/auth_providers.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/app_notification.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_kind.dart';
+import 'package:pet_profile_app/features/notifications/domain/services/notification_inbox_v2_rules.dart';
 import 'package:pet_profile_app/features/notifications/domain/entities/notification_preferences.dart';
 import 'package:pet_profile_app/features/notifications/presentation/providers/notification_providers.dart';
 import 'package:pet_profile_app/features/notifications/presentation/widgets/notification_panel.dart';
@@ -113,4 +114,58 @@ void main() {
       lessThan(tester.getTopLeft(find.text('Standard organisation update')).dy),
     );
   });
+
+  testWidgets('mark all read shows failure snackbar when repository fails', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+          notificationsProvider.overrideWith(
+            () => _MarkAllReadFailingNotificationsNotifier([
+              _notification(
+                id: 'unread',
+                title: 'Unread update',
+                kind: NotificationKind.relationship,
+              ),
+            ]),
+          ),
+          notificationPreferencesProvider.overrideWith(
+            () => TestNotificationPreferencesNotifier(
+              NotificationPreferences(v2ExplainerDismissedAt: _dismissedExplainer),
+            ),
+          ),
+          petListProvider.overrideWith(() => TestPetListNotifier()),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const Scaffold(body: NotificationPanel()),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    final l = AppLocalizations.of(tester.element(find.byType(NotificationPanel)))!;
+
+    await tester.tap(find.text(l.markAllRead));
+    await tester.pump();
+    await tester.pumpAndSettle();
+
+    expect(find.text(l.notificationsMarkReadFailed), findsOneWidget);
+    expect(find.text(l.notificationsMarkedRead), findsNothing);
+  });
+}
+
+class _MarkAllReadFailingNotificationsNotifier extends TestNotificationsNotifier {
+  _MarkAllReadFailingNotificationsNotifier(super.notifications);
+
+  @override
+  Future<void> markAllAsRead({
+    NotificationInboxTab scope = NotificationInboxTab.activity,
+  }) async {
+    throw Exception('mark all read failed');
+  }
 }
