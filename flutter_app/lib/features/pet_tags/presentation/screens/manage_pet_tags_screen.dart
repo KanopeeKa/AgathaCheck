@@ -62,9 +62,14 @@ class ManagePetTagsScreen extends ConsumerWidget {
                           if (tag.petIds.isNotEmpty)
                             Padding(
                               padding: const EdgeInsets.only(right: 8),
-                              child: Chip(
-                                label: Text('${tag.petIds.length}'),
-                                visualDensity: VisualDensity.compact,
+                              child: Semantics(
+                                label: l.petTagUsageCount(tag.petIds.length),
+                                child: Chip(
+                                  label: Text(
+                                    l.petTagUsageCount(tag.petIds.length),
+                                  ),
+                                  visualDensity: VisualDensity.compact,
+                                ),
                               ),
                             ),
                           PopupMenuButton<String>(
@@ -115,7 +120,7 @@ class ManagePetTagsScreen extends ConsumerWidget {
   Future<void> _createTag(BuildContext context, WidgetRef ref) async {
     final l = AppLocalizations.of(context)!;
     final name = await _promptForName(context, l.petTagsAdd, '');
-    if (name == null || name.trim().isEmpty) return;
+    if (name == null) return;
     try {
       await ref.read(petTagListProvider.notifier).createTag(name);
     } catch (e) {
@@ -135,7 +140,7 @@ class ManagePetTagsScreen extends ConsumerWidget {
   ) async {
     final l = AppLocalizations.of(context)!;
     final name = await _promptForName(context, l.petTagsRename, currentName);
-    if (name == null || name.trim().isEmpty) return;
+    if (name == null) return;
     try {
       await ref.read(petTagListProvider.notifier).renameTag(tagId, name);
     } catch (e) {
@@ -189,27 +194,49 @@ class ManagePetTagsScreen extends ConsumerWidget {
   ) async {
     final l = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: initialValue);
-    return showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: TextField(
-          controller: controller,
-          autofocus: true,
-          decoration: InputDecoration(labelText: l.petTagsNameHint),
-          onSubmitted: (value) => Navigator.of(context).pop(value),
+    final formKey = GlobalKey<FormState>();
+    try {
+      return await showDialog<String>(
+        context: context,
+        builder: (dialogContext) => AlertDialog(
+          title: Text(title),
+          content: Form(
+            key: formKey,
+            child: TextFormField(
+              controller: controller,
+              autofocus: true,
+              decoration: InputDecoration(labelText: l.petTagsNameHint),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l.petTagNameRequired;
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) {
+                if (formKey.currentState!.validate()) {
+                  Navigator.of(dialogContext).pop(controller.text.trim());
+                }
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l.cancel),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  Navigator.of(dialogContext).pop(controller.text.trim());
+                }
+              },
+              child: Text(l.save),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l.cancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
-            child: Text(l.save),
-          ),
-        ],
-      ),
-    );
+      );
+    } finally {
+      controller.dispose();
+    }
   }
 }
