@@ -490,6 +490,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get allCareClosedCareEmpty => 'Aucun soin fermé pour le moment.';
 
   @override
+  String get globalEventsPausedCareSection => 'Soins en pause';
+
+  @override
+  String get globalEventsClosedCareSection => 'Soins fermés';
+
+  @override
+  String globalEventsLifecycleSection(String title, int count) {
+    return '$title ($count)';
+  }
+
+  @override
+  String globalEventsShowSection(String title) {
+    return 'Afficher $title';
+  }
+
+  @override
+  String globalEventsHideSection(String title) {
+    return 'Masquer $title';
+  }
+
+  @override
   String get careItemClosedByYou => 'Fermé par vous';
 
   @override
@@ -2381,6 +2402,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notificationsMarkedRead => 'Tout est marqué comme lu';
+
+  @override
+  String get notificationsMarkReadFailed =>
+      'Impossible de marquer les notifications comme lues. Réessayez.';
 
   @override
   String get notificationOpenInbox => 'Ouvrir la boîte complète';

@@ -8,13 +8,9 @@ import 'package:pet_profile_app/features/experience/presentation/pet_profile/scr
 import 'package:pet_profile_app/features/experience/presentation/pet_profile/screens/widgets/pet_care_global_events_filters.dart';
 
 void main() {
-  test('default global filters are due and overdue only', () {
-    expect(const PetCareGlobalEventsFilters().eventFilters.statuses, {
-      ManageEventsStatusFilter.dueOverdue,
-    });
-    expect(const OrgGlobalEventsFilters().eventFilters.statuses, {
-      ManageEventsStatusFilter.dueOverdue,
-    });
+  test('default global filters include all statuses', () {
+    expect(const PetCareGlobalEventsFilters().eventFilters.statuses, isEmpty);
+    expect(const OrgGlobalEventsFilters().eventFilters.statuses, isEmpty);
   });
 
   test('selection round-trip preserves guardian global filters', () {

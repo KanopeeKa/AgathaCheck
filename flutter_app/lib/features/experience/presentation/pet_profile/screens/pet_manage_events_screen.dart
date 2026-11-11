@@ -11,7 +11,8 @@ import 'package:pet_profile_app/core/router/experience_shell_scaffold.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
 import '../widgets/all_care/all_care_list.dart';
 
-/// Pet-scoped All care destination — unified temporal list of care items.
+/// Legacy pet-scoped All care list — production routes redirect to `/pc/events`.
+@Deprecated('Use /pc/events?pet= via redirectPetScopedAllCareList')
 class PetManageEventsScreen extends ConsumerWidget {
   const PetManageEventsScreen({super.key, required this.petId});
 

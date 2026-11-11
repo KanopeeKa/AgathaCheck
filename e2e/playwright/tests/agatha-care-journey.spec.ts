@@ -6,7 +6,6 @@
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import { createPet } from '../support/api';
 import { CareAgendaPage } from '../pages/care-agenda.page';
-import { GuardianDashboardPage } from '../pages/guardian-dashboard.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { createCareItem, withCareClock } from '../support/care-api';
 import {
@@ -14,7 +13,11 @@ import {
   saveMicrochipOnProfile,
   seedMicrochipWelfarePending,
 } from '../pages/agatha-care-journey.seed';
-import { enableFlutterAccessibility } from '../support/flutter';
+import {
+  enableFlutterAccessibility,
+  flutterGotoUrl,
+  waitForFlutterRoutePattern,
+} from '../support/flutter';
 
 test.describe('Agatha care journey', () => {
   test('@smoke-uat @P1 ACJ-FB-01 — chip save clears welfare suggestion', async ({
@@ -88,9 +91,11 @@ test.describe('Agatha care journey', () => {
         dueDate: dueSoonDay,
       });
       await loginAs(page, testUser, { experience: 'guardian' });
-      const dashboard = new GuardianDashboardPage(page);
-      await dashboard.open();
+      await page.goto(flutterGotoUrl('/pc/events'));
+      await enableFlutterAccessibility(page);
+      await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 60_000);
       const agenda = new CareAgendaPage(page);
+      await agenda.showUpcomingCare();
       await agenda.expectRowVisible('Groom A');
       await agenda.expectSameDayDateHeader(dueSoonDay);
     } finally {
@@ -122,9 +127,11 @@ test.describe('Agatha care journey', () => {
         dueDate: dueSoonDay,
       });
       await loginAs(page, testUser, { experience: 'guardian' });
-      const dashboard = new GuardianDashboardPage(page);
-      await dashboard.open();
+      await page.goto(flutterGotoUrl('/pc/events'));
+      await enableFlutterAccessibility(page);
+      await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 60_000);
       const agenda = new CareAgendaPage(page);
+      await agenda.showUpcomingCare();
       await agenda.expectRowVisible('Bella groom');
       await agenda.expectRowVisible('Max groom');
       await agenda.expectCoordinationLinks([petA.id, petB.id], dueSoonDay);

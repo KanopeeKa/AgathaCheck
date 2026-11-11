@@ -12,6 +12,7 @@ import '../../domain/services/notification_inbox_v2_rules.dart';
 import '../../domain/services/notification_scope_rules.dart';
 import '../providers/notification_inbox_session.dart';
 import '../providers/notification_providers.dart';
+import '../utils/mark_all_read_action.dart';
 import '../utils/mark_all_read_eligibility.dart';
 import '../utils/notification_navigation.dart';
 import '../widgets/notification_inbox_list.dart';
@@ -96,16 +97,7 @@ class _NotificationsScreenState extends ConsumerState<NotificationsScreen> {
             icon: const Icon(Icons.done_all, size: 18),
             label: Text(l.markAllRead),
             onPressed: markAllEligible
-                ? () async {
-                    await ref
-                        .read(notificationsProvider.notifier)
-                        .markAllAsRead(scope: selectedTab);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l.notificationsMarkedRead)),
-                      );
-                    }
-                  }
+                ? () => performMarkAllRead(context, ref, scope: selectedTab)
                 : null,
           ),
         ],

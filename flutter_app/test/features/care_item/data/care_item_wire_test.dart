@@ -68,6 +68,31 @@ void main() {
     expect(s.openOccurrences.last.origin, CareOccurrenceOrigin.computed);
   });
 
+  test('parses completions_today for quiet Today lines', () {
+    final json = careItemJson()
+      ..['completions_today'] = [
+        {
+          'occurrence_id': 'done-am',
+          'scheduled_date': '2026-06-10',
+          'scheduled_time': '08:00',
+          'completed_on': '2026-06-10',
+          'time': '08:12',
+        },
+        {
+          'occurrence_id': 'done-pm',
+          'scheduled_date': '2026-06-10',
+          'scheduled_time': '18:00:00',
+          'completed_on': '2026-06-10',
+          'time': '18:05',
+        },
+      ];
+    final s = careItemScheduleFromJson(json);
+    expect(s.completionsToday, hasLength(2));
+    expect(s.completionsToday.first.occurrenceId, 'done-am');
+    expect(s.completionsToday.first.time, '08:12');
+    expect(s.completionsToday.last.scheduledTime, '18:00');
+  });
+
   test('a read without as_of is rejected', () {
     final json = careItemJson()..remove('as_of');
     expect(() => careItemScheduleFromJson(json), throwsA(isA<TypeError>()));

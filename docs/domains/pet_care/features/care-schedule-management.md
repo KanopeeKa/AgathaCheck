@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_schedule_management
 status: active
-last_updated: 2026-11-04
+last_updated: 2026-11-10
 related_prs: []
 ---
 
@@ -60,6 +60,7 @@ User-facing words: `docs/design/terminology.md` and care-item spec — **occurre
 | CARE-SCHEDULE-MANAGEMENT-R-010 | One item row lock per command; 409 `occurrence_not_open` when stale (D-CSM-033) | Live |
 | CARE-SCHEDULE-MANAGEMENT-R-011 | Server supplies `as_of` and per-occurrence status; Flutter uses `HealthEntry.schedule` / `CareItemSchedule` for agenda grouping in production (not device `nextDueDate` alone) | Live |
 | CARE-SCHEDULE-MANAGEMENT-R-012 | Agenda placement: Today (Overdue first), Due soon (7d), Upcoming — server-backed grouping (D-CIE-025; timing rules here) | Live |
+| CARE-SCHEDULE-MANAGEMENT-R-013 | List and detail reads include `completions_today[]`: every completed occurrence whose `completed_on` equals `as_of.date` in the pet's home timezone (earliest slot first); additive wire field for multi-line Today cards on All care | In delivery |
 
 ## Occurrence existence and status
 

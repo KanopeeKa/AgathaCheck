@@ -95,6 +95,31 @@ void handleShellBack(
   context.go(fallback);
 }
 
+/// Query parameter for multi-select pet chips on global All care (`/pc/events`).
+const globalAllCarePetQueryParam = 'pet';
+
+/// Builds `/pc/events` with optional `?pet=` and encoded `returnTo`.
+String globalAllCareLocation({
+  Iterable<String> petIds = const [],
+  String? returnTo,
+  Map<String, String> baseQuery = const {},
+}) {
+  final params = Map<String, String>.from(baseQuery);
+  params.remove(globalAllCarePetQueryParam);
+  final sorted = petIds.toSet().toList()..sort();
+  if (sorted.isNotEmpty) {
+    params[globalAllCarePetQueryParam] = sorted.join(',');
+  }
+  final safeReturnTo = parseShellReturnTo(returnTo);
+  if (safeReturnTo != null) {
+    params['returnTo'] = safeReturnTo;
+  }
+  return Uri(
+    path: '/pc/events',
+    queryParameters: params.isEmpty ? null : params,
+  ).toString();
+}
+
 /// Builds `/pet/:id` with optional encoded `returnTo`.
 String petDetailLocation(String petId, {String? returnTo}) {
   if (returnTo == null || returnTo.isEmpty) {

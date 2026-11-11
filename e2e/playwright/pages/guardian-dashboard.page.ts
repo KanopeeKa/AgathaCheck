@@ -95,18 +95,22 @@ export class GuardianDashboardPage {
   }
 
   async openEvents(): Promise<void> {
-    const actionsBottomNav = this.page
+    const careBottomNav = this.page
       .getByRole('button', {
-        name: /^Actions(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
+        name: /^(?:Actions|Care)(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
       })
-      .or(this.page.getByRole('tab', { name: /^Actions$|^Soins$/i }))
+      .or(this.page.getByRole('tab', { name: /^(?:Actions|Care)$|^Soins$/i }))
       .first();
-    if (await actionsBottomNav.isVisible().catch(() => false)) {
-      await actionsBottomNav.click();
+    if (await careBottomNav.isVisible().catch(() => false)) {
+      await careBottomNav.click();
     } else {
       await this.careRegion()
-        .getByRole('button', { name: /All Actions|Tous les soins|View all|Voir tout/i })
-        .or(this.careRegion().getByText(/All Actions|Tous les soins|View all|Voir tout/i))
+        .getByRole('button', {
+          name: /All Actions|All care|Tous les soins|View all|Voir tout/i,
+        })
+        .or(
+          this.careRegion().getByText(/All Actions|All care|Tous les soins|View all|Voir tout/i),
+        )
         .first()
         .click();
     }

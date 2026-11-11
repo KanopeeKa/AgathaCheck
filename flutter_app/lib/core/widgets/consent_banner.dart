@@ -35,8 +35,29 @@ class _ConsentBannerState extends ConsumerState<ConsentBanner> {
       saveFailed: _saveFailed,
       onManagePreferences: () => _showPreferences(context),
       onRejectOptional: _rejectOptional,
-      onAcceptAll: () => ref.read(consentServiceProvider.notifier).acceptAll(),
+      onAcceptAll: _acceptAll,
     );
+  }
+
+  Future<void> _acceptAll() async {
+    if (_saving) return;
+    setState(() {
+      _saving = true;
+      _saveFailed = false;
+    });
+    final ok = await ref.read(consentServiceProvider.notifier).acceptAll();
+    if (!mounted) return;
+    if (ok) {
+      setState(() {
+        _saving = false;
+        _saveFailed = false;
+      });
+      return;
+    }
+    setState(() {
+      _saving = false;
+      _saveFailed = true;
+    });
   }
 
   Future<void> _rejectOptional() async {
