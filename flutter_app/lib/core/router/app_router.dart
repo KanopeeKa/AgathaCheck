@@ -244,10 +244,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/pet/:petId/events',
         name: 'petManageEvents',
-        builder: (context, state) {
-          final petId = state.pathParameters['petId']!;
-          return PetManageEventsScreen(petId: petId);
-        },
+        redirect: (context, state) => redirectPetScopedAllCareList(state),
       ),
       GoRoute(
         path: '/pet/:petId/events/:entryId/edit',

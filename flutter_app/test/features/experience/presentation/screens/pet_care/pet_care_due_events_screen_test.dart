@@ -12,26 +12,18 @@ const _ownedPet = testOwnedPet;
 const _fosterPet = testFosterPet;
 final _shellPets = testAllShellPets;
 
-final _ownedEntry = HealthEntry(
+final _ownedEntry = scheduledEntry(
   id: 'entry-owned',
   petId: 'pet-owned',
   name: 'Heartgard',
-  type: HealthEntryType.medication,
-  dosage: '1 tablet',
-  frequency: HealthFrequency.monthly,
-  startDate: DateTime(2025, 1, 1),
-  nextDueDate: DateTime.now().add(const Duration(days: 3)),
+  dueInDays: 30,
 );
 
-final _fosterEntry = HealthEntry(
+final _fosterEntry = scheduledEntry(
   id: 'entry-foster',
   petId: 'pet-foster',
   name: 'Flea treatment',
-  type: HealthEntryType.preventive,
-  dosage: '',
-  frequency: HealthFrequency.monthly,
-  startDate: DateTime(2025, 1, 1),
-  nextDueDate: DateTime.now().subtract(const Duration(days: 2)),
+  dueInDays: -2,
 );
 
 void main() {
@@ -93,8 +85,7 @@ void main() {
         const {},
       );
 
-      // Default status filter is due/overdue — only the overdue foster entry.
-      expect(visible.map((entry) => entry.id), ['entry-foster']);
+      expect(visible.map((entry) => entry.id), ['entry-foster', 'entry-owned']);
     });
 
     test('all status filter includes non-due open entries', () {
@@ -116,11 +107,11 @@ void main() {
   // Screen-level widget tests (default ~800px → desktop layout)
   // ---------------------------------------------------------------------------
 
-  testWidgets('shows unified All Actions list without tabs', (tester) async {
+  testWidgets('shows unified All care list without tabs', (tester) async {
     await tester.pumpWidget(buildEventsScreen());
     await tester.pumpAndSettle();
 
-    expect(find.text('All Actions'), findsNWidgets(2));
+    expect(find.text('All care'), findsNWidgets(2));
     expect(find.byType(TabBar), findsNothing);
     expect(find.text('Flea treatment'), findsOneWidget);
     expect(find.text('Heartgard'), findsNothing);
@@ -169,20 +160,19 @@ void main() {
   // Filter / cohort chip tests
   // ---------------------------------------------------------------------------
 
-  testWidgets('due/overdue filter hides non-due entries', (tester) async {
-    await tester.pumpWidget(buildEventsScreen());
+  testWidgets('agenda surfaces non-due open entries without status filter', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildEventsScreen(entries: [_fosterEntry, _ownedEntry]),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Flea treatment'), findsOneWidget);
-    expect(find.text('Heartgard'), findsNothing);
+    expect(find.byKey(const Key('care_list_upcoming')), findsOneWidget);
 
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'status',
-      choiceId: 'all',
-    );
-
-    expect(find.text('Flea treatment'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('care_list_upcoming')));
+    await tester.pumpAndSettle();
     expect(find.text('Heartgard'), findsOneWidget);
   });
 
@@ -190,7 +180,12 @@ void main() {
     await tester.pumpWidget(
       buildEventsScreen(
         entries: [
-          _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+          scheduledEntry(
+            id: _ownedEntry.id,
+            petId: _ownedEntry.petId,
+            name: _ownedEntry.name,
+            dueInDays: 0,
+          ),
           _fosterEntry,
         ],
       ),
@@ -227,7 +222,12 @@ void main() {
     await tester.pumpWidget(
       buildEventsScreen(
         entries: [
-          _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+          scheduledEntry(
+            id: _ownedEntry.id,
+            petId: _ownedEntry.petId,
+            name: _ownedEntry.name,
+            dueInDays: 0,
+          ),
           _fosterEntry,
           HealthEntry(
             id: 'entry-shared',
@@ -245,16 +245,10 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'pet',
-      choiceId: 'pet:pet-owned',
-    );
-    await tapCollectionFilterChoice(
-      tester,
-      dimensionId: 'pet',
-      choiceId: 'pet:pet-foster',
-    );
+    await tester.tap(find.byKey(const Key('global_events_pet_pet-owned')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('global_events_pet_pet-foster')));
+    await tester.pumpAndSettle();
 
     expect(find.text('Heartgard'), findsOneWidget);
     expect(find.text('Flea treatment'), findsOneWidget);
@@ -302,7 +296,12 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     final notifier = TestMutableEntriesNotifier([
-      _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+      scheduledEntry(
+        id: _ownedEntry.id,
+        petId: _ownedEntry.petId,
+        name: _ownedEntry.name,
+        dueInDays: 0,
+      ),
     ]);
     await tester.pumpWidget(
       buildListScreen(pets: const [_ownedPet], notifierFactory: () => notifier),
@@ -310,7 +309,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('global_events_row_entry-owned')),
+      find.byKey(const Key('pet_care_action_done_entry-owned')),
       findsOneWidget,
     );
 
@@ -320,7 +319,7 @@ void main() {
     expect(find.byIcon(Icons.error_outline), findsOneWidget);
     expect(find.byKey(const Key('global_events_retry')), findsOneWidget);
     expect(
-      find.byKey(const Key('global_events_row_entry-owned')),
+      find.byKey(const Key('pet_care_action_done_entry-owned')),
       findsNothing,
     );
     expect(find.text('No entries yet'), findsNothing);
@@ -345,11 +344,92 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_agenda')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_action_planned')), findsOneWidget);
+    expect(find.byKey(const Key('care_list')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_care_action_done_planned')),
+      findsOneWidget,
+    );
   });
 
-  testWidgets('legacy rows render at all viewport widths', (tester) async {
+  testWidgets('?pet= deep link preselects pet filter chips', (tester) async {
+    await tester.pumpWidget(
+      buildEventsScreen(
+        initialLocation: '/pc/events?pet=pet-owned',
+        entries: [
+          scheduledEntry(
+            id: _ownedEntry.id,
+            petId: _ownedEntry.petId,
+            name: _ownedEntry.name,
+            dueInDays: 0,
+          ),
+          _fosterEntry,
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Heartgard'), findsOneWidget);
+    expect(find.text('Flea treatment'), findsNothing);
+
+    final fosterChip = find.byKey(const Key('global_events_pet_pet-foster'));
+    await tester.tap(fosterChip);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Flea treatment'), findsOneWidget);
+    expect(find.text('Heartgard'), findsOneWidget);
+  });
+
+  testWidgets('paused and closed care use collapsible sections', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      buildEventsScreen(
+        entries: [
+          scheduledEntry(
+            id: _ownedEntry.id,
+            petId: _ownedEntry.petId,
+            name: _ownedEntry.name,
+            dueInDays: 0,
+          ),
+          scheduledEntry(
+            id: 'paused-entry',
+            petId: 'pet-owned',
+            name: 'Paused care item',
+            dueInDays: 14,
+            entryStatus: 'paused',
+          ),
+          scheduledEntry(
+            id: 'closed-entry',
+            petId: 'pet-owned',
+            name: 'Closed care item',
+            dueInDays: 30,
+            frequency: HealthFrequency.once,
+            entryStatus: 'closed',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      find.byKey(const Key('global_events_paused_section')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('global_events_closed_section')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('global_events_row_paused-entry')),
+      findsNothing,
+    );
+    expect(
+      find.byKey(const Key('global_events_row_closed-entry')),
+      findsNothing,
+    );
+  });
+
+  testWidgets('lifecycle rows render at all viewport widths', (tester) async {
     await tester.binding.setSurfaceSize(const Size(800, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -357,7 +437,13 @@ void main() {
       buildListScreen(
         pets: const [_ownedPet],
         notifierFactory: () => TestFixedEntriesNotifier([
-          _ownedEntry.copyWith(nextDueDate: DateTime.now()),
+          scheduledEntry(
+            id: 'lifecycle-row',
+            petId: 'pet-owned',
+            name: 'Paused item',
+            dueInDays: 30,
+            entryStatus: 'paused',
+          ),
         ]),
       ),
     );
@@ -365,7 +451,7 @@ void main() {
 
     expect(find.byKey(const Key('global_events_list')), findsOneWidget);
     expect(
-      find.byKey(Key('global_events_row_${_ownedEntry.id}')),
+      find.bySemanticsIdentifier('global_events_paused_care'),
       findsOneWidget,
     );
   });

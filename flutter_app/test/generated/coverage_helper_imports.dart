@@ -15,6 +15,7 @@ import 'package:pet_profile_app/features/care_intelligence/domain/repositories/c
 import 'package:pet_profile_app/features/care_intelligence/domain/weight_provenance.dart';
 import 'package:pet_profile_app/features/care_item/domain/care_agenda.dart';
 import 'package:pet_profile_app/features/care_item/domain/care_item_schedule.dart';
+import 'package:pet_profile_app/features/care_item/domain/care_list_ordering.dart';
 import 'package:pet_profile_app/features/care_item/domain/care_occurrence.dart';
 import 'package:pet_profile_app/features/care_item/domain/completion_requirements.dart';
 import 'package:pet_profile_app/features/care_item/domain/done_decision.dart';

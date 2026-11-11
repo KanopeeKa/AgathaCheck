@@ -28,6 +28,7 @@ export {
 export { CareCommandError } from './careCommandError.js';
 export { executeCareCommand } from './commandRunner.js';
 export { syncOpenOccurrences } from './syncOpenOccurrences.js';
+export { listCompletionsTodayByEntry } from './completionsTodayQuery.js';
 export {
   listLastDoneByEntry,
   listOpenRows,
