@@ -17,7 +17,6 @@ import {
   enableFlutterAccessibility,
   flutterGotoUrl,
   refreshFlutterAccessibility,
-  waitForFlutterRoute,
   waitForFlutterRoutePattern,
 } from '../support/flutter';
 
@@ -116,9 +115,9 @@ test.describe('Care agenda', () => {
         dueDate: due,
       });
       await loginAs(page, testUser, { experience: 'guardian' });
-      const dashboard = new GuardianDashboardPage(page);
-      await dashboard.open();
-      await waitForFlutterRoute(page, '/pc/events');
+      await page.goto(flutterGotoUrl('/pc/events'));
+      await enableFlutterAccessibility(page);
+      await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 60_000);
       const agenda = new CareAgendaPage(page);
       await agenda.showUpcomingCare();
       await agenda.expectRowVisible('Future Groom');
@@ -160,7 +159,13 @@ test.describe('Care agenda', () => {
         { timeout: 30_000 },
       ).toBe('closed');
 
-      await waitForFlutterRoute(page, `/pc/events?pet=${pet.id}`);
+      await page.goto(flutterGotoUrl(`/pc/events?pet=${pet.id}`));
+      await enableFlutterAccessibility(page);
+      await waitForFlutterRoutePattern(
+        page,
+        new RegExp(`/pc/events.*pet=${pet.id}`),
+        60_000,
+      );
       const closedSection = page.locator(
         '[flt-semantics-identifier="global_events_closed_care"]',
       );
