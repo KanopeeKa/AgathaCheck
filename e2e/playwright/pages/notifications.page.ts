@@ -235,7 +235,16 @@ export class NotificationsPage {
   }
 
   async markAllRead(): Promise<void> {
-    await this.page.getByRole('button', { name: 'Mark all as read' }).click();
+    const markAll = this.page
+      .locator('[flt-semantics-identifier="notification_panel_mark_all_read"]')
+      .or(this.page.getByLabel(/Mark all as read|Tout marquer comme lu/i))
+      .or(
+        this.page.getByRole('button', {
+          name: /Mark all as read|Tout marquer comme lu/i,
+        }),
+      )
+      .first();
+    await markAll.click();
     await this.page.waitForTimeout(800);
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 /// Unlimited plan feature list on the paywall screen.
 class PaywallFeatureListCard extends StatelessWidget {
@@ -8,6 +9,7 @@ class PaywallFeatureListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Card(
       elevation: 0,
       color: theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
@@ -17,19 +19,31 @@ class PaywallFeatureListCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'AgathaTrack Unlimited',
+              l.subscriptionFeatureUnlimitedTitle,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.primary,
               ),
             ),
             const SizedBox(height: 12),
-            _featureRow(theme, Icons.pets, 'Unlimited pet profiles'),
-            _featureRow(theme, Icons.health_and_safety, 'Full health tracking'),
-            _featureRow(theme, Icons.share, 'Pet sharing with family'),
-            _featureRow(theme, Icons.picture_as_pdf, 'PDF report generation'),
-            _featureRow(theme, Icons.notifications_active, 'Health reminders'),
-            _featureRow(theme, Icons.support_agent, 'Priority support'),
+            _featureRow(theme, Icons.pets, l.subscriptionFeatureProfiles),
+            _featureRow(
+              theme,
+              Icons.health_and_safety,
+              l.subscriptionFeatureHealth,
+            ),
+            _featureRow(theme, Icons.share, l.subscriptionFeatureSharing),
+            _featureRow(theme, Icons.picture_as_pdf, l.subscriptionFeaturePdf),
+            _featureRow(
+              theme,
+              Icons.notifications_active,
+              l.subscriptionFeatureReminders,
+            ),
+            _featureRow(
+              theme,
+              Icons.support_agent,
+              l.subscriptionFeatureSupport,
+            ),
           ],
         ),
       ),

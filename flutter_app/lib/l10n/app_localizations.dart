@@ -3133,6 +3133,12 @@ abstract class AppLocalizations {
   /// **'Household name'**
   String get householdNameLabel;
 
+  /// No description provided for @householdNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a household name'**
+  String get householdNameRequired;
+
   /// No description provided for @householdOrganiserLabel.
   ///
   /// In en, this message translates to:
@@ -4183,6 +4189,18 @@ abstract class AppLocalizations {
   /// **'Mark all as read'**
   String get markAllRead;
 
+  /// No description provided for @notificationsMarkedRead.
+  ///
+  /// In en, this message translates to:
+  /// **'All marked as read'**
+  String get notificationsMarkedRead;
+
+  /// No description provided for @notificationOpenInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Open full inbox'**
+  String get notificationOpenInbox;
+
   /// No description provided for @notificationSettingsTooltip.
   ///
   /// In en, this message translates to:
@@ -4398,6 +4416,202 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subscription plans aren\'t available right now. Try again in a moment.'**
   String get subscriptionPlansUnavailable;
+
+  /// No description provided for @subscriptionStatusActiveSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Active subscription'**
+  String get subscriptionStatusActiveSemantic;
+
+  /// No description provided for @subscriptionStatusFreeSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan'**
+  String get subscriptionStatusFreeSemantic;
+
+  /// No description provided for @subscriptionProductNameUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'AgathaTrack Unlimited'**
+  String get subscriptionProductNameUnlimited;
+
+  /// No description provided for @subscriptionProductNameFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Plan'**
+  String get subscriptionProductNameFree;
+
+  /// No description provided for @subscriptionBodyUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'You have full access to all features.'**
+  String get subscriptionBodyUnlimited;
+
+  /// No description provided for @subscriptionBodyFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to unlock all features.'**
+  String get subscriptionBodyFree;
+
+  /// No description provided for @subscriptionRenewsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews on {date}'**
+  String subscriptionRenewsOn(String date);
+
+  /// No description provided for @subscriptionActiveUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until {date}'**
+  String subscriptionActiveUntil(String date);
+
+  /// No description provided for @subscriptionPeriodPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get subscriptionPeriodPerMonth;
+
+  /// No description provided for @subscriptionPeriodPerYear.
+  ///
+  /// In en, this message translates to:
+  /// **'per year'**
+  String get subscriptionPeriodPerYear;
+
+  /// No description provided for @subscriptionFallbackMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get subscriptionFallbackMonthly;
+
+  /// No description provided for @subscriptionFallbackYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get subscriptionFallbackYearly;
+
+  /// No description provided for @subscriptionBestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best Value'**
+  String get subscriptionBestValue;
+
+  /// No description provided for @subscriptionAutoRenewDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'This subscription renews automatically each billing period until you cancel.'**
+  String get subscriptionAutoRenewDisclosure;
+
+  /// No description provided for @subscriptionCancelDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel in your app store account before the next billing date to avoid being charged.'**
+  String get subscriptionCancelDisclosure;
+
+  /// No description provided for @subscriptionIntroDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String subscriptionIntroDays(int count);
+
+  /// No description provided for @subscriptionIntroWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week} other{{count} weeks}}'**
+  String subscriptionIntroWeeks(int count);
+
+  /// No description provided for @subscriptionIntroMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String subscriptionIntroMonths(int count);
+
+  /// No description provided for @subscriptionIntroYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year} other{{count} years}}'**
+  String subscriptionIntroYears(int count);
+
+  /// No description provided for @subscriptionTrialDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Introductory offer: {introPrice} for {introPeriod}, then {recurringPrice} per billing period.'**
+  String subscriptionTrialDisclosure(
+    String introPrice,
+    String introPeriod,
+    String recurringPrice,
+  );
+
+  /// No description provided for @subscriptionManagementUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription management isn\'t available on this device.'**
+  String get subscriptionManagementUnavailable;
+
+  /// No description provided for @subscriptionManagementOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open subscription management. Copy this link to open it in your browser:'**
+  String get subscriptionManagementOpenFailed;
+
+  /// No description provided for @externalLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open that link. Copy it to open in your browser:'**
+  String get externalLinkOpenFailed;
+
+  /// No description provided for @subscriptionPurchaseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase didn\'t complete. Try again, or restore an existing purchase.'**
+  String get subscriptionPurchaseFailed;
+
+  /// No description provided for @subscriptionRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t restore purchases. Try again in a moment.'**
+  String get subscriptionRestoreFailed;
+
+  /// No description provided for @subscriptionFeatureUnlimitedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AgathaTrack Unlimited'**
+  String get subscriptionFeatureUnlimitedTitle;
+
+  /// No description provided for @subscriptionFeatureProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited pet profiles'**
+  String get subscriptionFeatureProfiles;
+
+  /// No description provided for @subscriptionFeatureHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Full health tracking'**
+  String get subscriptionFeatureHealth;
+
+  /// No description provided for @subscriptionFeatureSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet sharing with family'**
+  String get subscriptionFeatureSharing;
+
+  /// No description provided for @subscriptionFeaturePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF report generation'**
+  String get subscriptionFeaturePdf;
+
+  /// No description provided for @subscriptionFeatureReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Health reminders'**
+  String get subscriptionFeatureReminders;
+
+  /// No description provided for @subscriptionFeatureSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority support'**
+  String get subscriptionFeatureSupport;
 
   /// No description provided for @petReport.
   ///
@@ -9123,6 +9337,18 @@ abstract class AppLocalizations {
   /// **'Manage Preferences'**
   String get consentManagePreferences;
 
+  /// No description provided for @consentRejectOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Optional'**
+  String get consentRejectOptional;
+
+  /// No description provided for @consentBannerSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your privacy choice'**
+  String get consentBannerSaving;
+
   /// No description provided for @consentSettings.
   ///
   /// In en, this message translates to:
@@ -9596,6 +9822,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your data has been exported'**
   String get dataExported;
+
+  /// No description provided for @dataExportUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This device cannot save an export file. Use the web app to download your data.'**
+  String get dataExportUnavailable;
+
+  /// No description provided for @dataExportCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Export cancelled. Your data was not saved.'**
+  String get dataExportCancelled;
+
+  /// No description provided for @dataExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export your data. Try again.'**
+  String get dataExportFailed;
 
   /// No description provided for @consentPreferences.
   ///
@@ -11226,7 +11470,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationInboxForYouEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No suggestions right now. Agatha will let you know when something\'s worth a look.'**
+  /// **'No suggestions right now.'**
   String get notificationInboxForYouEmpty;
 
   /// No description provided for @notificationInboxV2Explainer.
@@ -14086,6 +14330,18 @@ abstract class AppLocalizations {
   /// **'Tag name'**
   String get petTagsNameHint;
 
+  /// No description provided for @petTagNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a tag name'**
+  String get petTagNameRequired;
+
+  /// No description provided for @petTagUsageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Used by 1 pet} other{Used by {count} pets}}'**
+  String petTagUsageCount(int count);
+
   /// No description provided for @petTagsMyTags.
   ///
   /// In en, this message translates to:
@@ -15219,6 +15475,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save person'**
   String get peopleAddPersonSave;
+
+  /// No description provided for @peopleContactSavedInviteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact saved. The household invitation was not sent.'**
+  String get peopleContactSavedInviteFailed;
+
+  /// No description provided for @peopleRetryHouseholdInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry invitation'**
+  String get peopleRetryHouseholdInvite;
+
+  /// No description provided for @peopleOpenSavedContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Open contact'**
+  String get peopleOpenSavedContact;
 
   /// No description provided for @peopleAddRolesRequired.
   ///

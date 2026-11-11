@@ -5,7 +5,6 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 import '../services/consent_service.dart';
 import 'consent/consent_banner_surface.dart';
 import 'consent/consent_preferences_sheet.dart';
-import 'consent/consent_settings_screen.dart';
 
 export 'consent/consent_settings_screen.dart';
 
@@ -18,6 +17,9 @@ class ConsentBanner extends ConsumerStatefulWidget {
 }
 
 class _ConsentBannerState extends ConsumerState<ConsentBanner> {
+  bool _saving = false;
+  bool _saveFailed = false;
+
   @override
   Widget build(BuildContext context) {
     final consent = ref.watch(consentServiceProvider);
@@ -29,9 +31,35 @@ class _ConsentBannerState extends ConsumerState<ConsentBanner> {
     return ConsentBannerSurface(
       l10n: l10n,
       theme: theme,
+      saving: _saving,
+      saveFailed: _saveFailed,
       onManagePreferences: () => _showPreferences(context),
+      onRejectOptional: _rejectOptional,
       onAcceptAll: () => ref.read(consentServiceProvider.notifier).acceptAll(),
     );
+  }
+
+  Future<void> _rejectOptional() async {
+    if (_saving) return;
+    setState(() {
+      _saving = true;
+      _saveFailed = false;
+    });
+    final ok = await ref
+        .read(consentServiceProvider.notifier)
+        .savePreferences(analyticsConsent: false, marketingConsent: false);
+    if (!mounted) return;
+    if (ok) {
+      setState(() {
+        _saving = false;
+        _saveFailed = false;
+      });
+      return;
+    }
+    setState(() {
+      _saving = false;
+      _saveFailed = true;
+    });
   }
 
   void _showPreferences(BuildContext context) {

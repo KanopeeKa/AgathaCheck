@@ -28,7 +28,7 @@ class PersonAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final accent = personAccentColor(stableId, theme.colorScheme);
+    final monogram = personMonogramStyle(stableId, theme.colorScheme);
     final initials = personMonogramFromName(name);
     final resolvedPhoto = photoUrl?.trim() ?? '';
 
@@ -40,11 +40,11 @@ class PersonAvatar extends StatelessWidget {
           width: _diameter,
           height: _diameter,
           fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => _monogram(theme, accent, initials),
+          errorBuilder: (_, __, ___) => _monogram(theme, monogram, initials),
         ),
       );
     } else {
-      avatarChild = _monogram(theme, accent, initials);
+      avatarChild = _monogram(theme, monogram, initials);
     }
 
     return Semantics(
@@ -57,8 +57,10 @@ class PersonAvatar extends StatelessWidget {
             height: _diameter,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: accent.withValues(alpha: 0.14),
-              border: Border.all(color: accent.withValues(alpha: 0.35)),
+              color: monogram.accent.withValues(alpha: 0.14),
+              border: Border.all(
+                color: monogram.accent.withValues(alpha: 0.35),
+              ),
             ),
             alignment: Alignment.center,
             clipBehavior: Clip.antiAlias,
@@ -71,11 +73,15 @@ class PersonAvatar extends StatelessWidget {
     );
   }
 
-  Widget _monogram(ThemeData theme, Color accent, String initials) {
+  Widget _monogram(
+    ThemeData theme,
+    PersonMonogramStyle monogram,
+    String initials,
+  ) {
     return Text(
       initials,
       style: theme.textTheme.titleSmall?.copyWith(
-        color: accent,
+        color: monogram.foreground,
         fontWeight: FontWeight.w700,
         letterSpacing: 0.5,
         fontSize: size == PersonAvatarSize.header ? 22 : 14,

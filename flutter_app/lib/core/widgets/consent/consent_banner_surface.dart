@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
+import 'package:pet_profile_app/core/widgets/async_state/labelled_progress.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 /// Presentational first-use cookie consent banner surface.
@@ -9,13 +10,23 @@ class ConsentBannerSurface extends StatelessWidget {
     required this.l10n,
     required this.theme,
     required this.onManagePreferences,
+    required this.onRejectOptional,
     required this.onAcceptAll,
+    this.saving = false,
+    this.saveFailed = false,
+    this.savingLabel,
   });
 
   final AppLocalizations l10n;
   final ThemeData theme;
   final VoidCallback onManagePreferences;
+  final VoidCallback onRejectOptional;
   final VoidCallback onAcceptAll;
+  final bool saving;
+  final bool saveFailed;
+  final String? savingLabel;
+
+  static const double _compactBreakpoint = 400;
 
   @override
   Widget build(BuildContext context) {
@@ -69,57 +80,103 @@ class ConsentBannerSurface extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              LayoutBuilder(
-                builder: (context, constraints) {
-                  final actions = [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: onManagePreferences,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColorTokens.operationsOlive,
-                          side: const BorderSide(
-                            color: AppColorTokens.operationsOlive,
-                          ),
-                        ),
-                        child: Text(l10n.consentManagePreferences),
-                      ),
+              if (saveFailed) ...[
+                Semantics(
+                  liveRegion: true,
+                  child: Text(
+                    l10n.consentPreferencesSaveFailed,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.error,
                     ),
-                    Expanded(
-                      child: FilledButton(
-                        onPressed: onAcceptAll,
-                        style: FilledButton.styleFrom(
-                          backgroundColor: AppColorTokens.operationsOlive,
-                          foregroundColor: AppColorTokens.inverse,
-                        ),
-                        child: Text(l10n.consentAcceptAll),
-                      ),
-                    ),
-                  ];
+                  ),
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (saving)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: LabelledProgress(
+                    label: savingLabel ?? l10n.consentBannerSaving,
+                    size: 28,
+                  ),
+                )
+              else
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final manage = _manageButton();
+                    final reject = _rejectButton();
+                    final accept = _acceptButton();
 
-                  if (constraints.maxWidth < 400) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    if (constraints.maxWidth < _compactBreakpoint) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          manage,
+                          const SizedBox(height: 12),
+                          reject,
+                          const SizedBox(height: 12),
+                          accept,
+                        ],
+                      );
+                    }
+
+                    return Row(
                       children: [
-                        actions[0],
-                        const SizedBox(height: 12),
-                        actions[1],
+                        Expanded(child: manage),
+                        const SizedBox(width: 8),
+                        Expanded(child: reject),
+                        const SizedBox(width: 8),
+                        Expanded(child: accept),
                       ],
                     );
-                  }
-
-                  return Row(
-                    children: [
-                      actions[0],
-                      const SizedBox(width: 12),
-                      actions[1],
-                    ],
-                  );
-                },
-              ),
+                  },
+                ),
             ],
           ),
         ),
       ),
     );
   }
+
+  ButtonStyle _outlinedStyle() {
+    return OutlinedButton.styleFrom(
+      foregroundColor: AppColorTokens.operationsOlive,
+      side: const BorderSide(color: AppColorTokens.operationsOlive),
+      minimumSize: const Size(48, 48),
+    );
+  }
+
+  ButtonStyle _filledStyle() {
+    return FilledButton.styleFrom(
+      backgroundColor: AppColorTokens.operationsOlive,
+      foregroundColor: AppColorTokens.inverse,
+      minimumSize: const Size(48, 48),
+    );
+  }
+
+  Widget _manageButton() {
+    return OutlinedButton(
+      onPressed: onManagePreferences,
+      style: _outlinedStyle(),
+      child: Text(l10n.consentManagePreferences),
+    );
+  }
+
+  Widget _rejectButton() {
+    return OutlinedButton(
+      onPressed: onRejectOptional,
+      style: _outlinedStyle(),
+      child: Text(l10n.consentRejectOptional),
+    );
+  }
+
+  Widget _filledAcceptButton() {
+    return FilledButton(
+      onPressed: onAcceptAll,
+      style: _filledStyle(),
+      child: Text(l10n.consentAcceptAll),
+    );
+  }
+
+  Widget _acceptButton() => _filledAcceptButton();
 }
