@@ -1,0 +1,46 @@
+{
+  "name": "merged phase wins over newer open duplicate PR",
+  "rule": "P3.5",
+  "snapshot_patch": {
+    "phases": [
+      { "id": "1", "branch": "cursor/ui-truthful-outcomes-7c1d-phase-1" },
+      { "id": "2", "branch": "cursor/ui-truthful-outcomes-7c1d-phase-2" }
+    ]
+  },
+  "observations_patch": {
+    "phases": [
+      {
+        "id": "1",
+        "branch_exists": true,
+        "merged_into_integration": true,
+        "pr": {
+          "number": 2237,
+          "state": "open",
+          "draft": true,
+          "merged_at": null,
+          "created_at": "2026-10-16T10:30:00Z",
+          "head_ref": "cursor/ui-truthful-outcomes-7c1d-phase-1",
+          "base_ref": "cursor/ui-truthful-outcomes-7c1d-integration-7c1d"
+        }
+      },
+      {
+        "id": "2",
+        "branch_exists": false,
+        "merged_into_integration": false,
+        "pr": null
+      }
+    ]
+  },
+  "opts": {
+    "actor": "driver",
+    "lease": null
+  },
+  "expected": {
+    "launch": false,
+    "stop": null,
+    "state": "phase:pending",
+    "actor": "driver",
+    "kind": "create-phase-branch",
+    "phase": "2"
+  }
+}
