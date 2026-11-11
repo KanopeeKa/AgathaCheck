@@ -3,7 +3,7 @@ title: Subscription specs
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-10-08
+last_updated: 2026-11-11
 tags: [domain,subscription,specs]
 domain: subscription
 feature_id: subscription
@@ -51,7 +51,22 @@ Subscription notices (activated, renewal upcoming, payment issue, ended, trial e
 ## Tests
 
 - BDD: `subscriptions.feature` (11 scenarios) — documents intended journeys
-- Playwright E2E: **deferred** (Sprint 7.2)
+- Playwright E2E: **deferred** (Sprint 7.2) — store checkout cannot be mocked end to end
+
+### Manual UAT — subscription disclosure (truthful outcomes)
+
+Run on a build with live store products (TestFlight / Play internal / sandbox account as available):
+
+| Check | Pass when |
+| --- | --- |
+| Offer cards | Each package shows **recurring price and cadence** from the store product period, an **auto-renew** sentence, **how to cancel**, and links to `/legal/terms-of-use` and `/legal/privacy-notice`. |
+| Trial / intro | Trial or intro copy appears **only** when the store product carries an introductory price; the app never invents a trial length. |
+| Best value | **Best Value** appears only when the annual package’s monthly cost is lower than the monthly package in the same offering; with one cadence there is no tag. |
+| Manage subscription | **Manage subscription** opens the store `managementUrl` externally; if launch fails, localized copy with a **copyable URL** is shown; with no URL the control is absent or disabled with explanation. |
+| Status date | The date is labelled **renewal** only when status says the subscription will renew; otherwise it reads as **active until**. |
+| Purchase errors | Purchase and restore failures show localized messages — never raw exception text. |
+
+Automated journey coverage for bell panel and consent lives in `trust_surfaces.feature` / `trust.surfaces.spec.ts`.
 
 ---
 

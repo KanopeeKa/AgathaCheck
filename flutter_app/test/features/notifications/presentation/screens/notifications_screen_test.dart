@@ -103,6 +103,10 @@ void main() {
     expect(find.text(l10n.noNotifications), findsNothing);
     expect(find.text(l10n.notificationInboxActivityEmpty), findsOneWidget);
     expect(find.byKey(const Key('mark_all_read_button')), findsOneWidget);
+    final button = tester.widget<TextButton>(
+      find.byKey(const Key('mark_all_read_button')),
+    );
+    expect(button.onPressed, isNull);
   });
 
   testWidgets('shows notification titles grouped by date', (tester) async {

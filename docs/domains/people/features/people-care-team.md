@@ -5,7 +5,7 @@ audience: both
 domain: people
 feature_id: people_care_team
 status: implemented
-last_updated: 2026-11-10
+last_updated: 2026-11-11
 related_bdd: [away_planning.feature, away_plan_detail_v2.feature, sharing.feature, veterinarian_management.feature, notifications.feature]
 ---
 
@@ -511,6 +511,7 @@ One **roster** on `/pc/people` backed by a UI aggregate **PersonRosterEntry** (c
 ### Flows
 
 - **Adding someone (unified):** one **Add person** entry (FAB / desk). Steps: capture identity → **dedupe** against roster → relationship kind (household / carer / professional / organisation) → link pets → if app access is needed, branch into **sharing** (reuse `features/sharing` — no parallel invite UX). No upfront "offline contact vs invite" fork.
+- **Truthful outcomes (add person finalize):** when contact save succeeds but invite delivery fails, the UI shows a **persistent** contact-saved / invite-failed state with **Retry** that sends **only** the invite (no duplicate contact POST). Confirmations state only what the server confirmed (C-6.1).
 - **Legacy copy** ("Who would you like to add?" with four tiles) may appear inside relationship step; do not force invite vs contact before identity.
 - **Creating a household** includes the review step for which pets will be shared.
 - **Removing someone** lists the access they'll still have and offers two choices: remove from the household only, or remove all access to my pets.

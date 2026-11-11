@@ -2,9 +2,11 @@ import 'dart:typed_data';
 import 'dart:js_interop';
 import 'package:web/web.dart' as web;
 
-Future<void> exportUserDataWebOnly(List<int> bytes) async {
+bool get isUserDataExportDeliveryAvailable => true;
+
+Future<bool> deliverUserDataExport(Uint8List bytes) async {
   final blob = web.Blob(
-    [Uint8List.fromList(bytes).toJS].toJS,
+    [bytes.toJS].toJS,
     web.BlobPropertyBag(type: 'application/json'),
   );
   final url = web.URL.createObjectURL(blob);
@@ -13,4 +15,5 @@ Future<void> exportUserDataWebOnly(List<int> bytes) async {
   anchor.download = 'agatha_track_export.json';
   anchor.click();
   web.URL.revokeObjectURL(url);
+  return true;
 }

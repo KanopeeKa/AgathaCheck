@@ -5,6 +5,7 @@ import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import '../../services/consent_service.dart';
 import '../../theme/app_color_tokens.dart';
+import 'consent_timestamp_format.dart';
 
 class ConsentSettingsScreen extends ConsumerStatefulWidget {
   const ConsentSettingsScreen({super.key});
@@ -17,6 +18,7 @@ class ConsentSettingsScreen extends ConsumerStatefulWidget {
 class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
   late bool _analytics;
   late bool _marketing;
+  bool _saving = false;
 
   @override
   void initState() {
@@ -24,6 +26,26 @@ class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
     final consent = ref.read(consentServiceProvider);
     _analytics = consent.analyticsConsent;
     _marketing = consent.marketingConsent;
+  }
+
+  Future<void> _save(AppLocalizations l10n) async {
+    if (_saving) return;
+    setState(() => _saving = true);
+    final ok = await ref
+        .read(consentServiceProvider.notifier)
+        .savePreferences(
+          analyticsConsent: _analytics,
+          marketingConsent: _marketing,
+        );
+    if (!mounted) return;
+    setState(() => _saving = false);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          ok ? l10n.consentPreferencesSaved : l10n.consentPreferencesSaveFailed,
+        ),
+      ),
+    );
   }
 
   @override
@@ -67,7 +89,10 @@ class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
                         Expanded(
                           child: Text(
                             l10n.consentLastUpdated(
-                              _formatTimestamp(consent.consentTimestamp!),
+                              formatConsentTimestamp(
+                                context,
+                                consent.consentTimestamp!,
+                              ),
                             ),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSecondaryContainer,
@@ -95,8 +120,9 @@ class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
                       const Divider(height: 1),
                       SwitchListTile(
                         value: _analytics,
-                        onChanged: (value) =>
-                            setState(() => _analytics = value),
+                        onChanged: _saving
+                            ? null
+                            : (value) => setState(() => _analytics = value),
                         title: Text(l10n.consentAnalytics),
                         subtitle: Text(l10n.consentAnalyticsDescription),
                         secondary: const Icon(
@@ -107,8 +133,9 @@ class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
                       const Divider(height: 1),
                       SwitchListTile(
                         value: _marketing,
-                        onChanged: (value) =>
-                            setState(() => _marketing = value),
+                        onChanged: _saving
+                            ? null
+                            : (value) => setState(() => _marketing = value),
                         title: Text(l10n.consentMarketing),
                         subtitle: Text(l10n.consentMarketingDescription),
                         secondary: const Icon(
@@ -123,24 +150,7 @@ class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton(
-                    onPressed: () async {
-                      final ok = await ref
-                          .read(consentServiceProvider.notifier)
-                          .savePreferences(
-                            analyticsConsent: _analytics,
-                            marketingConsent: _marketing,
-                          );
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            ok
-                                ? l10n.consentPreferencesSaved
-                                : l10n.consentPreferencesSaveFailed,
-                          ),
-                        ),
-                      );
-                    },
+                    onPressed: _saving ? null : () => _save(l10n),
                     style: FilledButton.styleFrom(
                       backgroundColor: AppColorTokens.operationsOlive,
                       foregroundColor: AppColorTokens.inverse,
@@ -154,14 +164,5 @@ class _ConsentSettingsScreenState extends ConsumerState<ConsentSettingsScreen> {
         ),
       ),
     );
-  }
-
-  String _formatTimestamp(String iso) {
-    try {
-      final dateTime = DateTime.parse(iso);
-      return '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-    } catch (_) {
-      return iso;
-    }
   }
 }

@@ -668,6 +668,8 @@ For example, a pet-dependent action remains unavailable until the pet list has
 resolved; an actually resolved empty list may then show its appropriate
 no-pets guidance.
 
+**First-use consent (GDPR banner):** **Reject optional** is a one-tap peer of Accept all and Manage preferences. It persists `analytics` and `marketing` off via `savePreferences`, dismisses the banner on success, and keeps the banner visible with a localized retryable error when save fails (never silent ignore). Compact layouts below 400 dp stack actions without layout overflow (A-10.5). Journey coverage: `trust_surfaces.feature` — *Reject optional on the consent banner dismisses and persists the choice*.
+
 Shared Flutter widgets for these states live in
 `flutter_app/lib/core/widgets/async_state/` (import `async_state.dart`):
 
