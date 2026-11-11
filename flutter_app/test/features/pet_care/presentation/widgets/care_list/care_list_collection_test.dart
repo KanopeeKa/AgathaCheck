@@ -44,12 +44,18 @@ void main() {
 
     expect(find.bySemanticsIdentifier('care_list_today'), findsOneWidget);
     expect(find.bySemanticsIdentifier('care_list_upcoming'), findsOneWidget);
-    expect(find.bySemanticsIdentifier('care_list_card_due-today'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('care_list_card_due-today'),
+      findsOneWidget,
+    );
     expect(find.text('Due today'), findsOneWidget);
 
     await tester.tap(find.byKey(const Key('care_list_upcoming')));
     await tester.pumpAndSettle();
-    expect(find.bySemanticsIdentifier('care_list_card_due-later'), findsOneWidget);
+    expect(
+      find.bySemanticsIdentifier('care_list_card_due-later'),
+      findsOneWidget,
+    );
   });
 }
 

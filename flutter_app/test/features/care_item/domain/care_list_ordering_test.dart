@@ -6,10 +6,7 @@ void main() {
   test('partitionCareList merges due soon into upcoming', () {
     final dueSoon = scheduledEntry(id: 'soon', name: 'Soon', dueInDays: 3);
     final later = scheduledEntry(id: 'later', name: 'Later', dueInDays: 20);
-    final partition = partitionCareList(
-      [dueSoon, later],
-      (e) => e.schedule,
-    );
+    final partition = partitionCareList([dueSoon, later], (e) => e.schedule);
     expect(partition.today, isEmpty);
     expect(partition.upcoming.map((e) => e.id), ['soon', 'later']);
   });
@@ -17,10 +14,7 @@ void main() {
   test('partitionCareList keeps today and upcoming separate', () {
     final today = scheduledEntry(id: 'today', name: 'Today', dueInDays: 0);
     final later = scheduledEntry(id: 'later', name: 'Later', dueInDays: 12);
-    final partition = partitionCareList(
-      [today, later],
-      (e) => e.schedule,
-    );
+    final partition = partitionCareList([today, later], (e) => e.schedule);
     expect(partition.today.map((e) => e.id), ['today']);
     expect(partition.upcoming.map((e) => e.id), ['later']);
   });
