@@ -3,7 +3,7 @@ title: Navigation redesign brief
 owner: Experience Program Team
 audience: both
 status: active
-last_updated: 2026-08-21
+last_updated: 2026-11-10
 tags: [experience,guardian,organisation]
 domain: navigation
 feature_id: navigation-brief
@@ -13,6 +13,8 @@ feature_id: navigation-brief
 > [navigation-decisions.md — Phase 1](navigation-decisions.md#phase-1-shell-navigation-folded). Imported verbatim 2026-07-25.
 >
 > **D38 supersession (2026-09-02):** Workspace drawer labels are **Pet Care** / **Suivi** and **Shelter** / **Refuges** — not Guardian / Organisation / My Pets. Historical bullets below retain original wording; interpret through [pet_care README](/docs/domains/pet_care/README.md).
+>
+> **Removal (2026-11):** Shelter/Fostering product code and the workspace switcher are gone from the app. The brief below describes the **pre-removal** shell IA. Active navigation is Pet Care-only (Today, Pets, Care, Account); see [navigation-decisions.md](navigation-decisions.md) and [frozen-domains removal record](/docs/engineering/frozen-domains/README.md).
 
 # Navigation redesign brief
 

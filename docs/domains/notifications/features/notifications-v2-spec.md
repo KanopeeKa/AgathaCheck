@@ -3,13 +3,15 @@ title: Notifications — Activity, account & Agatha Suggestions
 owner: Product
 audience: both
 status: accepted (rev 2.5.1)
-last_updated: 2026-10-13
+last_updated: 2026-11-11
 tags: [domain,notifications,spec,suggestions,sharing]
 domain: notifications
 feature_id: notifications
 ---
 
 # Notifications — Activity, account & Agatha Suggestions
+
+> **UI (2026-11):** Organisation/foster pending sections and settings categories were removed from the app with `frozen-domains-removal-3f9c`. Rows below that describe org/foster inbox or settings behaviour are **historical** for retained data and emitters until the data API track retires them.
 
 > **Status: accepted 2026-10-06, rev 2.5.1.** UAT closeout: resolve-by-type, actionability matrix, suggestion scheduler, FR-FB-2/3. Billing provider: undecided, so PR8 is blocked. Sign-in location: not now (N13). Functional spec only. Implementation follows the rollout in §12, with one atomic PR
 > per outcome. Rev 2+ changes are summarised in §15. The decisions in §0 take effect.
@@ -916,6 +918,8 @@ User-facing flows for the global bell and inbox. v2 ships in PR1–PR8 (§12). U
 
 On every authenticated screen, the header shows a persistent bell. On wide layouts it opens a full-height right slide-over; on compact layouts, a full screen with the same content. The inbox has two tabs: **Activity** (default) and **For you**.
 
+The panel header exposes **Open full inbox** and **Notification settings** as 48 dp controls (tooltips and semantics identifiers `notification_panel_open_inbox` / `notification_panel_settings`). Each closes the drawer and pushes `/notifications` or `/notifications/settings` respectively (D-4.1). Journey coverage: `trust_surfaces.feature` — *Bell panel opens notification settings from the shell*, *Bell panel opens the full inbox from the shell*.
+
 The bell shows a **number** for items that need you: invites to answer, urgent items, and an unanswered new-sign-in alert. It shows a **dot** when there is only something new to read. Care reminders never touch the bell.
 
 ### Answer an invite without leaving the inbox
@@ -950,7 +954,7 @@ Due and overdue care is in **Care Actions** (dashboard) and **Actions**, and is 
 
 Account → Notification settings shows a category × channel grid (in-app / push / email), per-suggestion-type toggles, and locked security items. Per-pet mute affects reminders, suggestions and people-update pushes, never security notices. Org-scoped self-management prefs are reached from org people cards (D26–D27).
 
-BDD: `notifications.feature` (legacy) + `notifications_v2.feature` · E2E: navigation contract requires bell + panel ready state.
+BDD: `notifications.feature` (legacy) + `notifications_v2.feature` + `trust_surfaces.feature` (panel → full inbox / settings) · E2E: navigation contract requires bell + panel ready state; Playwright `trust.surfaces.spec.ts`.
 
 ## 17. Implementation reference
 

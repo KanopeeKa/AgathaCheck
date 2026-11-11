@@ -16,15 +16,10 @@
 import { execFileSync } from 'node:child_process';
 import { test, expect, loginAs } from '../fixtures/auth.fixture';
 import {
-  acceptInvite,
   createHealthEntry,
-  createOrganization,
   createPet,
-  fosterInviteToOrganization,
   getNotifications,
-  getPendingInvites,
   getUnreadNotificationCount,
-  inviteToOrganization,
   markNotificationRead,
   markAllNotificationsRead,
   seedOverdueNotification,
@@ -43,7 +38,6 @@ import {
 import { checkA11y } from '../support/axe';
 import { refreshFlutterAccessibility, waitForFlutterRoutePattern, flutterGotoUrl, flutterRoutePath } from '../support/flutter';
 import { NotificationsPage } from '../pages/notifications.page';
-import { OrganizationDetailPage } from '../pages/organization-detail.page';
 import { PetDetailPage } from '../pages/pet-detail.page';
 import { PetListPage } from '../pages/pet-list.page';
 import { CareItemPage } from '../pages/care-item.page';
@@ -444,57 +438,6 @@ test.describe('Notifications', () => {
     await page.goto(flutterGotoUrl(`/pet/${pet.id}`));
     const petDetail = new PetDetailPage(page);
     await petDetail.expectLoaded(pet.name);
-  });
-
-  test.skip('tapping an organisation notification navigates to org detail', async ({ page }) => {
-    const baseURL = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-    const stamp = Date.now();
-    const alice = await signupUser(baseURL, {
-      firstName: 'Alice',
-      lastName: 'Super',
-      email: `alice-org-notify-${stamp}@example.com`,
-    });
-    const bob = await signupUser(baseURL, {
-      firstName: 'Bob',
-      lastName: 'Member',
-      email: `bob-org-notify-${stamp}@example.com`,
-    });
-    const org = await createOrganization(baseURL, alice.accessToken, {
-      name: 'Happy Paws Clinic',
-    });
-    await inviteToOrganization(baseURL, alice.accessToken, org.id, {
-      email: bob.email,
-      role: 'associate',
-    });
-    const invites = await getPendingInvites(baseURL, bob.accessToken);
-    const invite = invites.find((item) => item.organization_id === org.id);
-    expect(invite).toBeTruthy();
-    await acceptInvite(baseURL, bob.accessToken, invite!.id);
-
-    await fosterInviteToOrganization(baseURL, alice.accessToken, org.id, {
-      userIds: [bob.userId],
-    });
-
-    const notifications = await getNotifications(baseURL, bob.accessToken);
-    const orgNotification = notifications.find(
-      (n: TestNotification) =>
-        n.organization_id === org.id && n.type === 'fosterInvitationReceived',
-    );
-    expect(orgNotification).toBeTruthy();
-
-    await loginAs(page, bob, { experience: 'organization' });
-    const petList = new PetListPage(page);
-    await petList.expectLoaded();
-
-    const notificationsPage = new NotificationsPage(page);
-    await notificationsPage.openFromPetList();
-    await notificationsPage.selectKindFilter('Organisation');
-    await notificationsPage.expectNotificationVisible(orgNotification!.title);
-
-    // Organisation notifications deep-link to org profile; panel tap is flaky on Flutter web.
-    await page.goto(flutterGotoUrl(`/o/orgs/${org.id}`));
-    const orgDetail = new OrganizationDetailPage(page);
-    await orgDetail.expectLoaded('Happy Paws Clinic');
   });
 
   // ── Settings ──────────────────────────────────────────────────────────────

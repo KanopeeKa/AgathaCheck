@@ -113,7 +113,7 @@ abstract class AppLocalizations {
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
-  /// **'AgathaTrack keeps your pet\'s health organised — whether you care at home, in a shelter, or as part of a team.'**
+  /// **'AgathaTrack keeps your pet\'s care organised — at home and with the people you trust.'**
   String get appTagline;
 
   /// No description provided for @appDescription.
@@ -3163,6 +3163,12 @@ abstract class AppLocalizations {
   /// **'Household name'**
   String get householdNameLabel;
 
+  /// No description provided for @householdNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a household name'**
+  String get householdNameRequired;
+
   /// No description provided for @householdOrganiserLabel.
   ///
   /// In en, this message translates to:
@@ -4213,6 +4219,18 @@ abstract class AppLocalizations {
   /// **'Mark all as read'**
   String get markAllRead;
 
+  /// No description provided for @notificationsMarkedRead.
+  ///
+  /// In en, this message translates to:
+  /// **'All marked as read'**
+  String get notificationsMarkedRead;
+
+  /// No description provided for @notificationOpenInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Open full inbox'**
+  String get notificationOpenInbox;
+
   /// No description provided for @notificationSettingsTooltip.
   ///
   /// In en, this message translates to:
@@ -4428,6 +4446,202 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Subscription plans aren\'t available right now. Try again in a moment.'**
   String get subscriptionPlansUnavailable;
+
+  /// No description provided for @subscriptionStatusActiveSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Active subscription'**
+  String get subscriptionStatusActiveSemantic;
+
+  /// No description provided for @subscriptionStatusFreeSemantic.
+  ///
+  /// In en, this message translates to:
+  /// **'Free plan'**
+  String get subscriptionStatusFreeSemantic;
+
+  /// No description provided for @subscriptionProductNameUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'AgathaTrack Unlimited'**
+  String get subscriptionProductNameUnlimited;
+
+  /// No description provided for @subscriptionProductNameFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free Plan'**
+  String get subscriptionProductNameFree;
+
+  /// No description provided for @subscriptionBodyUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'You have full access to all features.'**
+  String get subscriptionBodyUnlimited;
+
+  /// No description provided for @subscriptionBodyFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to unlock all features.'**
+  String get subscriptionBodyFree;
+
+  /// No description provided for @subscriptionRenewsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews on {date}'**
+  String subscriptionRenewsOn(String date);
+
+  /// No description provided for @subscriptionActiveUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Active until {date}'**
+  String subscriptionActiveUntil(String date);
+
+  /// No description provided for @subscriptionPeriodPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get subscriptionPeriodPerMonth;
+
+  /// No description provided for @subscriptionPeriodPerYear.
+  ///
+  /// In en, this message translates to:
+  /// **'per year'**
+  String get subscriptionPeriodPerYear;
+
+  /// No description provided for @subscriptionFallbackMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get subscriptionFallbackMonthly;
+
+  /// No description provided for @subscriptionFallbackYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get subscriptionFallbackYearly;
+
+  /// No description provided for @subscriptionBestValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Best Value'**
+  String get subscriptionBestValue;
+
+  /// No description provided for @subscriptionAutoRenewDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'This subscription renews automatically each billing period until you cancel.'**
+  String get subscriptionAutoRenewDisclosure;
+
+  /// No description provided for @subscriptionCancelDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel in your app store account before the next billing date to avoid being charged.'**
+  String get subscriptionCancelDisclosure;
+
+  /// No description provided for @subscriptionIntroDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day} other{{count} days}}'**
+  String subscriptionIntroDays(int count);
+
+  /// No description provided for @subscriptionIntroWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 week} other{{count} weeks}}'**
+  String subscriptionIntroWeeks(int count);
+
+  /// No description provided for @subscriptionIntroMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 month} other{{count} months}}'**
+  String subscriptionIntroMonths(int count);
+
+  /// No description provided for @subscriptionIntroYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 year} other{{count} years}}'**
+  String subscriptionIntroYears(int count);
+
+  /// No description provided for @subscriptionTrialDisclosure.
+  ///
+  /// In en, this message translates to:
+  /// **'Introductory offer: {introPrice} for {introPeriod}, then {recurringPrice} per billing period.'**
+  String subscriptionTrialDisclosure(
+    String introPrice,
+    String introPeriod,
+    String recurringPrice,
+  );
+
+  /// No description provided for @subscriptionManagementUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription management isn\'t available on this device.'**
+  String get subscriptionManagementUnavailable;
+
+  /// No description provided for @subscriptionManagementOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open subscription management. Copy this link to open it in your browser:'**
+  String get subscriptionManagementOpenFailed;
+
+  /// No description provided for @externalLinkOpenFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t open that link. Copy it to open in your browser:'**
+  String get externalLinkOpenFailed;
+
+  /// No description provided for @subscriptionPurchaseFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase didn\'t complete. Try again, or restore an existing purchase.'**
+  String get subscriptionPurchaseFailed;
+
+  /// No description provided for @subscriptionRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t restore purchases. Try again in a moment.'**
+  String get subscriptionRestoreFailed;
+
+  /// No description provided for @subscriptionFeatureUnlimitedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'AgathaTrack Unlimited'**
+  String get subscriptionFeatureUnlimitedTitle;
+
+  /// No description provided for @subscriptionFeatureProfiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited pet profiles'**
+  String get subscriptionFeatureProfiles;
+
+  /// No description provided for @subscriptionFeatureHealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Full health tracking'**
+  String get subscriptionFeatureHealth;
+
+  /// No description provided for @subscriptionFeatureSharing.
+  ///
+  /// In en, this message translates to:
+  /// **'Pet sharing with family'**
+  String get subscriptionFeatureSharing;
+
+  /// No description provided for @subscriptionFeaturePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF report generation'**
+  String get subscriptionFeaturePdf;
+
+  /// No description provided for @subscriptionFeatureReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Health reminders'**
+  String get subscriptionFeatureReminders;
+
+  /// No description provided for @subscriptionFeatureSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority support'**
+  String get subscriptionFeatureSupport;
 
   /// No description provided for @petReport.
   ///
@@ -8544,7 +8758,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqAccountA4.
   ///
   /// In en, this message translates to:
-  /// **'Go to the user menu (your avatar in the top-right corner), then tap \"My Details\". From there you can edit your name, bio, profile photo, and change your password.'**
+  /// **'Open Account from the main menu, then tap My Details at the top of the page or under Profile. From there you can edit your name, bio, profile photo, and change your password.'**
   String get faqAccountA4;
 
   /// No description provided for @faqAccountQ5.
@@ -8556,7 +8770,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqAccountA5.
   ///
   /// In en, this message translates to:
-  /// **'Open the user menu (avatar icon in the top-right corner) and tap \"Logout\". You will be returned to the landing page.'**
+  /// **'Open Account from the main menu, scroll to Actions, and tap Log out. You return to the landing page.'**
   String get faqAccountA5;
 
   /// No description provided for @faqPetProfileTitle.
@@ -8664,7 +8878,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqHealthA2.
   ///
   /// In en, this message translates to:
-  /// **'You can add entries from two places: the pet\'s detail page (specific to that pet) or the global Health Dashboard (accessible from the medical icon in the top bar). Fill in the type, name, date, and optional details like frequency, notes, and photo attachments.'**
+  /// **'Add care from the pet\'s profile page or open All actions from the Pet Care home. Fill in the care type, name, date, and optional details like frequency, notes, and photo attachments.'**
   String get faqHealthA2;
 
   /// No description provided for @faqHealthQ3.
@@ -8676,7 +8890,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqHealthA3.
   ///
   /// In en, this message translates to:
-  /// **'The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by organisation to focus on specific groups of pets.'**
+  /// **'All actions is a single list of upcoming, due, and overdue care across your pets. Open it from the Pet Care home to review everything in one place, or focus on one pet from its profile.'**
   String get faqHealthA3;
 
   /// No description provided for @faqHealthQ4.
@@ -8772,7 +8986,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqVetA1.
   ///
   /// In en, this message translates to:
-  /// **'Go to the Veterinarians section (accessible from the stethoscope icon in the top bar). Tap the \"+\" button and fill in the clinic name, vet name, phone number, email, address, and website.'**
+  /// **'Open Account → People, or choose Vets from the Pet Care menu, then tap Add. Fill in the clinic name, vet name, phone number, email, address, and website.'**
   String get faqVetA1;
 
   /// No description provided for @faqVetQ2.
@@ -8838,7 +9052,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA3.
   ///
   /// In en, this message translates to:
-  /// **'Yes. Swipe left on a shared pet\'s card to hide it. Hidden pets will not appear in your pet list, health dashboard, or generate notifications. You can unhide them from the organisation\'s detail page under \"Hidden Shared Pets\".'**
+  /// **'Yes. From the pet\'s Sharing section, choose Hide from my pets. Hidden pets no longer appear in your pet list or care reminders. Ask the owner for a new share link if you want to follow the pet again.'**
   String get faqSharingA3;
 
   /// No description provided for @faqSharingQ4.
@@ -8850,7 +9064,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqSharingA4.
   ///
   /// In en, this message translates to:
-  /// **'Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.'**
+  /// **'Sharing gives someone view access while you keep full control. Transfer ownership moves a pet you own to another person\'s account; you may keep shared access unless they remove you.'**
   String get faqSharingA4;
 
   /// No description provided for @faqOrgTitle.
@@ -9000,7 +9214,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqNotificationsA2.
   ///
   /// In en, this message translates to:
-  /// **'Go to the Notifications screen (bell icon in the top bar) and tap the settings icon. From there you can customise which types of notifications you receive.'**
+  /// **'Open the full Notifications screen (when your layout shows a notifications icon in the app bar, tap it) and use the settings icon in the top bar. You can also open Notification settings from the For you tab when suggestions are turned off.'**
   String get faqNotificationsA2;
 
   /// No description provided for @faqNotificationsQ3.
@@ -9042,7 +9256,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqReportsA1.
   ///
   /// In en, this message translates to:
-  /// **'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, health issues, family events, notifications, and sharing details. The report is generated as a downloadable PDF.'**
+  /// **'Open a pet\'s profile, open the menu (⋯), and choose Download pet report. Pick the sections you want — profile, weight, care history, health issues, notifications, and sharing. The app generates a PDF you can save.'**
   String get faqReportsA1;
 
   /// No description provided for @faqReportsQ2.
@@ -9054,7 +9268,7 @@ abstract class AppLocalizations {
   /// No description provided for @faqReportsA2.
   ///
   /// In en, this message translates to:
-  /// **'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for organisation pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.'**
+  /// **'Reports can include pet profile details (name, breed, age, ID), a weight chart and history table, care entries by type, recorded health issues, recent notifications and alerts, and sharing access details. You choose which sections to include before generating.'**
   String get faqReportsA2;
 
   /// No description provided for @faqSubscriptionTitle.
@@ -9152,6 +9366,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage Preferences'**
   String get consentManagePreferences;
+
+  /// No description provided for @consentRejectOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject Optional'**
+  String get consentRejectOptional;
+
+  /// No description provided for @consentBannerSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving your privacy choice'**
+  String get consentBannerSaving;
 
   /// No description provided for @consentSettings.
   ///
@@ -9626,6 +9852,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your data has been exported'**
   String get dataExported;
+
+  /// No description provided for @dataExportUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This device cannot save an export file. Use the web app to download your data.'**
+  String get dataExportUnavailable;
+
+  /// No description provided for @dataExportCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Export cancelled. Your data was not saved.'**
+  String get dataExportCancelled;
+
+  /// No description provided for @dataExportFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not export your data. Try again.'**
+  String get dataExportFailed;
 
   /// No description provided for @consentPreferences.
   ///
@@ -11256,7 +11500,7 @@ abstract class AppLocalizations {
   /// No description provided for @notificationInboxForYouEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No suggestions right now. Agatha will let you know when something\'s worth a look.'**
+  /// **'No suggestions right now.'**
   String get notificationInboxForYouEmpty;
 
   /// No description provided for @notificationInboxV2Explainer.
@@ -11528,6 +11772,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Action needed'**
   String get notificationActionNeeded;
+
+  /// No description provided for @pendingActionsUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No actions here'**
+  String get pendingActionsUnavailableTitle;
+
+  /// No description provided for @pendingActionsUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Foster, adoption and custody approvals are no longer handled on this page. Open your inbox for people updates and Agatha suggestions.'**
+  String get pendingActionsUnavailableBody;
+
+  /// No description provided for @pendingActionsOpenInbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Open inbox'**
+  String get pendingActionsOpenInbox;
 
   /// No description provided for @notificationRead.
   ///
@@ -14098,6 +14360,18 @@ abstract class AppLocalizations {
   /// **'Tag name'**
   String get petTagsNameHint;
 
+  /// No description provided for @petTagNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a tag name'**
+  String get petTagNameRequired;
+
+  /// No description provided for @petTagUsageCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Used by 1 pet} other{Used by {count} pets}}'**
+  String petTagUsageCount(int count);
+
   /// No description provided for @petTagsMyTags.
   ///
   /// In en, this message translates to:
@@ -15231,6 +15505,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save person'**
   String get peopleAddPersonSave;
+
+  /// No description provided for @peopleContactSavedInviteFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact saved. The household invitation was not sent.'**
+  String get peopleContactSavedInviteFailed;
+
+  /// No description provided for @peopleRetryHouseholdInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry invitation'**
+  String get peopleRetryHouseholdInvite;
+
+  /// No description provided for @peopleOpenSavedContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Open contact'**
+  String get peopleOpenSavedContact;
 
   /// No description provided for @peopleAddRolesRequired.
   ///

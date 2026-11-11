@@ -16,7 +16,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get appTagline =>
-      'AgathaTrack keeps your pet\'s health organised — whether you care at home, in a shelter, or as part of a team.';
+      'AgathaTrack keeps your pet\'s care organised — at home and with the people you trust.';
 
   @override
   String get appDescription =>
@@ -1803,6 +1803,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get householdNameLabel => 'Household name';
 
   @override
+  String get householdNameRequired => 'Enter a household name';
+
+  @override
   String get householdOrganiserLabel => 'Organiser · Full access';
 
   @override
@@ -2369,6 +2372,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get markAllRead => 'Mark all as read';
 
   @override
+  String get notificationsMarkedRead => 'All marked as read';
+
+  @override
+  String get notificationOpenInbox => 'Open full inbox';
+
+  @override
   String get notificationSettingsTooltip => 'Notification settings';
 
   @override
@@ -2488,6 +2497,152 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get subscriptionPlansUnavailable =>
       'Subscription plans aren\'t available right now. Try again in a moment.';
+
+  @override
+  String get subscriptionStatusActiveSemantic => 'Active subscription';
+
+  @override
+  String get subscriptionStatusFreeSemantic => 'Free plan';
+
+  @override
+  String get subscriptionProductNameUnlimited => 'AgathaTrack Unlimited';
+
+  @override
+  String get subscriptionProductNameFree => 'Free Plan';
+
+  @override
+  String get subscriptionBodyUnlimited =>
+      'You have full access to all features.';
+
+  @override
+  String get subscriptionBodyFree => 'Upgrade to unlock all features.';
+
+  @override
+  String subscriptionRenewsOn(String date) {
+    return 'Renews on $date';
+  }
+
+  @override
+  String subscriptionActiveUntil(String date) {
+    return 'Active until $date';
+  }
+
+  @override
+  String get subscriptionPeriodPerMonth => 'per month';
+
+  @override
+  String get subscriptionPeriodPerYear => 'per year';
+
+  @override
+  String get subscriptionFallbackMonthly => 'Monthly';
+
+  @override
+  String get subscriptionFallbackYearly => 'Yearly';
+
+  @override
+  String get subscriptionBestValue => 'Best Value';
+
+  @override
+  String get subscriptionAutoRenewDisclosure =>
+      'This subscription renews automatically each billing period until you cancel.';
+
+  @override
+  String get subscriptionCancelDisclosure =>
+      'Cancel in your app store account before the next billing date to avoid being charged.';
+
+  @override
+  String subscriptionIntroDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days',
+      one: '1 day',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count weeks',
+      one: '1 week',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count months',
+      one: '1 month',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count years',
+      one: '1 year',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionTrialDisclosure(
+    String introPrice,
+    String introPeriod,
+    String recurringPrice,
+  ) {
+    return 'Introductory offer: $introPrice for $introPeriod, then $recurringPrice per billing period.';
+  }
+
+  @override
+  String get subscriptionManagementUnavailable =>
+      'Subscription management isn\'t available on this device.';
+
+  @override
+  String get subscriptionManagementOpenFailed =>
+      'We couldn\'t open subscription management. Copy this link to open it in your browser:';
+
+  @override
+  String get externalLinkOpenFailed =>
+      'We couldn\'t open that link. Copy it to open in your browser:';
+
+  @override
+  String get subscriptionPurchaseFailed =>
+      'Purchase didn\'t complete. Try again, or restore an existing purchase.';
+
+  @override
+  String get subscriptionRestoreFailed =>
+      'We couldn\'t restore purchases. Try again in a moment.';
+
+  @override
+  String get subscriptionFeatureUnlimitedTitle => 'AgathaTrack Unlimited';
+
+  @override
+  String get subscriptionFeatureProfiles => 'Unlimited pet profiles';
+
+  @override
+  String get subscriptionFeatureHealth => 'Full health tracking';
+
+  @override
+  String get subscriptionFeatureSharing => 'Pet sharing with family';
+
+  @override
+  String get subscriptionFeaturePdf => 'PDF report generation';
+
+  @override
+  String get subscriptionFeatureReminders => 'Health reminders';
+
+  @override
+  String get subscriptionFeatureSupport => 'Priority support';
 
   @override
   String get petReport => 'Pet Report';
@@ -4797,14 +4952,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqAccountA4 =>
-      'Go to the user menu (your avatar in the top-right corner), then tap \"My Details\". From there you can edit your name, bio, profile photo, and change your password.';
+      'Open Account from the main menu, then tap My Details at the top of the page or under Profile. From there you can edit your name, bio, profile photo, and change your password.';
 
   @override
   String get faqAccountQ5 => 'How do I log out?';
 
   @override
   String get faqAccountA5 =>
-      'Open the user menu (avatar icon in the top-right corner) and tap \"Logout\". You will be returned to the landing page.';
+      'Open Account from the main menu, scroll to Actions, and tap Log out. You return to the landing page.';
 
   @override
   String get faqPetProfileTitle => 'Pet Profiles';
@@ -4866,14 +5021,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqHealthA2 =>
-      'You can add entries from two places: the pet\'s detail page (specific to that pet) or the global Health Dashboard (accessible from the medical icon in the top bar). Fill in the type, name, date, and optional details like frequency, notes, and photo attachments.';
+      'Add care from the pet\'s profile page or open All actions from the Pet Care home. Fill in the care type, name, date, and optional details like frequency, notes, and photo attachments.';
 
   @override
   String get faqHealthQ3 => 'What is the Health Dashboard?';
 
   @override
   String get faqHealthA3 =>
-      'The Health Dashboard is a global view of all health events across all your pets. It is organised into tabs by type (medications, preventives, vet visits, etc.) and shows upcoming, due, and overdue entries. You can filter by organisation to focus on specific groups of pets.';
+      'All actions is a single list of upcoming, due, and overdue care across your pets. Open it from the Pet Care home to review everything in one place, or focus on one pet from its profile.';
 
   @override
   String get faqHealthQ4 => 'How do recurring health entries work?';
@@ -4928,7 +5083,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqVetA1 =>
-      'Go to the Veterinarians section (accessible from the stethoscope icon in the top bar). Tap the \"+\" button and fill in the clinic name, vet name, phone number, email, address, and website.';
+      'Open Account → People, or choose Vets from the Pet Care menu, then tap Add. Fill in the clinic name, vet name, phone number, email, address, and website.';
 
   @override
   String get faqVetQ2 => 'How do I link a vet to my pet?';
@@ -4966,7 +5121,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqSharingA3 =>
-      'Yes. Swipe left on a shared pet\'s card to hide it. Hidden pets will not appear in your pet list, health dashboard, or generate notifications. You can unhide them from the organisation\'s detail page under \"Hidden Shared Pets\".';
+      'Yes. From the pet\'s Sharing section, choose Hide from my pets. Hidden pets no longer appear in your pet list or care reminders. Ask the owner for a new share link if you want to follow the pet again.';
 
   @override
   String get faqSharingQ4 =>
@@ -4974,7 +5129,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqSharingA4 =>
-      'Sharing gives someone view access to a pet — the original owner retains full control. Transferring ownership (personal pets) moves the pet to another user; you keep shared access unless they remove you. Organisation pet transfers are managed separately.';
+      'Sharing gives someone view access while you keep full control. Transfer ownership moves a pet you own to another person\'s account; you may keep shared access unless they remove you.';
 
   @override
   String get faqOrgTitle => 'Organisations';
@@ -5064,7 +5219,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqNotificationsA2 =>
-      'Go to the Notifications screen (bell icon in the top bar) and tap the settings icon. From there you can customise which types of notifications you receive.';
+      'Open the full Notifications screen (when your layout shows a notifications icon in the app bar, tap it) and use the settings icon in the top bar. You can also open Notification settings from the For you tab when suggestions are turned off.';
 
   @override
   String get faqNotificationsQ3 =>
@@ -5089,14 +5244,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get faqReportsA1 =>
-      'Open a pet\'s detail page and tap the report/PDF icon. You can customise what to include — profile information, weight history, health events, health issues, family events, notifications, and sharing details. The report is generated as a downloadable PDF.';
+      'Open a pet\'s profile, open the menu (⋯), and choose Download pet report. Pick the sections you want — profile, weight, care history, health issues, notifications, and sharing. The app generates a PDF you can save.';
 
   @override
   String get faqReportsQ2 => 'What information is included in a report?';
 
   @override
   String get faqReportsA2 =>
-      'Reports can include: pet profile details (name, breed, age, ID), a weight chart and history table, a list of all health entries by type, recorded health issues, family event assignments and foster stays (for organisation pets), recent notifications and alerts, and sharing access details. You choose which sections to include before generating.';
+      'Reports can include pet profile details (name, breed, age, ID), a weight chart and history table, care entries by type, recorded health issues, recent notifications and alerts, and sharing access details. You choose which sections to include before generating.';
 
   @override
   String get faqSubscriptionTitle => 'Subscription';
@@ -5151,6 +5306,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get consentManagePreferences => 'Manage Preferences';
+
+  @override
+  String get consentRejectOptional => 'Reject Optional';
+
+  @override
+  String get consentBannerSaving => 'Saving your privacy choice';
 
   @override
   String get consentSettings => 'Privacy Preferences';
@@ -5424,6 +5585,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dataExported => 'Your data has been exported';
+
+  @override
+  String get dataExportUnavailable =>
+      'This device cannot save an export file. Use the web app to download your data.';
+
+  @override
+  String get dataExportCancelled =>
+      'Export cancelled. Your data was not saved.';
+
+  @override
+  String get dataExportFailed => 'Could not export your data. Try again.';
 
   @override
   String get consentPreferences => 'Privacy Preferences';
@@ -6378,8 +6550,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Nothing new. When someone shares a pet or joins your household, you\'ll see it here.';
 
   @override
-  String get notificationInboxForYouEmpty =>
-      'No suggestions right now. Agatha will let you know when something\'s worth a look.';
+  String get notificationInboxForYouEmpty => 'No suggestions right now.';
 
   @override
   String get notificationInboxV2Explainer =>
@@ -6528,6 +6699,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notificationActionNeeded => 'Action needed';
+
+  @override
+  String get pendingActionsUnavailableTitle => 'No actions here';
+
+  @override
+  String get pendingActionsUnavailableBody =>
+      'Foster, adoption and custody approvals are no longer handled on this page. Open your inbox for people updates and Agatha suggestions.';
+
+  @override
+  String get pendingActionsOpenInbox => 'Open inbox';
 
   @override
   String get notificationRead => 'Read';
@@ -8098,6 +8279,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get petTagsNameHint => 'Tag name';
 
   @override
+  String get petTagNameRequired => 'Enter a tag name';
+
+  @override
+  String petTagUsageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Used by $count pets',
+      one: 'Used by 1 pet',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get petTagsMyTags => 'My tags';
 
   @override
@@ -8732,6 +8927,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peopleAddPersonSave => 'Save person';
+
+  @override
+  String get peopleContactSavedInviteFailed =>
+      'Contact saved. The household invitation was not sent.';
+
+  @override
+  String get peopleRetryHouseholdInvite => 'Retry invitation';
+
+  @override
+  String get peopleOpenSavedContact => 'Open contact';
 
   @override
   String get peopleAddRolesRequired => 'Choose at least one role to continue.';

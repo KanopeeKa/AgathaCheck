@@ -29,7 +29,7 @@ List<RouteBase> buildExperienceRoutes() {
     GoRoute(
       path: '/app/choose',
       name: 'experienceChoose',
-      builder: (context, state) => const ExperienceChooserScreen(),
+      redirect: (context, state) => '/app/resolve',
     ),
     GoRoute(
       path: '/pc/onboarding',

@@ -4,11 +4,7 @@ import 'package:pet_profile_app/features/health_tracking/data/models/health_entr
 import 'package:pet_profile_app/features/health_tracking/data/models/health_history_model.dart';
 import 'package:pet_profile_app/features/health_tracking/data/models/health_issue_model.dart';
 import 'package:pet_profile_app/features/health_tracking/domain/entities/health_entry.dart';
-import 'package:pet_profile_app/features/health_tracking/presentation/widgets/entry_form_labels.dart';
 import 'package:pet_profile_app/features/health_tracking/presentation/widgets/health_entry_status.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/family_event.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/foster_placement.dart';
-import 'package:pet_profile_app/features/organization/domain/entities/foster_request.dart';
 import 'package:pet_profile_app/features/pet_profile/data/models/pet_model.dart';
 import 'package:pet_profile_app/features/weight_tracking/data/models/weight_entry_model.dart';
 
@@ -302,120 +298,13 @@ void main() {
                 ).toJson()['date']
                 as String?,
       );
-
-      expectCalendarDateFieldBehavior(
-        entity: 'FamilyEvent',
-        field: 'fromDate',
-        readParsed: () => FamilyEvent.fromJson({
-          'id': 'fe1',
-          'pet_id': 'pet1',
-          'organization_id': 'org1',
-          'from_date': calendarFieldLegacyUtc,
-        }).fromDate,
-        readFromUtcMidnightPicker: () {
-          final event = FamilyEvent.fromJson({
-            'id': 'fe1',
-            'pet_id': 'pet1',
-            'organization_id': 'org1',
-            'from_date': toCalendarDateString(
-              calendarDateOnly(calendarFieldUtcMidnightPicker),
-            ),
-          });
-          return event.fromDate;
-        },
-      );
-
-      expectCalendarDateFieldBehavior(
-        entity: 'FamilyEvent',
-        field: 'toDate',
-        readParsed: () => FamilyEvent.fromJson({
-          'id': 'fe1',
-          'pet_id': 'pet1',
-          'organization_id': 'org1',
-          'from_date': '2026-01-01',
-          'to_date': calendarFieldIso,
-        }).toDate,
-        readFromUtcMidnightPicker: () {
-          final event = FamilyEvent.fromJson({
-            'id': 'fe1',
-            'pet_id': 'pet1',
-            'organization_id': 'org1',
-            'from_date': '2026-01-01',
-            'to_date': toCalendarDateString(
-              calendarDateOnly(calendarFieldUtcMidnightPicker),
-            ),
-          });
-          return event.toDate;
-        },
-      );
-
-      expectCalendarDateFieldBehavior(
-        entity: 'FosterPlacement',
-        field: 'startDate',
-        readParsed: () => FosterPlacement.fromJson({
-          'id': 'fp1',
-          'organization_id': 'org1',
-          'pet_id': 'pet1',
-          'foster_user_id': 'user1',
-          'status': 'in_progress',
-          'start_date': calendarFieldIso,
-        }).startDate,
-        readFromUtcMidnightPicker: () => FosterPlacement(
-          id: 'fp1',
-          organizationId: 'org1',
-          petId: 'pet1',
-          fosterUserId: 'user1',
-          status: 'in_progress',
-          startDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
-        ).startDate,
-      );
-
-      expectCalendarDateFieldBehavior(
-        entity: 'FosterPlacement',
-        field: 'endDate',
-        readParsed: () => FosterPlacement.fromJson({
-          'id': 'fp1',
-          'organization_id': 'org1',
-          'pet_id': 'pet1',
-          'foster_user_id': 'user1',
-          'status': 'not_in_foster',
-          'end_date': calendarFieldLegacyUtc,
-        }).endDate,
-        readFromUtcMidnightPicker: () => FosterPlacement(
-          id: 'fp1',
-          organizationId: 'org1',
-          petId: 'pet1',
-          fosterUserId: 'user1',
-          status: 'not_in_foster',
-          endDate: calendarDateOnly(calendarFieldUtcMidnightPicker),
-        ).endDate,
-      );
-
-      expectCalendarDateFieldBehavior(
-        entity: 'FosterRequestResponse',
-        field: 'earliestAvailability',
-        readParsed: () => FosterRequestResponse.fromJson({
-          'id': 'fr1',
-          'org_foster_parent_id': 'ofp1',
-          'response': 'can_help',
-          'earliest_availability': calendarFieldIso,
-        }).earliestAvailability,
-        readFromUtcMidnightPicker: () => FosterRequestResponse(
-          id: 'fr1',
-          orgFosterParentId: 'ofp1',
-          response: FosterResponseType.canHelp,
-          earliestAvailability: calendarDateOnly(
-            calendarFieldUtcMidnightPicker,
-          ),
-        ).earliestAvailability,
-      );
     },
   );
 
   group('display formatters', () {
     test('formatEntryDate matches dd/MM/yyyy for UTC-midnight picker', () {
       final normalized = calendarDateOnly(calendarFieldUtcMidnightPicker);
-      expect(formatEntryDate(normalized), calendarFieldDisplay);
+      expect(formatCalendarDateDisplay(normalized), calendarFieldDisplay);
     });
 
     test('formatHealthEntryStatusDate preserves calendar day', () {

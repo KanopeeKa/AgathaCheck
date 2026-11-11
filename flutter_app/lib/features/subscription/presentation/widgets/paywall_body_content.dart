@@ -3,10 +3,12 @@ import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:pet_profile_app/core/theme/app_color_tokens.dart';
 import 'package:pet_profile_app/core/widgets/async_state/async_error_state.dart';
 import 'package:pet_profile_app/core/widgets/async_state/labelled_progress.dart';
+import 'package:pet_profile_app/core/widgets/async_state/supplemental_state_caption.dart';
 import 'package:pet_profile_app/features/subscription/domain/entities/subscription_status.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
 
 import 'paywall_feature_list_card.dart';
+import 'paywall_offer_display.dart';
 import 'paywall_offering_card.dart';
 
 /// Scrollable paywall content (presentational; no Riverpod).
@@ -22,6 +24,7 @@ class PaywallBodyContent extends StatelessWidget {
     required this.onPurchasePackage,
     required this.onRestorePurchases,
     required this.onReloadOfferings,
+    required this.onManageSubscription,
     required this.formatDate,
   });
 
@@ -34,6 +37,7 @@ class PaywallBodyContent extends StatelessWidget {
   final void Function(Package package) onPurchasePackage;
   final VoidCallback onRestorePurchases;
   final VoidCallback onReloadOfferings;
+  final VoidCallback? onManageSubscription;
   final String Function(DateTime date) formatDate;
 
   @override
@@ -61,14 +65,14 @@ class PaywallBodyContent extends StatelessWidget {
                     ? AppColorTokens.warmAccent
                     : theme.colorScheme.primary,
                 semanticLabel: subscriptionStatus.hasUnlimited
-                    ? 'Active subscription'
-                    : 'Free plan',
+                    ? l.subscriptionStatusActiveSemantic
+                    : l.subscriptionStatusFreeSemantic,
               ),
               const SizedBox(height: 16),
               Text(
                 subscriptionStatus.hasUnlimited
-                    ? 'AgathaTrack Unlimited'
-                    : 'Free Plan',
+                    ? l.subscriptionProductNameUnlimited
+                    : l.subscriptionProductNameFree,
                 style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -76,8 +80,8 @@ class PaywallBodyContent extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 subscriptionStatus.hasUnlimited
-                    ? 'You have full access to all features.'
-                    : 'Upgrade to unlock all features.',
+                    ? l.subscriptionBodyUnlimited
+                    : l.subscriptionBodyFree,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -86,7 +90,13 @@ class PaywallBodyContent extends StatelessWidget {
               if (subscriptionStatus.expirationDate != null) ...[
                 const SizedBox(height: 8),
                 Text(
-                  'Renews: ${formatDate(subscriptionStatus.expirationDate!)}',
+                  subscriptionStatus.willRenew
+                      ? l.subscriptionRenewsOn(
+                          formatDate(subscriptionStatus.expirationDate!),
+                        )
+                      : l.subscriptionActiveUntil(
+                          formatDate(subscriptionStatus.expirationDate!),
+                        ),
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -97,7 +107,11 @@ class PaywallBodyContent extends StatelessWidget {
                 PaywallFeatureListCard(theme: theme),
                 const SizedBox(height: 24),
                 if (error != null)
-                  AsyncErrorState(title: error, onRetry: onReloadOfferings)
+                  AsyncErrorState(
+                    title: error,
+                    onRetry: onReloadOfferings,
+                    retryKey: const Key('paywall_reload_offerings'),
+                  )
                 else
                   ..._offeringCards(context, l),
                 const SizedBox(height: 12),
@@ -111,15 +125,21 @@ class PaywallBodyContent extends StatelessWidget {
                 ),
               ],
               if (subscriptionStatus.hasUnlimited) ...[
-                if (subscriptionStatus.managementUrl != null) ...[
+                if (onManageSubscription != null) ...[
                   SizedBox(
                     width: double.infinity,
                     child: FilledButton.icon(
                       key: const Key('manage_subscription_button'),
-                      onPressed: () {},
+                      onPressed: onManageSubscription,
                       icon: const Icon(Icons.settings),
                       label: Text(l.manageSubscription),
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                ] else ...[
+                  SupplementalStateCaption(
+                    state: SupplementalState.unavailable,
+                    label: l.subscriptionManagementUnavailable,
                   ),
                   const SizedBox(height: 12),
                 ],
@@ -141,59 +161,23 @@ class PaywallBodyContent extends StatelessWidget {
 
   List<Widget> _offeringCards(BuildContext context, AppLocalizations l) {
     final widgets = <Widget>[];
-
+    final packages = <Package>[];
     for (final offering in offerings) {
-      for (final package in offering.availablePackages) {
-        final product = package.storeProduct;
-        final isMonthly =
-            product.identifier.contains('monthly') ||
-            package.packageType == PackageType.monthly;
-        final isYearly =
-            product.identifier.contains('yearly') ||
-            package.packageType == PackageType.annual;
-
-        String periodLabel;
-        if (isYearly) {
-          periodLabel = 'per year';
-        } else if (isMonthly) {
-          periodLabel = 'per month';
-        } else {
-          periodLabel = '';
-        }
-
-        final savingsTag = isYearly ? 'Best Value' : null;
-
-        widgets.add(
-          Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: PaywallOfferingCard(
-              title: product.title.isNotEmpty
-                  ? product.title
-                  : (isYearly ? 'Yearly' : 'Monthly'),
-              price: product.priceString,
-              periodLabel: periodLabel,
-              savingsTag: savingsTag,
-              isPurchasing: purchasing,
-              onPurchase: () => onPurchasePackage(package),
-              theme: theme,
-            ),
-          ),
-        );
-      }
+      packages.addAll(offering.availablePackages);
     }
 
-    if (widgets.isEmpty && error == null) {
+    final displays = PaywallOfferDisplay.displaysForPackages(packages, l);
+    for (var i = 0; i < packages.length; i++) {
+      final package = packages[i];
+      final display = displays[i];
       widgets.add(
         Padding(
-          padding: const EdgeInsets.only(bottom: 16),
-          child: SizedBox(
-            width: double.infinity,
-            child: FilledButton.icon(
-              key: const Key('subscribe_button'),
-              onPressed: loading ? null : onReloadOfferings,
-              icon: const Icon(Icons.refresh),
-              label: Text(l.loadPlans),
-            ),
+          padding: const EdgeInsets.only(bottom: 12),
+          child: PaywallOfferingCard(
+            offer: display,
+            isPurchasing: purchasing,
+            onPurchase: () => onPurchasePackage(package),
+            theme: theme,
           ),
         ),
       );

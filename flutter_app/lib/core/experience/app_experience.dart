@@ -1,5 +1,12 @@
-/// Product experience shell: individual pet care vs shelter/organisation.
-enum AppExperience { petCare, organization }
+/// Active product experience — Pet Care only (`/pc/*`).
+///
+/// [AppExperience.organization] is retained for wire compatibility and legacy
+/// references; it must not be offered in UI.
+enum AppExperience {
+  petCare,
+  @Deprecated('Frozen shelter workspace — not active in the product')
+  organization,
+}
 
 extension AppExperienceWire on AppExperience {
   String get wire => switch (this) {
@@ -9,23 +16,13 @@ extension AppExperienceWire on AppExperience {
 
   static AppExperience? fromWire(String? value) => switch (value) {
     'pet_care' || 'guardian' => AppExperience.petCare,
-    'organization' => AppExperience.organization,
+    'organization' => AppExperience.petCare,
     _ => null,
   };
 
-  String homePath({String? orgId}) => switch (this) {
-    AppExperience.petCare => '/pc/home',
-    AppExperience.organization =>
-      orgId != null && orgId.isNotEmpty ? '/o/$orgId' : '/o/orgs',
-  };
+  String homePath({String? orgId}) => '/pc/home';
 
-  String get eventsPath => switch (this) {
-    AppExperience.petCare => '/pc/events',
-    AppExperience.organization => '/o/events',
-  };
+  String get eventsPath => '/pc/events';
 
-  String get settingsPath => switch (this) {
-    AppExperience.petCare => '/pc/settings',
-    AppExperience.organization => '/o/settings',
-  };
+  String get settingsPath => '/pc/settings';
 }

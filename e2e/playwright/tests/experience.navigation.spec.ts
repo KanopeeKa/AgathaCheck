@@ -183,15 +183,16 @@ test.describe('Experience navigation', () => {
     await expect(page.getByRole('button', { name: /back/i })).toBeVisible();
   });
 
-  test('guardian chooser hides organisation option for guardian-only users', async ({
+  test.skip('guardian chooser hides organisation option for guardian-only users', async ({
     page,
     testUser,
   }) => {
+    // frozen-domains-removal-3f9c phase 6: Pet Care MVP no longer exposes /app/choose FTUE
+    // for guardian-only sign-in (chooser screen removed from active router).
     await loginFromLanding(page, testUser.email, testUser.password);
     const experience = new ExperiencePage(page);
     await experience.gotoChooser();
     await experience.expectChooserVisible();
-    // @legacy BDD expected org hidden for guardian-only; FTUE now shows both paths.
     await expect(
       page.getByRole('button', { name: /Track my pets|Suivre mes animaux/i }),
     ).toBeVisible();

@@ -22,7 +22,6 @@ void main() {
     'providers/care_item_absence_providers.dart',
     'providers/care_item_absence_resolution_sync.dart',
     'providers/pet_event_view_providers.dart',
-    'widgets/entry_document_section.dart',
     'widgets/health_entry_form/health_entry_advanced_settings_section.dart',
     'widgets/health_entry_form/health_entry_document_handler.dart',
     'widgets/health_entry_form/health_entry_photos_section.dart',

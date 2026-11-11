@@ -90,7 +90,8 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
                 .toList(),
           );
       if (!mounted) return;
-      await _afterSave(detail);
+      final completed = await _afterSave(detail);
+      if (!completed && _controller.householdInviteFailed) return;
     } on PeopleApiException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +122,7 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
     return created.id;
   }
 
-  Future<void> _afterSave(ContactDetail detail) async {
+  Future<bool> _afterSave(ContactDetail detail) async {
     final args = widget.args;
     final access = _controller.appAccess;
     final email = _controller.form.email.trim();
@@ -140,7 +141,7 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
             prefillEmail: email,
           ),
         );
-        return;
+        return true;
       }
     }
 
@@ -148,23 +149,77 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
         email.isNotEmpty) {
       final householdId = await _resolveHouseholdId();
       if (householdId != null) {
-        await ref
-            .read(householdsRepositoryProvider)
-            .createHouseholdInvite(
+        try {
+          await ref
+              .read(householdsRepositoryProvider)
+              .createHouseholdInvite(
+                householdId: householdId,
+                inviteeEmail: email,
+                contactId: detail.id,
+              );
+        } catch (_) {
+          if (mounted) {
+            _controller.setHouseholdInviteFailed(
+              contact: detail,
               householdId: householdId,
-              inviteeEmail: email,
-              contactId: detail.id,
             );
+          }
+          return false;
+        }
       }
     }
 
+    return _navigateAfterSuccessfulSave(detail, args);
+  }
+
+  Future<bool> _navigateAfterSuccessfulSave(
+    ContactDetail detail,
+    AddPersonRouteArgs? args,
+  ) async {
     if (args?.popResultOnSave == true) {
       context.pop(detail.toSummary());
-      return;
+      return true;
     }
     if (mounted) {
       context.go('/pc/people/${detail.id}');
     }
+    return true;
+  }
+
+  Future<void> _retryHouseholdInvite() async {
+    final contact = _controller.savedContact;
+    final householdId = _controller.pendingInviteHouseholdId;
+    final email = _controller.form.email.trim();
+    if (contact == null || householdId == null || email.isEmpty) return;
+
+    setState(() => _saving = true);
+    try {
+      await ref
+          .read(householdsRepositoryProvider)
+          .createHouseholdInvite(
+            householdId: householdId,
+            inviteeEmail: email,
+            contactId: contact.id,
+          );
+      _controller.clearHouseholdInviteFailed();
+      if (!mounted) return;
+      await _navigateAfterSuccessfulSave(contact, widget.args);
+    } catch (_) {
+      if (mounted) {
+        _controller.setHouseholdInviteFailed(
+          contact: contact,
+          householdId: householdId,
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  void _openSavedContact() {
+    final contact = _controller.savedContact;
+    if (contact == null || !mounted) return;
+    context.go('/pc/people/${contact.id}');
   }
 
   @override
@@ -180,6 +235,8 @@ class _AddPersonFlowState extends ConsumerState<AddPersonFlow> {
       onBack: _handleBack,
       onNext: _handleNext,
       onSave: _save,
+      onRetryHouseholdInvite: _retryHouseholdInvite,
+      onOpenSavedContact: _openSavedContact,
     );
 
     if (isDialog) {
@@ -233,6 +290,8 @@ class _AddPersonFlowBody extends StatelessWidget {
     required this.onBack,
     required this.onNext,
     required this.onSave,
+    required this.onRetryHouseholdInvite,
+    required this.onOpenSavedContact,
   });
 
   final AddPersonFlowController controller;
@@ -240,6 +299,8 @@ class _AddPersonFlowBody extends StatelessWidget {
   final VoidCallback onBack;
   final VoidCallback onNext;
   final VoidCallback onSave;
+  final Future<void> Function() onRetryHouseholdInvite;
+  final VoidCallback onOpenSavedContact;
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +312,25 @@ class _AddPersonFlowBody extends StatelessWidget {
 
     return Column(
       children: [
+        if (controller.householdInviteFailed)
+          Semantics(
+            liveRegion: true,
+            child: MaterialBanner(
+              content: Text(l.peopleContactSavedInviteFailed),
+              actions: [
+                TextButton(
+                  key: const Key('people_add_open_saved_contact'),
+                  onPressed: onOpenSavedContact,
+                  child: Text(l.peopleOpenSavedContact),
+                ),
+                FilledButton(
+                  key: const Key('people_add_retry_household_invite'),
+                  onPressed: saving ? null : onRetryHouseholdInvite,
+                  child: Text(l.peopleRetryHouseholdInvite),
+                ),
+              ],
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Text(
@@ -274,7 +354,9 @@ class _AddPersonFlowBody extends StatelessWidget {
                 const Spacer(),
                 FilledButton(
                   onPressed:
-                      saving || entry == null && controller.stepIndex == 0
+                      saving ||
+                          entry == null && controller.stepIndex == 0 ||
+                          controller.householdInviteFailed
                       ? null
                       : onNext,
                   child: saving

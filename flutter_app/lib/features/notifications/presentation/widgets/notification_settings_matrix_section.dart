@@ -58,32 +58,37 @@ class NotificationSettingsMatrixSection extends StatelessWidget {
           theme: theme,
           showPush: kNotificationPushTransportShipped,
         ),
-        ...NotificationMatrixCategory.values.map((category) {
-          if (category == NotificationMatrixCategory.agathaSuggestions) {
-            return _AgathaSuggestionsRow(
-              l: l,
-              theme: theme,
-              channels: matrix.channel(category),
-              agathaInApp: agathaSuggestionsInApp,
-              pushOsDenied: pushOsDenied,
-              suggestionTypes: suggestionTypes,
-              onChannelsChanged: (ch) =>
-                  onMatrixChanged(matrix.copyWithCategory(category, ch)),
-              onAgathaInAppChanged: onAgathaInAppChanged,
-              onSuggestionTypesChanged: onSuggestionTypesChanged,
-            );
-          }
-          return _CategoryMatrixRow(
-            l: l,
-            theme: theme,
-            category: category,
-            channels: matrix.channel(category),
-            pushOsDenied: pushOsDenied,
-            showPush: kNotificationPushTransportShipped,
-            onChanged: (ch) =>
-                onMatrixChanged(matrix.copyWithCategory(category, ch)),
-          );
-        }),
+        ...NotificationMatrixCategory.values
+            .where(
+              (category) =>
+                  category != NotificationMatrixCategory.organisationFoster,
+            )
+            .map((category) {
+              if (category == NotificationMatrixCategory.agathaSuggestions) {
+                return _AgathaSuggestionsRow(
+                  l: l,
+                  theme: theme,
+                  channels: matrix.channel(category),
+                  agathaInApp: agathaSuggestionsInApp,
+                  pushOsDenied: pushOsDenied,
+                  suggestionTypes: suggestionTypes,
+                  onChannelsChanged: (ch) =>
+                      onMatrixChanged(matrix.copyWithCategory(category, ch)),
+                  onAgathaInAppChanged: onAgathaInAppChanged,
+                  onSuggestionTypesChanged: onSuggestionTypesChanged,
+                );
+              }
+              return _CategoryMatrixRow(
+                l: l,
+                theme: theme,
+                category: category,
+                channels: matrix.channel(category),
+                pushOsDenied: pushOsDenied,
+                showPush: kNotificationPushTransportShipped,
+                onChanged: (ch) =>
+                    onMatrixChanged(matrix.copyWithCategory(category, ch)),
+              );
+            }),
         if (!kNotificationPushTransportShipped)
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),

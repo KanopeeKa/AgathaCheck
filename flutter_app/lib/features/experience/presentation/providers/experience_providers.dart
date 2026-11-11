@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../pet_profile/pet_profile.dart';
 import '../../data/experience_preferences_store.dart';
 import '../../data/pet_care_onboarding_store.dart';
-import '../../data/org_onboarding_store.dart';
 import '../../domain/entities/app_experience.dart';
 import '../../domain/services/experience_eligibility.dart';
 import '../../domain/services/pet_care_onboarding_rules.dart';
@@ -20,14 +19,6 @@ final petCareOnboardingStoreProvider = Provider<PetCareOnboardingStore>((ref) {
 
 final petCareOnboardingCompletedProvider = Provider<bool>((ref) {
   return ref.watch(petCareOnboardingStoreProvider).readCompleted();
-});
-
-final orgOnboardingStoreProvider = Provider<OrgOnboardingStore>((ref) {
-  return OrgOnboardingStore(ref.watch(sharedPreferencesProvider));
-});
-
-final orgOnboardingCompletedProvider = Provider<bool>((ref) {
-  return ref.watch(orgOnboardingStoreProvider).readCompleted();
 });
 
 final experienceEligibilityProvider =

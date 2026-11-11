@@ -188,11 +188,9 @@ void main() {
     expect(find.text('Pet profile'), findsOneWidget);
   });
 
-  testWidgets('navigates to organisation detail when no pet id', (
+  testWidgets('organisation-only notification does not deep-link to /o', (
     tester,
   ) async {
-    late String location;
-
     await tester.pumpWidget(
       MaterialApp.router(
         routerConfig: GoRouter(
@@ -209,13 +207,6 @@ void main() {
                 ),
               ),
             ),
-            GoRoute(
-              path: '/o/orgs/:orgId',
-              builder: (context, state) {
-                location = state.uri.path;
-                return const Scaffold(body: Text('Org detail'));
-              },
-            ),
           ],
         ),
       ),
@@ -224,7 +215,6 @@ void main() {
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
 
-    expect(location, '/o/orgs/org-1');
-    expect(find.text('Org detail'), findsOneWidget);
+    expect(find.text('Open'), findsOneWidget);
   });
 }

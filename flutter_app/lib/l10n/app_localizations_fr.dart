@@ -16,7 +16,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get appTagline =>
-      'AgathaTrack organise la santé de vos animaux — à la maison, dans un refuge ou avec une équipe de soins.';
+      'AgathaTrack organise les soins de votre animal — à la maison et avec les personnes de confiance.';
 
   @override
   String get appDescription =>
@@ -1826,6 +1826,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get householdNameLabel => 'Household name';
 
   @override
+  String get householdNameRequired => 'Saisissez un nom de foyer';
+
+  @override
   String get householdOrganiserLabel => 'Organiser · Full access';
 
   @override
@@ -2398,6 +2401,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get markAllRead => 'Tout marquer comme lu';
 
   @override
+  String get notificationsMarkedRead => 'Tout est marqué comme lu';
+
+  @override
+  String get notificationOpenInbox => 'Ouvrir la boîte complète';
+
+  @override
   String get notificationSettingsTooltip => 'Paramètres de notification';
 
   @override
@@ -2518,6 +2527,153 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get subscriptionPlansUnavailable =>
       'Les forfaits ne sont pas disponibles pour le moment. Réessayez dans un instant.';
+
+  @override
+  String get subscriptionStatusActiveSemantic => 'Abonnement actif';
+
+  @override
+  String get subscriptionStatusFreeSemantic => 'Forfait gratuit';
+
+  @override
+  String get subscriptionProductNameUnlimited => 'AgathaTrack Illimité';
+
+  @override
+  String get subscriptionProductNameFree => 'Forfait gratuit';
+
+  @override
+  String get subscriptionBodyUnlimited =>
+      'Vous avez accès à toutes les fonctionnalités.';
+
+  @override
+  String get subscriptionBodyFree =>
+      'Passez à l\'offre supérieure pour tout débloquer.';
+
+  @override
+  String subscriptionRenewsOn(String date) {
+    return 'Renouvellement le $date';
+  }
+
+  @override
+  String subscriptionActiveUntil(String date) {
+    return 'Actif jusqu\'au $date';
+  }
+
+  @override
+  String get subscriptionPeriodPerMonth => 'par mois';
+
+  @override
+  String get subscriptionPeriodPerYear => 'par an';
+
+  @override
+  String get subscriptionFallbackMonthly => 'Mensuel';
+
+  @override
+  String get subscriptionFallbackYearly => 'Annuel';
+
+  @override
+  String get subscriptionBestValue => 'Meilleur rapport';
+
+  @override
+  String get subscriptionAutoRenewDisclosure =>
+      'Cet abonnement se renouvelle automatiquement à chaque période de facturation jusqu\'à annulation.';
+
+  @override
+  String get subscriptionCancelDisclosure =>
+      'Annulez dans votre compte de la boutique avant la prochaine date de facturation pour éviter un prélèvement.';
+
+  @override
+  String subscriptionIntroDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours',
+      one: '1 jour',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroWeeks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count semaines',
+      one: '1 semaine',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroMonths(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mois',
+      one: '1 mois',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionIntroYears(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ans',
+      one: '1 an',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String subscriptionTrialDisclosure(
+    String introPrice,
+    String introPeriod,
+    String recurringPrice,
+  ) {
+    return 'Offre d\'introduction : $introPrice pour $introPeriod, puis $recurringPrice par période de facturation.';
+  }
+
+  @override
+  String get subscriptionManagementUnavailable =>
+      'La gestion de l\'abonnement n\'est pas disponible sur cet appareil.';
+
+  @override
+  String get subscriptionManagementOpenFailed =>
+      'Impossible d\'ouvrir la gestion de l\'abonnement. Copiez ce lien pour l\'ouvrir dans votre navigateur :';
+
+  @override
+  String get externalLinkOpenFailed =>
+      'Impossible d\'ouvrir ce lien. Copiez-le pour l\'ouvrir dans votre navigateur :';
+
+  @override
+  String get subscriptionPurchaseFailed =>
+      'L\'achat n\'a pas abouti. Réessayez ou restaurez un achat existant.';
+
+  @override
+  String get subscriptionRestoreFailed =>
+      'Impossible de restaurer les achats. Réessayez dans un instant.';
+
+  @override
+  String get subscriptionFeatureUnlimitedTitle => 'AgathaTrack Illimité';
+
+  @override
+  String get subscriptionFeatureProfiles => 'Profils d\'animaux illimités';
+
+  @override
+  String get subscriptionFeatureHealth => 'Suivi de santé complet';
+
+  @override
+  String get subscriptionFeatureSharing => 'Partage familial des animaux';
+
+  @override
+  String get subscriptionFeaturePdf => 'Génération de rapports PDF';
+
+  @override
+  String get subscriptionFeatureReminders => 'Rappels de santé';
+
+  @override
+  String get subscriptionFeatureSupport => 'Assistance prioritaire';
 
   @override
   String get petReport => 'Rapport de l\'animal';
@@ -4877,14 +5033,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqAccountA4 =>
-      'Allez dans le menu utilisateur (votre avatar en haut à droite), puis appuyez sur « Mes informations ». Vous pouvez modifier votre nom, bio, photo de profil et changer votre mot de passe.';
+      'Ouvrez Compte depuis le menu principal, puis appuyez sur Mes informations en haut de la page ou sous Profil. Vous pouvez modifier votre nom, bio, photo de profil et changer votre mot de passe.';
 
   @override
   String get faqAccountQ5 => 'Comment me déconnecter ?';
 
   @override
   String get faqAccountA5 =>
-      'Ouvrez le menu utilisateur (icône avatar en haut à droite) et appuyez sur « Déconnexion ». Vous serez redirigé vers la page d\'accueil.';
+      'Ouvrez Compte depuis le menu principal, faites défiler jusqu\'à Actions et appuyez sur Déconnexion. Vous retournez à la page d\'accueil.';
 
   @override
   String get faqPetProfileTitle => 'Profils des animaux';
@@ -4946,14 +5102,14 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqHealthA2 =>
-      'Vous pouvez ajouter des entrées depuis deux endroits : la page de détail de l\'animal (spécifique à cet animal) ou le Tableau de bord santé global (accessible depuis l\'icône médicale dans la barre du haut). Renseignez le type, le nom, la date et les détails optionnels.';
+      'Ajoutez un soin depuis le profil de l\'animal ou ouvrez Toutes les actions depuis l\'accueil Soins animalier. Renseignez le type de soin, le nom, la date et les détails optionnels (fréquence, notes, photos).';
 
   @override
   String get faqHealthQ3 => 'Qu\'est-ce que le Tableau de bord santé ?';
 
   @override
   String get faqHealthA3 =>
-      'Le Tableau de bord santé est une vue globale de tous les événements de santé de tous vos animaux. Il est organisé en onglets par type et affiche les entrées à venir, dues et en retard. Vous pouvez filtrer par organisation.';
+      'Toutes les actions regroupe les soins à venir, dus et en retard pour tous vos animaux. Ouvrez-la depuis l\'accueil Soins animalier pour tout voir en un seul endroit, ou concentrez-vous sur un animal depuis son profil.';
 
   @override
   String get faqHealthQ4 =>
@@ -5010,7 +5166,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqVetA1 =>
-      'Allez dans la section Vétérinaires (accessible depuis l\'icône stéthoscope dans la barre du haut). Appuyez sur le bouton « + » et renseignez le nom de la clinique, le nom du vétérinaire, le téléphone, l\'e-mail, l\'adresse et le site web.';
+      'Ouvrez Compte → Personnes, ou choisissez Vétérinaires dans le menu Soins animalier, puis appuyez sur Ajouter. Renseignez le nom de la clinique, le nom du vétérinaire, le téléphone, l\'e-mail, l\'adresse et le site web.';
 
   @override
   String get faqVetQ2 => 'Comment associer un vétérinaire à mon animal ?';
@@ -5049,7 +5205,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqSharingA3 =>
-      'Oui. Faites glisser vers la gauche sur la carte d\'un animal partagé pour le masquer. Les animaux masqués n\'apparaîtront pas dans votre liste, votre tableau de bord santé, et ne généreront pas de notifications. Vous pouvez les réafficher depuis la page de détail de l\'organisation.';
+      'Oui. Dans la section Partage de l\'animal, choisissez Masquer de mes animaux. Les animaux masqués n\'apparaissent plus dans votre liste ni dans les rappels de soins. Demandez un nouveau lien de partage au propriétaire si vous souhaitez suivre l\'animal à nouveau.';
 
   @override
   String get faqSharingQ4 =>
@@ -5057,7 +5213,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqSharingA4 =>
-      'Le partage donne un accès en lecture à un animal — le propriétaire d\'origine garde le contrôle total. Le transfert (disponible pour les animaux d\'organisation) transfère la propriété de l\'animal à un autre utilisateur ou organisation.';
+      'Le partage donne un accès en lecture pendant que vous gardez le contrôle total. Le transfert de propriété déplace un animal dont vous êtes propriétaire vers le compte d\'une autre personne ; vous pouvez conserver un accès partagé tant qu\'elle ne vous retire pas.';
 
   @override
   String get faqOrgTitle => 'Organisations';
@@ -5149,7 +5305,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqNotificationsA2 =>
-      'Allez sur l\'écran Notifications (icône cloche dans la barre du haut) et appuyez sur l\'icône paramètres. Vous pouvez personnaliser les types de notifications que vous souhaitez recevoir.';
+      'Ouvrez l\'écran Notifications complet (lorsque votre interface affiche une icône notifications dans la barre, appuyez dessus) et utilisez l\'icône paramètres en haut. Vous pouvez aussi ouvrir les paramètres de notification depuis l\'onglet Pour vous lorsque les suggestions sont désactivées.';
 
   @override
   String get faqNotificationsQ3 =>
@@ -5174,7 +5330,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqReportsA1 =>
-      'Ouvrez la page de détail d\'un animal et appuyez sur l\'icône rapport/PDF. Vous pouvez personnaliser le contenu — informations de profil, historique de poids, événements de santé, problèmes de santé, événements familiaux, notifications et détails de partage. Le rapport est généré en PDF téléchargeable.';
+      'Ouvrez le profil d\'un animal, ouvrez le menu (⋯) et choisissez Télécharger le rapport animal. Sélectionnez les sections souhaitées — profil, poids, historique des soins, problèmes de santé, notifications et partage. L\'application génère un PDF que vous pouvez enregistrer.';
 
   @override
   String get faqReportsQ2 =>
@@ -5182,7 +5338,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get faqReportsA2 =>
-      'Les rapports peuvent inclure : les détails du profil (nom, race, âge, ID), un graphique de poids et tableau d\'historique, une liste de toutes les entrées de santé par type, les problèmes de santé enregistrés, les affectations et séjours en famille d\'accueil (pour les animaux d\'organisation), les notifications et alertes récentes, et les détails de partage. Vous choisissez les sections à inclure.';
+      'Les rapports peuvent inclure les détails du profil (nom, race, âge, ID), un graphique de poids et un tableau d\'historique, les entrées de soins par type, les problèmes de santé enregistrés, les notifications et alertes récentes, et les détails de partage. Vous choisissez les sections avant la génération.';
 
   @override
   String get faqSubscriptionTitle => 'Abonnement';
@@ -5237,6 +5393,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get consentManagePreferences => 'Gérer les préférences';
+
+  @override
+  String get consentRejectOptional => 'Refuser l\'optionnel';
+
+  @override
+  String get consentBannerSaving => 'Enregistrement de votre choix';
 
   @override
   String get consentSettings => 'Préférences de confidentialité';
@@ -5513,6 +5675,18 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get dataExported => 'Vos données ont été exportées';
+
+  @override
+  String get dataExportUnavailable =>
+      'Cet appareil ne peut pas enregistrer un fichier d\'export. Utilisez l\'application web pour télécharger vos données.';
+
+  @override
+  String get dataExportCancelled =>
+      'Export annulé. Vos données n\'ont pas été enregistrées.';
+
+  @override
+  String get dataExportFailed =>
+      'Impossible d\'exporter vos données. Réessayez.';
 
   @override
   String get consentPreferences => 'Préférences de confidentialité';
@@ -6480,7 +6654,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notificationInboxForYouEmpty =>
-      'Pas de suggestion pour l\'instant. Agatha vous préviendra quand quelque chose mérite un coup d\'œil.';
+      'Pas de suggestion pour l\'instant.';
 
   @override
   String get notificationInboxV2Explainer =>
@@ -6633,6 +6807,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get notificationActionNeeded => 'Action requise';
+
+  @override
+  String get pendingActionsUnavailableTitle => 'Aucune action ici';
+
+  @override
+  String get pendingActionsUnavailableBody =>
+      'Les validations famille d\'accueil, adoption et garde ne sont plus gérées sur cette page. Ouvrez votre boîte de réception pour les messages et les suggestions d\'Agatha.';
+
+  @override
+  String get pendingActionsOpenInbox => 'Ouvrir la boîte de réception';
 
   @override
   String get notificationRead => 'Lu';
@@ -8236,6 +8420,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get petTagsNameHint => 'Nom de l\'étiquette';
 
   @override
+  String get petTagNameRequired => 'Saisissez un nom d\'étiquette';
+
+  @override
+  String petTagUsageCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Utilisée pour $count animaux',
+      one: 'Utilisée pour 1 animal',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get petTagsMyTags => 'Mes étiquettes';
 
   @override
@@ -8874,6 +9072,16 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get peopleAddPersonSave => 'Enregistrer';
+
+  @override
+  String get peopleContactSavedInviteFailed =>
+      'Contact enregistré. L\'invitation au foyer n\'a pas été envoyée.';
+
+  @override
+  String get peopleRetryHouseholdInvite => 'Réessayer l\'invitation';
+
+  @override
+  String get peopleOpenSavedContact => 'Ouvrir le contact';
 
   @override
   String get peopleAddRolesRequired =>

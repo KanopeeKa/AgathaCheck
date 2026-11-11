@@ -38,6 +38,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 | Away planning — People amendments | [people-care-team.md](/docs/domains/people/features/people-care-team.md) § Away Planning integration | Per-pet away plans shipped — co-parent visibility in [care-context.md](features/care-context.md) |
 | Care Intelligence Phase D | [phase-d-review-relevance-plan.md](changes/phase-d-review-relevance-plan.md) | Research and delivery |
 | Classification taxonomy | [care-classification-taxonomy-spec.md](changes/care-classification-taxonomy-spec.md) | Spec → fold when delivered |
+| All care by care item | [all-care-by-item-delivery-plan.md](changes/all-care-by-item-delivery-plan.md) | Execute-plan `all-care-by-item-c455` |
 
 ## Frozen delivery history
 

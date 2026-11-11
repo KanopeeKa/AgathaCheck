@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../domain/entities/app_notification.dart';
 import '../../domain/services/notification_inbox_v2_rules.dart';
 import '../providers/notification_inbox_session.dart';
 import '../providers/notification_providers.dart';
+import '../utils/mark_all_read_eligibility.dart';
 import '../utils/notification_navigation.dart';
 import 'notification_inbox_list.dart';
 import 'notification_inbox_tab_bar.dart';
@@ -52,6 +54,12 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
             .toList() ??
         const <AppNotification>[];
 
+    final markAllEligible = MarkAllReadEligibility.isEligible(
+      isLoading: notificationsAsync.isLoading,
+      notifications: visible,
+      tab: selectedTab,
+    );
+
     return Drawer(
       width: _panelWidth(context),
       child: SafeArea(
@@ -61,7 +69,9 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
               NotificationPanelHeader(
                 l: l,
                 theme: theme,
-                onMarkAllRead: _markAllRead,
+                onOpenInbox: () => _openFullInbox(context),
+                onOpenSettings: () => _openNotificationSettings(context),
+                onMarkAllRead: markAllEligible ? _markAllRead : null,
               ),
               NotificationInboxTabBar(
                 selected: selectedTab,
@@ -115,6 +125,16 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
     navigateToNotificationActions(context);
   }
 
+  static void _openFullInbox(BuildContext context) {
+    Navigator.of(context).pop();
+    context.push('/notifications');
+  }
+
+  static void _openNotificationSettings(BuildContext context) {
+    Navigator.of(context).pop();
+    context.push('/notifications/settings');
+  }
+
   Future<void> _onPanelNotificationTap(
     BuildContext context,
     WidgetRef ref,
@@ -140,7 +160,7 @@ class _NotificationPanelState extends ConsumerState<NotificationPanel> {
       final l = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l.markAllRead)));
+      ).showSnackBar(SnackBar(content: Text(l.notificationsMarkedRead)));
     }
   }
 }

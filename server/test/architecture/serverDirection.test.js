@@ -11,10 +11,7 @@ const SCAN_ROOTS = ['lib', 'services'];
 const ROUTES_IMPORT_RE = /from\s+['"][^'"]*\/routes\//;
 const ROUTES_IMPORT_RE_ALT = /require\s*\(\s*['"][^'"]*\/routes\//;
 
-const ROUTE_SCAN_EXCLUDED = [
-  'routes/fosterPlacements.js',
-  'routes/custodyTransfers.js',
-];
+const ROUTE_SCAN_EXCLUDED = [];
 
 const IMPORT_SPEC_RE = /(?:from|export\s+\*\s+from)\s+['"]([^'"]+)['"]/g;
 
