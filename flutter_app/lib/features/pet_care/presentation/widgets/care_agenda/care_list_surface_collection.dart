@@ -255,14 +255,13 @@ class _CareListSurfaceCollectionState
   void _appendUpcomingWithDateHeaders(
     List<CareCollectionInsetItem> items,
     List<HealthEntry> entries,
-  void Function(HealthEntry entry, {required bool todaySection}) card,
+    void Function(HealthEntry entry, {required bool todaySection}) card,
     void Function(String key, String text, {String? semanticsIdentifier})
-        header,
+    header,
     Duration elapsed,
   ) {
     final petNames = widget.petNames;
-    final multiPet =
-        petNames != null && petNames.length > 1;
+    final multiPet = petNames != null && petNames.length > 1;
     final rows = <CareAgendaRow<HealthEntry>>[];
     for (final entry in entries) {
       final row = careListUpcomingRow(entry, entry.schedule!, elapsed: elapsed);
