@@ -169,9 +169,9 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Flea treatment'), findsOneWidget);
-    expect(find.byKey(const Key('care_agenda_upcoming')), findsOneWidget);
+    expect(find.byKey(const Key('care_list_upcoming')), findsOneWidget);
 
-    await tester.tap(find.byKey(const Key('care_agenda_upcoming')));
+    await tester.tap(find.byKey(const Key('care_list_upcoming')));
     await tester.pumpAndSettle();
     expect(find.text('Heartgard'), findsOneWidget);
   });
@@ -309,7 +309,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(
-      find.byKey(const Key('pet_care_action_entry-owned')),
+      find.byKey(const Key('pet_care_action_done_entry-owned')),
       findsOneWidget,
     );
 
@@ -318,7 +318,10 @@ void main() {
 
     expect(find.byIcon(Icons.error_outline), findsOneWidget);
     expect(find.byKey(const Key('global_events_retry')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_action_entry-owned')), findsNothing);
+    expect(
+      find.byKey(const Key('pet_care_action_done_entry-owned')),
+      findsNothing,
+    );
     expect(find.text('No entries yet'), findsNothing);
   });
 
@@ -341,8 +344,11 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('care_agenda')), findsOneWidget);
-    expect(find.byKey(const Key('pet_care_action_planned')), findsOneWidget);
+    expect(find.byKey(const Key('care_list')), findsOneWidget);
+    expect(
+      find.byKey(const Key('pet_care_action_done_planned')),
+      findsOneWidget,
+    );
   });
 
   testWidgets('?pet= deep link preselects pet filter chips', (tester) async {

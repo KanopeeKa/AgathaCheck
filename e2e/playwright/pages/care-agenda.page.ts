@@ -32,9 +32,7 @@ export class CareAgendaPage {
       await this.expectRowVisible(entryName);
     }
     const opensItem = /Opens the care item|Ouvre le soin/i;
-    const byId = this.page.locator(
-      `[flt-semantics-identifier="care_agenda_row_${entryId}"]`,
-    );
+    const byId = this.rowById(entryId);
     const byRole =
       entryName != null
         ? this.page
@@ -63,9 +61,7 @@ export class CareAgendaPage {
       await refreshFlutterAccessibility(this.page);
       let path = flutterRoutePath(this.page.url());
       if (!careItemRoute.test(path) && entryName) {
-        const byRowId = this.page.locator(
-          `[flt-semantics-identifier="care_agenda_row_${entryId}"]`,
-        );
+        const byRowId = this.rowById(entryId);
         if (await byRowId.isVisible().catch(() => false)) {
           await byRowId.click({ position: { x: 12, y: 16 } });
           await refreshFlutterAccessibility(this.page);
@@ -138,7 +134,29 @@ export class CareAgendaPage {
     if (await show.isVisible({ timeout: 5_000 }).catch(() => false)) {
       await show.click();
       await refreshFlutterAccessibility(this.page);
+      return;
     }
+    const toggle = this.upcomingToggle();
+    if (await toggle.isVisible({ timeout: 5_000 }).catch(() => false)) {
+      await toggle.click();
+      await refreshFlutterAccessibility(this.page);
+    }
+  }
+
+  private rowById(entryId: string) {
+    return this.page
+      .locator(`[flt-semantics-identifier="care_list_card_${entryId}"]`)
+      .or(this.page.locator(`[flt-semantics-identifier="care_list_stack_${entryId}"]`))
+      .or(this.page.locator(`[flt-semantics-identifier="care_agenda_row_${entryId}"]`))
+      .or(this.page.locator(`[flt-semantics-identifier="care_agenda_stack_${entryId}"]`));
+  }
+
+  private upcomingToggle() {
+    return this.page
+      .locator('[flt-semantics-identifier="care_list_upcoming"]')
+      .or(this.page.locator('[flt-semantics-identifier="care_agenda_upcoming"]'))
+      .or(this.page.locator('[key="care_list_upcoming"]'))
+      .or(this.page.locator('[key="care_agenda_upcoming"]'));
   }
 
   async markDone(entryId: string): Promise<void> {
