@@ -8,10 +8,8 @@ import '../care_agenda/care_coordination_banner.dart';
 import '../care_surface/care_collection_inset_list.dart';
 import '../care_surface/care_surface_tokens.dart';
 
-typedef CareListCardBuilder = Widget Function(
-  HealthEntry entry, {
-  required bool todaySection,
-});
+typedef CareListCardBuilder =
+    Widget Function(HealthEntry entry, {required bool todaySection});
 
 List<CareCollectionInsetItem> buildCareListInsetItems({
   required BuildContext context,

@@ -275,16 +275,8 @@ class _OpenSlotLine extends StatelessWidget {
       label: '$when, ${pill.label}',
       child: Row(
         children: [
-          Expanded(
-            child: Text(
-              when,
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
-          CareItemStatusPill(
-            label: pill.label,
-            tone: _toneForPill(pill.tone),
-          ),
+          Expanded(child: Text(when, style: theme.textTheme.bodyMedium)),
+          CareItemStatusPill(label: pill.label, tone: _toneForPill(pill.tone)),
         ],
       ),
     );

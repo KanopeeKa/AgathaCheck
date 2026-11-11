@@ -20,7 +20,9 @@ class CareListSkeleton extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Material(
           color: CareSurfaceTokens.collectionBackground(),
-          borderRadius: BorderRadius.circular(CareSurfaceTokens.collectionRadius),
+          borderRadius: BorderRadius.circular(
+            CareSurfaceTokens.collectionRadius,
+          ),
           clipBehavior: Clip.antiAlias,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,

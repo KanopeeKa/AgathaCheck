@@ -150,9 +150,7 @@ class _CareListCollectionState extends ConsumerState<CareListCollection> {
     return Column(
       key: const Key('care_list'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        CareCollectionInsetList(children: items),
-      ],
+      children: [CareCollectionInsetList(children: items)],
     );
   }
 }
