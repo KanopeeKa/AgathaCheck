@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
-
+import '../../../../core/utils/external_link_launcher.dart';
 import '../../../../core/widgets/dashboard_section.dart';
 import '../../../../core/theme/app_color_tokens.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -96,7 +95,7 @@ class AccountScreen extends ConsumerWidget {
                         key: const Key('account_contact'),
                         icon: Icons.email_outlined,
                         label: l.contact,
-                        onTap: () => _launchContact(),
+                        onTap: () => _launchContact(context),
                       ),
                       _AccountRow(
                         key: const Key('account_legal'),
@@ -127,9 +126,16 @@ class AccountScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _launchContact() async {
-    final uri = Uri(scheme: 'mailto', path: DrawerMenuConfig.contactEmail);
-    if (await canLaunchUrl(uri)) await launchUrl(uri);
+  Future<void> _launchContact(BuildContext context) async {
+    final l = AppLocalizations.of(context)!;
+    final email = DrawerMenuConfig.contactEmail;
+    final uri = Uri(scheme: 'mailto', path: email);
+    await launchExternalLink(
+      context,
+      uri: uri,
+      displayUrl: email,
+      dialogTitle: l.contact,
+    );
   }
 }
 
