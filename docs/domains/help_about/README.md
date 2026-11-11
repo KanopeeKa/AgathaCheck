@@ -9,7 +9,7 @@ tags: [domain,help_about]
 
 # Help & about
 
-FAQ, help content, and about screens.
+FAQ, help content, and about screens. **Product support tickets and the contact hub** are owned by [customer_support](/docs/domains/customer_support/README.md) (not this domain).
 
 Part of the AgathaTrack domain-first documentation tree. Cross-cutting architecture: [/docs/architecture/index.md](/docs/architecture/index.md).
 

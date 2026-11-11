@@ -197,6 +197,17 @@ One health entry as a care series: open occurrences, agenda row, occurrence scre
 | Flutter | `flutter_app/lib/features/help/`, `about/` |
 | BDD | `help_faq.feature` |
 
+### Customer support
+
+| | Path |
+|---|------|
+| **Docs** | [/docs/domains/customer_support/README.md](/docs/domains/customer_support/README.md) |
+| Roadmap | [/docs/domains/customer_support/changes/support-roadmap.md](/docs/domains/customer_support/changes/support-roadmap.md) |
+| Flutter | TBD (`flutter_app/lib/features/support/`) |
+| Node | TBD (`server/routes/support/`) |
+| BDD / E2E | TBD |
+| **Today** | Account → `mailto:contact@agathatrack.com` only |
+
 ### Cross-cutting Flutter core
 
 | Concern | Path |

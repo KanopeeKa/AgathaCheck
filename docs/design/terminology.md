@@ -58,6 +58,16 @@ EN/FR labels for the People hub, pet profile grouping, and Today desk (see [`peo
 | Filters | All · Household · Carers · Professionals | Tous · Foyer · Proches · Pros | |
 | Pet profile section title | People around {pet} | Autour de {pet} | |
 | Pet profile — household group | At home | À la maison | One household per pet on profile |
+
+### Customer support vs directory contacts
+
+| Concept | English | Notes |
+| --- | --- | --- |
+| Directory contact | Contact (People hub) | A person or organisation in the user's care network — vets, sitters, etc. API: `/api/people/contacts`. |
+| Support request / ticket | Support request · ticket | A customer message to AgathaTrack staff about the product — bugs, billing, privacy. Domain: [customer_support](/docs/domains/customer_support/README.md). |
+| Contact (Account menu) | Contact | Account utility that will route to the **support contact hub** (not the People directory). Today: `mailto:contact@agathatrack.com`. |
+
+Do not use "contact" alone in engineering docs without specifying **directory** vs **support**.
 | Pet profile — carers group | Trusted carers | Proches & pet-sitters | |
 | Pet profile — professionals group | Pet professionals | Ses pros | |
 
