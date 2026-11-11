@@ -34,7 +34,8 @@ class StubRevenueCatService implements RevenueCatService {
       purchaseOutcome;
 
   @override
-  Future<SubscriptionStatus> getSubscriptionStatus() async => subscriptionStatus;
+  Future<SubscriptionStatus> getSubscriptionStatus() async =>
+      subscriptionStatus;
 
   @override
   Future<List<Offering>> getOfferings() async => [];
@@ -126,33 +127,35 @@ void main() {
     expect(container.read(subscriptionStatusProvider).hasUnlimited, isTrue);
   });
 
-  test('pending purchase does not downgrade confirmed unlimited on stale refresh',
-      () async {
-    const unlimited = SubscriptionStatus(
-      tier: SubscriptionTier.unlimited,
-      isActive: true,
-    );
-    final stub = StubRevenueCatService(
-      purchaseOutcome: const PurchaseOutcome.pendingUnconfirmed(),
-      subscriptionStatus: SubscriptionStatus.free,
-    );
+  test(
+    'pending purchase does not downgrade confirmed unlimited on stale refresh',
+    () async {
+      const unlimited = SubscriptionStatus(
+        tier: SubscriptionTier.unlimited,
+        isActive: true,
+      );
+      final stub = StubRevenueCatService(
+        purchaseOutcome: const PurchaseOutcome.pendingUnconfirmed(),
+        subscriptionStatus: SubscriptionStatus.free,
+      );
 
-    final container = ProviderContainer(
-      overrides: [
-        revenueCatServiceProvider.overrideWithValue(stub),
-        authProvider.overrideWith((ref) => FakeAuthNotifier()),
-      ],
-    );
-    addTearDown(container.dispose);
+      final container = ProviderContainer(
+        overrides: [
+          revenueCatServiceProvider.overrideWithValue(stub),
+          authProvider.overrideWith((ref) => FakeAuthNotifier()),
+        ],
+      );
+      addTearDown(container.dispose);
 
-    final notifier = container.read(subscriptionStatusProvider.notifier);
-    notifier.state = unlimited;
+      final notifier = container.read(subscriptionStatusProvider.notifier);
+      notifier.state = unlimited;
 
-    final outcome = await notifier.purchasePackage(_monthlyPackage());
+      final outcome = await notifier.purchasePackage(_monthlyPackage());
 
-    expect(outcome.kind, PurchaseOutcomeKind.pendingUnconfirmed);
-    expect(container.read(subscriptionStatusProvider).hasUnlimited, isTrue);
-  });
+      expect(outcome.kind, PurchaseOutcomeKind.pendingUnconfirmed);
+      expect(container.read(subscriptionStatusProvider).hasUnlimited, isTrue);
+    },
+  );
 
   test('restored outcome updates state to unlimited', () async {
     const unlimited = SubscriptionStatus(
