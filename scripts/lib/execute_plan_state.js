@@ -190,6 +190,13 @@ function prLadder(pr, rawCtx) {
   // PR-ladder 2
   if (pr.draft) {
     if (!ctx.draftAction) return finish(ctx, { ...base, action: wait('checks'), looked });
+    if (
+      kind === 'phase'
+      && ctx.draftAction.kind === 'implement'
+      && (ctx.obs.phases || []).some((p) => p.id === ctx.phase && p.merged_into_integration)
+    ) {
+      return finish(ctx, { ...base, action: wait('phase-merged'), looked });
+    }
     return launchOrStop(ctx, base, agent(ctx.draftAction.kind, ctx.draftAction.args), looked);
   }
   // PR-ladder 3
@@ -321,13 +328,14 @@ function decide(snapshot, obs, opts) {
   if (rel) return finish(ctx, { state: 'release:merged', action: wait('preuat'), looked: [{ label: 'release PR', pr: rel }] });
   // D4
   const phases = obs.phases || [];
-  if (phases.length && phases.every((p) => p.pr && p.pr.merged_at)) {
+  const phaseComplete = (p) => Boolean(p.merged_into_integration || (p.pr && p.pr.merged_at));
+  if (phases.length && phases.every(phaseComplete)) {
     if ((obs.integration.behind_main_by || 0) > 0) return decideSync(ctx); // S1
     // S2
     return finish(ctx, { state: 'phase:merged', action: driver('open-release-pr', { head: snapshot.integration_branch, base: 'main' }) });
   }
   // D5 / P1
-  const cur = phases.find((p) => !(p.pr && p.pr.merged_at));
+  const cur = phases.find((p) => !phaseComplete(p));
   const def = snapshot.phases.find((p) => p.id === cur.id);
   const base = { state: 'phase:pending', phase: cur.id };
   // P2

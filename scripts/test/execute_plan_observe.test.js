@@ -254,7 +254,7 @@ test('observe fills every Observations field (all phases pending, then a phase P
   assert.equal(obs.init_sha, STATUS.init_sha);
   assert.deepEqual(obs.main, { head_sha: 'm1', preuat_queued_for_head: true });
   assert.deepEqual(obs.integration, { exists: true, head_sha: 'i1', behind_main_by: 2 });
-  assert.deepEqual(obs.phases, [{ id: '1', branch_exists: false, pr: null }]);
+  assert.deepEqual(obs.phases, [{ id: '1', branch_exists: false, merged_into_integration: false, pr: null }]);
   assert.deepEqual(obs.sync, { open_pr: null, resolve_pr: null, resolve_prs_since_epoch: 1 });
   assert.deepEqual(obs.release, { pr: null });
   assert.deepEqual(obs.remedial, { open_pr: null, merged_since_epoch: 1 });
@@ -303,4 +303,64 @@ test('observe finds release PR when integration branch ref is gone', async () =>
   assert.equal(obs.integration.head_sha, null);
   assert.equal(obs.release.pr.number, 1969);
   assert.equal(obs.release.pr.state, 'merged');
+});
+
+test('observe prefers merged phase PR over a newer open duplicate (#2259)', async () => {
+  const mergedPull = {
+    number: 2236,
+    node_id: 'N2236',
+    state: 'closed',
+    draft: false,
+    merged_at: '2026-10-16T09:55:00Z',
+    merge_commit_sha: 'eeee000000000000000000000000000000000001',
+    created_at: '2026-10-16T09:20:00Z',
+    head: { ref: SNAP.phases[0].branch, sha: 'm2236' },
+    base: { ref: INTEG },
+    mergeable_state: 'unknown',
+    auto_merge: null,
+    labels: [],
+  };
+  const duplicateOpen = {
+    number: 2237,
+    node_id: 'N2237',
+    state: 'open',
+    draft: true,
+    merged_at: null,
+    created_at: '2026-10-16T10:30:00Z',
+    head: { ref: SNAP.phases[0].branch, sha: 'o2237' },
+    base: { ref: INTEG },
+    mergeable_state: 'clean',
+    auto_merge: null,
+    labels: [],
+  };
+  const base = {
+    'GET /repos/o/r/branches/main': { body: { commit: { sha: 'm1' } } },
+    'GET /repos/o/r/actions/workflows/pre-uat-e2e.yml/runs?branch=main&per_page=100': { body: { workflow_runs: [] } },
+    [`GET /repos/o/r/branches/${encodeURIComponent(INTEG)}`]: { body: { commit: { sha: 'i1' } } },
+    [`GET /repos/o/r/compare/${encodeURIComponent(INTEG)}...main`]: { body: { ahead_by: 0, behind_by: 0, files: [] } },
+    [`GET /repos/o/r/branches/${encodeURIComponent(SNAP.phases[0].branch)}`]: { body: { commit: { sha: 'o2237' } } },
+    [`GET /repos/o/r/pulls?base=${INTEG}&head=o:${SNAP.phases[0].branch}&per_page=100&state=all`]: {
+      body: [mergedPull, duplicateOpen],
+    },
+    [`GET /repos/o/r/pulls?base=${INTEG}&head=o:main&per_page=100&state=open`]: { body: [] },
+    [`GET /repos/o/r/pulls?base=${INTEG}&per_page=100&state=all`]: { body: [] },
+    [`GET /repos/o/r/pulls?base=main&head=o:${INTEG}&per_page=100&state=all`]: { body: [] },
+    'GET /repos/o/r/pulls?base=main&per_page=100&state=all': { body: [] },
+    'GET /repos/o/r/pulls/2236': { body: mergedPull },
+    'GET /repos/o/r/commits/m2236/check-runs?per_page=100': { body: { check_runs: [
+      run(1, 'ci-gate / CI passed', 'success', '2026-10-16T09:54:00Z'),
+      run(2, 'execute-plan-scope', 'success', '2026-10-16T09:54:00Z', 'ok'),
+    ] } },
+    'GET /repos/o/r/commits/m2236/statuses?per_page=100': { body: [] },
+    'GET /repos/o/r/pulls/2236/commits?per_page=100': { body: [{ sha: 'm2236' }] },
+    'GET /repos/o/r/pulls/2236/reviews?per_page=100': { body: [] },
+    'GET /repos/o/r/issues/2236/timeline?per_page=100': { body: [] },
+    'POST /graphql': { body: { data: { repository: { pullRequest: { reviewThreads: { nodes: [] } } } } } },
+  };
+  const { client, sleep } = setup(base);
+  const ctx = await loadPlanContext(client, { planId: PLAN_ID, controlIssue: 9 });
+  const obs = await observe(client, ctx, { now: NOW, sleep });
+  assert.equal(obs.phases[0].merged_into_integration, true);
+  assert.equal(obs.phases[0].pr.number, 2236);
+  assert.equal(obs.phases[0].pr.merged_at, '2026-10-16T09:55:00Z');
 });

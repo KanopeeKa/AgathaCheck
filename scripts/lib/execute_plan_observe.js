@@ -208,6 +208,18 @@ async function observe(client, ctx, { now, sleep }) {
     return pick ? observePr(client, pick, prOpts(pick.base.ref)) : null;
   };
 
+  /** Phase branch may have a merged PR plus a newer open duplicate (#2236 vs #2237); merged wins. */
+  const observePhase = async (headRef, baseRef) => {
+    const pulls = (await client.listPulls({ head: headRef, base: baseRef, state: 'all', pages: 1 })).filter(usable);
+    const mergedPull = newest(pulls.filter((p) => p.merged_at));
+    const pick = mergedPull || newest(pulls);
+    return {
+      merged_into_integration: Boolean(mergedPull),
+      pr: pick ? await observePr(client, pick, prOpts(baseRef)) : null,
+      branchActivity: pulls.length > 0,
+    };
+  };
+
   const mainBranch = await client.getBranch('main');
   const mainHead = mainBranch && mainBranch.commit && mainBranch.commit.sha;
   const runs = await client.listWorkflowRuns(config.uat.preuat_workflow, { branch: 'main', pages: 1 });
@@ -220,8 +232,13 @@ async function observe(client, ctx, { now, sleep }) {
   const phases = [];
   for (const def of snapshot.phases) {
     const branchExists = Boolean(await client.getBranch(def.branch));
-    const pr = await mostRecent({ head: def.branch, base: integ });
-    phases.push({ id: def.id, branch_exists: branchExists || Boolean(pr), pr });
+    const phase = await observePhase(def.branch, integ);
+    phases.push({
+      id: def.id,
+      branch_exists: branchExists || phase.branchActivity,
+      merged_into_integration: phase.merged_into_integration,
+      pr: phase.pr,
+    });
   }
 
   const syncOpen = (await client.listPulls({ head: 'main', base: integ, state: 'open', pages: 1 }))[0] || null;

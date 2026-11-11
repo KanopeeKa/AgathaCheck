@@ -31,11 +31,13 @@
     {
       "id": "1",
       "branch_exists": false,
+      "merged_into_integration": false,
       "pr": null
     },
     {
       "id": "2",
       "branch_exists": false,
+      "merged_into_integration": false,
       "pr": null
     }
   ],
