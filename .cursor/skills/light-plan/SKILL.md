@@ -34,7 +34,7 @@ One GitHub issue with a one-sentence goal and `- [ ] P<n> — <outcome> — scop
 
 ## Phase loop (sequential)
 
-**Sync first:** if integration is behind `main`, PR `main` → integration and **light merge** below (merge, never rebase — ruleset `non_fast_forward`); unclear conflict → stop and ask. Merge integration into local dev.
+**Leave integration where it is.** Do not open a `main` → integration PR because the branch is behind `main`. Merge integration into local dev, then implement the phase. A `main` → integration PR exists only to resolve a conflict on the release (§Release): merge commit, never rebase (`non_fast_forward`). An unclear conflict → stop and ask.
 
 Implement the current phase per its checklist scope (files needed for that outcome → add them to that phase's scope on the checklist, note why on the issue, continue; stop only if the goal itself would change). Pre-PR self-review ([`pr-hygiene.mdc`](../../rules/pr-hygiene.mdc)) + `./scripts/pre-push-changed.sh`; open PR dev → integration (ready for review, not draft).
 
@@ -52,7 +52,7 @@ Self-review fixes use the same dev → integration light merge.
 
 ## Final self-review (before release PR)
 
-**Sync integration:** if behind `main`, light-merge a sync PR, then re-review `origin/main...<integration>`.
+**Release diff:** review `origin/main...<integration>`. Do not merge `main` into integration before that review.
 
 - Goal + checklist done; cross-phase seams (dead code, dup helpers, half renames, TODOs)
 - Files outside any phase scope (justify or revert)
@@ -64,7 +64,7 @@ Record under `## Self-review` on the release PR.
 
 ## Release
 
-Open integration → `main` only now. Body: goal, phase links, `## Self-review`, `## Docs`, `Closes #<issue>`. Read and follow [`/babysit-uat`](../babysit-uat/SKILL.md) in the same turn (builds on [`/babysit-plus`](../babysit-plus/SKILL.md); remedial via [`/e2e-debug`](../e2e-debug/SKILL.md) when needed). Programme-owned merges: [`AGENTS.md`](../../../AGENTS.md) §Autonomy and merging.
+Open integration → `main` only now. Body: goal, phase links, `## Self-review`, `## Docs`, `Closes #<issue>`. Read and follow [`/babysit-uat`](../babysit-uat/SKILL.md) in the same turn (builds on [`/babysit-plus`](../babysit-plus/SKILL.md); remedial via [`/e2e-debug`](../e2e-debug/SKILL.md) when needed). On this release, do not run `babysit_sync_base.sh --push`: a `MERGEABLE` head squash-merges while `BEHIND`. Programme-owned merges: [`AGENTS.md`](../../../AGENTS.md) §Autonomy and merging.
 
 Re-read this section before opening that PR, and again before any user-facing message while the programme is unfinished. Until Done, take the first matching action. Do not describe it and stop.
 
@@ -72,8 +72,9 @@ Re-read this section before opening that PR, and again before any user-facing me
 |-----------|--------|
 | Required checks pending or running (Playwright, `ci-gate`, any other required check) | `gh pr checks <url> --watch` until every required check has finished. A fixed `sleep` or a one-shot `gh pr checks` does not finish the wait. |
 | A check failed | Fix inside `/babysit-uat`. Retry budget exhausted → §Stop and ask. |
-| Branch behind `main`, or merge rejected because the head moved | `./scripts/babysit_sync_base.sh --pr <url> --push` once, then watch again. |
-| Checks green, review gate exit `0` | Squash-merge (babysit-uat Phase 1). |
+| `mergeable` is `MERGEABLE`, including `mergeStateStatus` `BEHIND`; checks green; review gate exit `0` | Squash-merge. Do not update integration from `main`. |
+| `mergeable` is `CONFLICTING`, or preflight exit `4` | One PR that merges `main` into integration and resolves the conflict. Light-merge it, then watch the release again. |
+| Release head moved because that conflict PR merged | Watch CI on the new head. |
 | Merged, Pre-UAT not yet green | `./scripts/babysit_uat_watch_preuat.sh <merge_sha> --json --timeout-min 90`. Failure → Phase 3–4, then watch again. |
 | Pre-UAT green | Tick the checklist, comment the merge SHA and pre-UAT run URL, `gh issue close <n>`. |
 

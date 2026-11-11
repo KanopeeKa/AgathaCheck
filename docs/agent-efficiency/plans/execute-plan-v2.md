@@ -3,7 +3,7 @@ title: Execute-plan v2 — build spec (merged + deployed to UAT)
 owner: Kanopee
 audience: agent
 status: active
-last_updated: 2026-11-02
+last_updated: 2026-11-11
 tags: [agent, execute-plan, autonomy, uat]
 ---
 # Execute-plan v2 — build spec
@@ -152,7 +152,7 @@ comment on the draft PR with the command and its output, and end the session.
 | Tier 3 live E2E | advisory | `settings.tier3_blocking: false` |
 | Release owner review | off | `settings.release_owner_review: false` |
 | Models | the Cursor model named in `pr-review-cost-efficiency.md` §Cloud Agent model policy, for every worker action | config `cursor_model_*` |
-| `main` ruleset | add `execute-plan-scope` pinned to 15368; thread resolution on; keep strict and reviews 0 | runbooks §7.2 |
+| `main` ruleset | add `execute-plan-scope` pinned to 15368; thread resolution on; **strict false**; reviews 0 | runbooks §7.2 |
 | Integration ruleset | new, contexts pinned, no bypass | runbooks §7.2 |
 | Repo setting | **Allow auto-merge** on (currently off) | runbooks §7.3 |
 | Kill switch | `EXECUTE_PLAN_DRIVER` = `dry-run` after WP7b, `on` from WP9 | runbooks §7.4 |
@@ -182,7 +182,7 @@ prompts to paste: [work-split-and-prompts.md](./execute-plan-v2/work-split-and-p
 
 - `main` ruleset 18979034 "Main protection" (active, no bypass actors): `non_fast_forward`;
   required checks `Analyze JavaScript` and `ci-gate / CI passed`, both pinned to integration
-  15368, **strict = true**; `pull_request` with 0 reviews, `required_review_thread_resolution:
+  15368, **strict = true** (superseded 2026-11-11: strict is **false**; a clean behind PR may merge); `pull_request` with 0 reviews, `required_review_thread_resolution:
   false`, `require_extra_approval_for_unattributed_changes: true`; `copilot_code_review` (drafts
   included). Tag rulesets "UAT tag" and "PROD tag" active.
 - Repo: public, owner type `User`, `allow_auto_merge = false`, squash and merge commits allowed,
@@ -233,6 +233,7 @@ prompts to paste: [work-split-and-prompts.md](./execute-plan-v2/work-split-and-p
 | 2026-11-03 | **Init branch guard at authoring time** (no approve gate change). `init` compares committed diff vs `main` with `--no-renames` and exits 3 when paths other than the two plan files are present; approve rejection uses the same actionable message. Delivery docs and README rows stay on normal PRs to `main`. Optional future `init_files` with hashed bytes remains a separate escalation. | Catches bundled init PRs on day 0; approve still seeds integration from a two-file-only SHA with no CI or scope check on that step. |
 | 2026-11-03 | **Approve init check is rename-aware.** `compare(main…sha)` unions `filename` and `previous_filename` so a rename into a plan path cannot hide a deleted file on the integration tip. | Matches release scope's path union; closes the rename loophole left by filename-only approve checks. |
 | 2026-11-04 | **Sync resolves can merge, and only one is open at a time** (owner request after [#2074](https://github.com/KanopeeKa/AgathaCheck/pull/2074): five resolve PRs, all green CI, all red `execute-plan-scope` with 58 `protected`/`forbidden` files merged in from unrelated `main` commits). The scope check skips files identical to the `main` tip for `sync-resolve` as it already did for `release` (schema §scope 2c); files the resolve changes vs `main` are still checked. S1b drives an open `cursor/<id>-sync-*` PR through the PR-ladder (draft action `resolve-sync`, method `merge`) instead of launching a new resolve branch on every pass (`observe` adds `sync.resolve_pr`). | `main`'s content is already reviewed and merged; checking it against one plan's scope blocked every sync once `main` moved outside that scope. A resolve PR that is blocked now reaches a worker fix or a named STOP (`worker-blocked`, `ci-budget`) instead of burning the sync budget. |
+| 2026-11-11 | **Light-plan releases do not catch integration up to `main`.** `main` ruleset `strict_required_status_checks_policy` is false. A `MERGEABLE` integration → `main` PR squash-merges while `BEHIND`. `main` is merged into the integration branch only when that release is `CONFLICTING` (babysit preflight exit `4`). The execute-plan driver still opens a sync PR when it sees the integration branch behind `main` before release (S1); that runtime is unchanged. | Concurrent light-plans were each opening a full-CI sync PR whenever another release landed, including when `git merge-tree` was clean (#2269 / #2294). Pre-UAT on the merge SHA checks the combined tree. |
 
 Residual: on Cursor cloud a turn can end at any time; the design makes that cost minutes, not the
 programme. Each WP is one PR and reverts independently; safe reversal order is WP10 → WP8 → WP7b →

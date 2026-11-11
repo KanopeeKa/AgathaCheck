@@ -3,7 +3,7 @@ title: UAT promotion contract
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-08-22
+last_updated: 2026-11-11
 tags: [uat, promotion, pipeline]
 ---
 # Promotion contract
@@ -81,7 +81,9 @@ is green at current HEAD (throttle skips stale runs).
 We rely on:
 
 - `ci-gate / CI passed` + `Analyze JavaScript` on the PR
-- **Require branches to be up to date before merging** (`strict_required_status_checks_policy`)
+- Pre-UAT E2E on the merge SHA
+
+A PR may squash-merge while behind `main` when GitHub reports the merge clean (`MERGEABLE`). The `main` ruleset keeps `strict_required_status_checks_policy` **false**, so a clean release is not blocked for being behind. A conflict is resolved on that release before merge. A clean textual merge can still disagree semantically with commits that landed during CI; Pre-UAT on the merge SHA is that check.
 
 Squash/rebase merge SHAs may differ from the last PR head SHA. Residual risk is
 **accepted** in exchange for fast auto-promotion. See [ci-cd-gates.md](./ci-cd-gates.md).
