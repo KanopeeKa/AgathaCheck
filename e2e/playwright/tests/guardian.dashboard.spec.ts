@@ -122,7 +122,15 @@ test.describe('Guardian dashboard', () => {
     await dashboard.expectCareVisible('Today Care');
     await dashboard.expectCarePriorityOrder(['Overdue Care', 'Today Care']);
     await dashboard.expectCareVisible('Upcoming Care');
-    await dashboard.openEvents();
+    const careTab = page
+      .getByRole('button', {
+        name: /^Care(?:\s+Tab\s+\d+\s+of\s+\d+)?$|^Soins(?:\s+Tab\s+\d+\s+of\s+\d+)?$/i,
+      })
+      .or(page.getByRole('tab', { name: /^Care$|^Soins$/i }))
+      .first();
+    await careTab.click();
+    await refreshFlutterAccessibility(page);
+    await waitForFlutterRoutePattern(page, /\/pc\/events(?:\?|$)/, 30_000);
     await expect(page).toHaveURL(/#\/pc\/events/);
     await dashboard.goBackToDashboard();
   });
@@ -229,7 +237,7 @@ test.describe('Guardian dashboard', () => {
     await page.goto(flutterGotoUrl('/pc/events'));
     await refreshFlutterAccessibility(page);
     await waitForFlutterRoutePattern(page, /^\/pc\/events(?:\?|$)/, 60_000);
-    await expect(page.getByText('All Actions', { exact: true }).first()).toBeVisible();
+    await expect(page.getByText(/^All care$|^Tous les soins$/i).first()).toBeVisible();
     await expect(page.getByRole('tab')).toHaveCount(0);
     await expect(page.getByRole('button', { name: /Add an event/i })).toBeVisible();
     await expect(semanticsByName(page, /Due Med/i).first()).toBeVisible();
