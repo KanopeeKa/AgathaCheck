@@ -10,6 +10,7 @@ const { ExecutePlanError, V2_CAPS, V2_DEFAULTS, MAX_LAUNCH_HISTORY } = require('
 const { computeApprovalHash } = require('./execute_plan_approval');
 const { isForbiddenPath } = require('../../.github/scripts/agent-safety-lib');
 const { globToRegExp } = require('./execute_plan_schema');
+const { warnCrossPlanWaitPhrases } = require('./execute_plan_plan_warnings');
 
 const PLAN_ID_RE = /^[a-z0-9][a-z0-9-]{2,48}$/;
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
@@ -192,6 +193,7 @@ function validateSnapshotV2(snapshot, { planMarkdown } = {}) {
   if (planMarkdown !== undefined && sha256Hex(planMarkdown) !== snapshot.plan_file_sha256) {
     fail('plan_file_sha256 does not match the plan file');
   }
+  if (planMarkdown !== undefined) warnCrossPlanWaitPhrases(planMarkdown);
   return snapshot;
 }
 
