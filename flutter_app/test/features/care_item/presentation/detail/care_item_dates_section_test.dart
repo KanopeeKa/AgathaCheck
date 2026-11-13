@@ -191,6 +191,23 @@ void main() {
 
       expect(find.byKey(const Key('care_item_paused_banner')), findsOneWidget);
       expect(find.text('Mark as done'), findsNothing);
+      expect(find.byKey(const Key('care_item_skip_all_missed')), findsNothing);
+      expect(
+        find.byKey(const Key('care_item_occurrence_done_occ-open')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('care_item_occurrence_mark_done_occ-open')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('care_item_occurrence_skip_occ-open')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('care_item_occurrence_reschedule_occ-open')),
+        findsNothing,
+      );
     },
   );
 }

@@ -106,9 +106,12 @@ class CareItemDatesSection extends ConsumerWidget {
                   alignment: Alignment.centerLeft,
                   child: OutlinedButton(
                     key: const Key('care_item_needs_attention_refresh'),
-                    onPressed: () => ref
-                        .read(healthEntriesNotifierProvider.notifier)
-                        .refresh(),
+                    onPressed: () async {
+                      ref.invalidate(entryOccurrencesProvider(entry.id));
+                      await ref
+                          .read(healthEntriesNotifierProvider.notifier)
+                          .refresh();
+                    },
                     child: Text(l.retry),
                   ),
                 ),
