@@ -62,7 +62,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | Given the Partnerships card, when the email link cannot open, then a copy dialog shows `partnerships@`. | SUPPORT-TICKETING-R-002, SUPPORT-TICKETING-R-004 | none — #2271 |
 | Given a signed-out sender, when the request includes a screenshot, then the API rejects it. | SUPPORT-TICKETING-R-008 | none — #2271 |
 | Given a stored screenshot, when requested via `/uploads/…`, or by a signed-in non-staff user, or with a guessed id, then responses are 404, 403, and 403 respectively. | SUPPORT-TICKETING-R-008 | none — #2271 |
-| Given 3 tickets in the past hour from one account, when a 4th is submitted, then the API returns 429 with `Retry-After`. | SUPPORT-TICKETING-R-018 | test: server/test/support/ticketsRateLimit.integration.test.js |
+| Given 3 tickets in the past hour from one account, when a 4th is submitted, then the API returns 429 with `Retry-After`. | SUPPORT-TICKETING-R-018 | test: server/test/db/support/ticketsRateLimit.integration.test.js |
 | Given SMTP and GitHub are down, when a ticket is submitted, then the ticket is saved and outbox rows retry later. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-017 | none — #2271 |
 | Given `SUPPORT_GITHUB_REPO` points at a public repo, when the worker starts, then create-issue rows are `blocked`; when a later check sees a private repo, those rows return to `pending`. | SUPPORT-TICKETING-R-017 | none — #2271 |
 | Given a user with signed-in and signed-out tickets, when their account is erased, then tickets, screenshots, and pending outbox rows are gone, redact rows are queued, and erasure still commits. | SUPPORT-TICKETING-R-019 | none — #2271 |
