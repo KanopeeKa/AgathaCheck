@@ -10795,6 +10795,90 @@ abstract class AppLocalizations {
   /// **'Contact'**
   String get contact;
 
+  /// No description provided for @contactHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contactHubTitle;
+
+  /// No description provided for @contactHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the channel that fits your message. Help & Support uses our in-app form; other topics can reach us by email.'**
+  String get contactHubSubtitle;
+
+  /// No description provided for @contactHubHelpSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get contactHubHelpSupportTitle;
+
+  /// No description provided for @contactHubHelpSupportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a bug, suggest an improvement, or ask about your account or billing.'**
+  String get contactHubHelpSupportDescription;
+
+  /// No description provided for @contactHubPartnershipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Partnerships'**
+  String get contactHubPartnershipsTitle;
+
+  /// No description provided for @contactHubPartnershipsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelters, rescues, vets, and other organisations interested in AgathaTrack.'**
+  String get contactHubPartnershipsDescription;
+
+  /// No description provided for @contactHubLegalPrivacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & Privacy'**
+  String get contactHubLegalPrivacyTitle;
+
+  /// No description provided for @contactHubLegalPrivacyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy rights, legal notices, and data-processing questions.'**
+  String get contactHubLegalPrivacyDescription;
+
+  /// No description provided for @contactHubMailboxesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email addresses'**
+  String get contactHubMailboxesTitle;
+
+  /// No description provided for @contactHubMailboxContact.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get contactHubMailboxContact;
+
+  /// No description provided for @contactHubMailboxSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get contactHubMailboxSupport;
+
+  /// No description provided for @contactHubMailboxLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & privacy'**
+  String get contactHubMailboxLegal;
+
+  /// No description provided for @contactHubMailboxPartnerships.
+  ///
+  /// In en, this message translates to:
+  /// **'Partnerships'**
+  String get contactHubMailboxPartnerships;
+
+  /// No description provided for @contactHubGeneralLine.
+  ///
+  /// In en, this message translates to:
+  /// **'You can also reach us any time at {email}.'**
+  String contactHubGeneralLine(String email);
+
   /// No description provided for @continueButton.
   ///
   /// In en, this message translates to:

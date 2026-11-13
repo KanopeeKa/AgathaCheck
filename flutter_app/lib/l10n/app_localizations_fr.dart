@@ -6281,6 +6281,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contact => 'Contact';
 
   @override
+  String get contactHubTitle => 'Contact';
+
+  @override
+  String get contactHubSubtitle =>
+      'Choisissez le canal adapté à votre message. Aide et assistance passent par notre formulaire in-app ; les autres sujets nous joignent par e-mail.';
+
+  @override
+  String get contactHubHelpSupportTitle => 'Aide et assistance';
+
+  @override
+  String get contactHubHelpSupportDescription =>
+      'Signalez un bug, proposez une amélioration ou posez une question sur votre compte ou la facturation.';
+
+  @override
+  String get contactHubPartnershipsTitle => 'Partenariats';
+
+  @override
+  String get contactHubPartnershipsDescription =>
+      'Refuges, associations, vétérinaires et autres organisations intéressées par AgathaTrack.';
+
+  @override
+  String get contactHubLegalPrivacyTitle => 'Juridique et confidentialité';
+
+  @override
+  String get contactHubLegalPrivacyDescription =>
+      'Droits sur vos données, mentions légales et questions sur le traitement des données.';
+
+  @override
+  String get contactHubMailboxesTitle => 'Adresses e-mail';
+
+  @override
+  String get contactHubMailboxContact => 'Général';
+
+  @override
+  String get contactHubMailboxSupport => 'Assistance';
+
+  @override
+  String get contactHubMailboxLegal => 'Juridique et confidentialité';
+
+  @override
+  String get contactHubMailboxPartnerships => 'Partenariats';
+
+  @override
+  String contactHubGeneralLine(String email) {
+    return 'Vous pouvez aussi nous écrire à tout moment à $email.';
+  }
+
+  @override
   String get continueButton => 'Continuer';
 
   @override

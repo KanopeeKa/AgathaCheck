@@ -15,6 +15,7 @@ import '../../features/people/people.dart';
 import '../../features/sharing/sharing.dart';
 import '../../features/about/about.dart';
 import '../../features/help/help.dart';
+import '../../features/support/hub/hub.dart';
 import '../../features/subscription/subscription.dart';
 import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
@@ -182,6 +183,18 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/about',
         name: 'about',
         builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/contact',
+        name: 'contact',
+        builder: (context, state) => const ContactHubScreen(),
+        routes: [
+          GoRoute(
+            path: 'support',
+            name: 'contactSupport',
+            builder: (context, state) => const SupportIntakeFormScreen(),
+          ),
+        ],
       ),
       GoRoute(
         path: '/legal',

@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/entities/app_experience.dart';
-import '../config/drawer_menu_config.dart';
 import '../providers/experience_providers.dart';
 import '../../domain/entities/drawer_menu_item.dart';
 
@@ -29,14 +27,6 @@ Future<void> handleExperienceDrawerItemTap(
       return;
     case 'drawer_account':
       context.go('/account');
-      return;
-
-    // Legacy contact handler (still used in account_screen.dart)
-    case 'drawer_contact':
-      final uri = Uri(scheme: 'mailto', path: DrawerMenuConfig.contactEmail);
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      }
       return;
   }
 

@@ -13,6 +13,7 @@ class LegalFooterLinks extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     final links = [
+      (label: l10n.contact, path: '/contact'),
       (label: l10n.termsOfService, path: LegalDocumentId.termsOfUse.routePath),
       (
         label: l10n.privacyPolicy,
