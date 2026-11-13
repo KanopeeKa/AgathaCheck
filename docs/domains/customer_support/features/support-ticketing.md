@@ -7,7 +7,6 @@ last_updated: 2026-11-13
 tags: [domain, customer_support, support-ticketing]
 domain: customer_support
 feature_id: support-ticketing
-related_prs: 2271
 ---
 
 # Support ticketing and contact hub
