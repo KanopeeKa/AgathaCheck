@@ -321,7 +321,7 @@ Case matrix (AID = After it's done, FX = Fixed schedule). Agenda UX words: [care
 | ME-1 — When FX monthly anchored 31 Jan then 28 Feb (29 leap), 31 Mar, 30 Apr, 31 May | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-1 monthly anchored on 31 Jan counts from the anchor |
 | ME-2 — When Every 6 months from 31 Aug then 28/29 Feb, 31 Aug | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-2 every six months from 31 Aug |
 | ME-3 — When Yearly from 29 Feb 2028 then 28 Feb 2029 … 29 Feb 2032 | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-3 yearly from 29 Feb 2028 |
-| ME-4 — When AID monthly done 31 Jan then 28 Feb; then from each completion | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| ME-4 — When AID monthly done 31 Jan then 28 Feb; then from each completion | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-4 after-it's-done monthly done 31 Jan |
 | ME-5 — When FX “This and following” moved to 31 Oct then 30 Nov, 31 Dec | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/careSchedule/scheduleRules.test.js#ME-5 this-and-following moved to 31 Oct |
 | PL-1 — When Vaccine yearly AID: first dose 1 Jun, booster 1 Jul then 1 Jun done → next 1 Jul (no computed); booster done → 1 Ju… | CARE-SCHEDULE-MANAGEMENT-R-001 | bdd: care_booster.feature#PL-1 first dose then booster then yearly recurrence |
 | PL-2 — When First dose done 20 Jun (due 1 Jun), booster 1 Jul waiting then Gap 11 < 15 → Keep / Skip / Move by 19 days | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PL-2 a late first dose keeps the booster unless a choice is sent (D-CSM-026 v4) |
@@ -339,35 +339,35 @@ Case matrix (AID = After it's done, FX = Fixed schedule). Agenda UX words: [care
 | PP-7 — When Undo right after pause then Previous state | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#PP-7 undo right after pause restores the item |
 | PP-8 — When FX paused with 2 doses not recorded; 4 days pass then Not in the agenda; the tick closes old slots as `not_recorded… | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
 | LC-1 — When Remember “Skip the next date” then Applied automatically in the completion transaction; visible and resettable in A… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#LC-1 a remembered choice is applied without asking |
-| LC-2 — When Nothing remembered, no choice sent then Keep; `next_choice_applied: keep` | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| LC-2 — When Nothing remembered, no choice sent then Keep; `next_choice_applied: keep` | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careItemContract.integration.test.js#complete matches CareCommandResponse with no choice sent, and a refused choice matches CareCommandError |
 | LC-3 — When FX twice daily: 08:00 recorded at 15:00, 18:00 waiting then Gap 10 h → 3 h → the trigger fires; with no choice the … | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#LC-3 twice daily recorded at 15:00 with no choice keeps the 18:00 dose |
 | LC-4 — When Sent with `next_choice: 'skip_next'` then One transaction: dose completed, 18:00 skipped; Undo reverses both | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#LC-4 skip next is undone as a whole |
 | LC-5 — When Response lost; app retries then 409 `occurrence_not_open`; the app reloads the item | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#LC-5 completing a date twice answers 409 occurrence_not_open |
 | UN-1 — When AID done → computed next → Undo then Reopen; computed next deleted | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#UN-1 undo reopens the date and removes the new computed date |
 | UN-2 — When AID done → next changed (planned) → Undo then Reopen; planned kept | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#UN-2 a next date someone changed survives undo of the completion |
 | UN-3 — When FX dose done → Undo then Reopen only | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
-| UN-4 — When Done with “skip next” applied → Undo then Whole command reversed | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
-| UN-5 — When Delete a weigh-in's weight entry then Same as UN-1 | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
-| TS-1 — When FX → AID with 3 Not recorded + next scheduled then Confirm; all open `schedule` slots close as `not_recorded`; plan… | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| UN-4 — When Done with “skip next” applied → Undo then Whole command reversed | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#LC-4 skip next is undone as a whole |
+| UN-5 — When Delete a weigh-in's weight entry then Same as UN-1 | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/weightIntegrity.integration.test.js#L-12 DELETE linked weight returns reopened_occurrence |
+| TS-1 — When FX → AID with 3 Not recorded + next scheduled then Confirm; all open `schedule` slots close as `not_recorded`; plan… | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.fixed.integration.test.js#TS-1 switching to after it's done closes the stack and computes from the last dose; none — #1770 (client Confirm step) |
 | TS-1b — When Same, with a `planned` date then The planned date is the only open occurrence; no computed date | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
 | TS-2 — When AID → FX with a planned future date then Planned kept; anchor = open date; slots generated without duplicates | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
 | TS-3 — When FX weekly → every 2 weeks then Cadence “this and following” from today | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
 | TS-4 — When Edit form changes the next date then Change date on the open occurrence | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.afterDone.integration.test.js#TS-4 editing the next date moves the open occurrence |
-| AG-1 — When Only Anytime items today then Heading “Today's list”, no sub-groups | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
-| AG-2 — When Morning + Anytime then Two headings | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-1 — When Only Anytime items today then Heading “Today's list”, no sub-groups | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG-1 only anytime items → one group, no sub-headings |
+| AG-2 — When Morning + Anytime then Two headings | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG-2 morning and anytime → two headings |
 | AG-3 — When Overdue items then First in Today | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG overdue first, then today by time group, due soon, upcoming |
-| AG-4 — When Daily med after all doses done then Stays in Today as Done until the day ends; never in Due soon | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
-| AG-5 — When Weekly item due in 3 / 20 days then Due soon / Upcoming (collapsed) | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
-| AG-6 — When Every-3-days item due tomorrow then Due soon | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-4 — When Daily med after all doses done then Stays in Today as Done until the day ends; never in Due soon | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG-4 daily med done today stays in Today, not Due soon or Upcoming |
+| AG-5 — When Weekly item due in 3 / 20 days then Due soon / Upcoming (collapsed) | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG-5 weekly due in 3 days is Due soon; 20 days is Upcoming |
+| AG-6 — When Every-3-days item due tomorrow then Due soon | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG-6 every-3-days due tomorrow is Due soon |
 | AG-7 — When Stack of 3 then One row “3 doses not recorded” + Review | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#a stack is one overdue row with its count (DN-1b) |
 | AG-8 — When Pet profile then Same groups, one pet | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
-| AG-9 — When Yearly vaccine in 200 days, reminder 7 days then Upcoming; no notification yet | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
-| AG-10 — When Nothing overdue or due today then “Nothing due today”, then Due soon / Upcoming | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
+| AG-9 — When Yearly vaccine in 200 days, reminder 7 days then Upcoming; no notification yet | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG-9 yearly vaccine 200 days away is Upcoming; none — #1770 (no notification before remind window) |
+| AG-10 — When Nothing overdue or due today then “Nothing due today”, then Due soon / Upcoming | CARE-SCHEDULE-MANAGEMENT-R-012 | test: flutter_app/test/features/care_item/domain/care_agenda_test.dart#AG-10 no overdue or due today still lists Due soon and Upcoming |
 | AG-11 — When Loading / error then Skeleton / Retry; no empty copy while loading | CARE-SCHEDULE-MANAGEMENT-R-012 | none — #1770 |
 | AB-1 — When AID done before a trip then The away plan lists it with its occurrence id | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
 | AB-2 — When Plan a date inside the trip, looked after by Carol then The real occurrence carries the assignment | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
 | AB-3 — When FX twice-daily med over a 7-day trip then One rhythm row; dates from the anchor; slots stored as days arrive | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
-| AB-4 — When Trip dates change then Resolution “needs review” | CARE-SCHEDULE-MANAGEMENT-R-001 | none — #1770 |
+| AB-4 — When Trip dates change then Resolution “needs review” | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/care/absence/deriveResolutionState.test.js#returns needs_review when dates changed |
 | CR-1 — When Tick overlaps itself then Advisory lock; no duplicates | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-1 an overlapping tick skips the held advisory lock, then a later tick catches up once |
 | CR-2 — When Tick late by 2 hours then The next command catches up first | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-2 a command catches up a two-hour-late tick before applying its skip |
 | CR-3 — When Pet timezone differs from server then Day boundaries per pet timezone | CARE-SCHEDULE-MANAGEMENT-R-001 | test: server/test/db/careOccurrences.catchupConcurrency.integration.test.js#CR-3 one instant straddles the Tokyo/UTC calendar boundary for two pets |
