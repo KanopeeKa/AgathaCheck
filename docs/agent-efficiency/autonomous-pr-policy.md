@@ -3,7 +3,7 @@ title: Autonomous Pr Policy
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-11
+last_updated: 2026-11-13
 tags: [agent-efficiency, policy]
 ---
 # Autonomous PR policy (canonical)
@@ -115,7 +115,7 @@ Serialize merge attempts when multiple PRs reach the CI gate at the same time. D
 | After successful merge | `./scripts/babysit_merge_preflight.sh --pr <url> --release` (no-op if PR closed) |
 | Stale lease (≥45 min, holder idle) | `--claim --force` |
 
-Script: `scripts/babysit_merge_preflight.sh` — `merge-lease` label mutex + FIFO yield when base was updated within 10 minutes and a lower-numbered green PR exists on the same base. Env: `MERGE_PREFLIGHT_BASE_HOT_MINUTES`, `MERGE_PREFLIGHT_LEASE_STALE_MINUTES`.
+Script: `scripts/babysit_merge_preflight.sh` — `merge-lease` label mutex + FIFO yield when base was updated within 10 minutes and a lower-numbered green PR exists on the same base. Env: `MERGE_PREFLIGHT_BASE_HOT_MINUTES`, `MERGE_PREFLIGHT_LEASE_STALE_MINUTES`. Claim and release add or remove that label with the REST issue-labels API (`POST` / `DELETE /repos/{owner}/{repo}/issues/{n}/labels`). Release succeeds when the label is already absent, including after the PR is closed. Do not switch the mutation back to `gh pr edit`: that command fetches org team `login`, `name`, and `slug` (and Projects fields) before it edits, and a `repo`-only token fails the fetch. The script would then exit `3`, which babysit treats as a halt, on a preflight that had already evaluated clear.
 
 ## CI cost (Actions minutes)
 

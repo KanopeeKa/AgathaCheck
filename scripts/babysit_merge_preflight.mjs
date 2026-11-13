@@ -26,7 +26,10 @@ import {
   findCompetingGreenPrs,
   findLeaseHolder,
   isBaseHot,
+  isLabelAlreadyAbsent,
   isLeaseStale,
+  leaseLabelApiArgs,
+  parsePrNumber,
 } from './lib/babysit_merge_preflight_lib.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -62,12 +65,41 @@ function ghJson(args) {
   return text ? JSON.parse(text) : null;
 }
 
-function ghRun(args) {
-  const result = spawnSync('gh', args, { cwd: repoRoot, encoding: 'utf8' });
-  if (result.status !== 0) {
-    console.error(result.stderr || result.stdout);
-    process.exit(3);
+function ghResult(args) {
+  return spawnSync('gh', args, { cwd: repoRoot, encoding: 'utf8' });
+}
+
+function failGh(result) {
+  console.error(result.stderr || result.stdout);
+  process.exit(3);
+}
+
+/** Issue number for the labels API. `gh pr edit` accepted a URL; this does too. */
+function resolvePrNumber(prRef) {
+  const parsed = parsePrNumber(prRef);
+  if (parsed) {
+    return parsed;
   }
+  const pr = ghJson(['pr', 'view', String(prRef), '--json', 'number']);
+  return String(pr.number);
+}
+
+function addLeaseLabel(prNumber) {
+  const result = ghResult(leaseLabelApiArgs(prNumber, 'add'));
+  if (result.status !== 0) {
+    failGh(result);
+  }
+}
+
+function removeLeaseLabel(prNumber) {
+  const result = ghResult(leaseLabelApiArgs(prNumber, 'remove'));
+  if (result.status === 0) {
+    return false;
+  }
+  if (isLabelAlreadyAbsent(result.stderr, result.stdout)) {
+    return true;
+  }
+  failGh(result);
 }
 
 function syncBaseCheck(pr) {
@@ -254,17 +286,13 @@ function main() {
   const opts = parseArgs();
 
   if (opts.release) {
-    ghRun([
-      'pr',
-      'edit',
-      String(opts.pr),
-      '--remove-label',
-      MERGE_LEASE_LABEL,
-    ]);
+    const prNumber = resolvePrNumber(opts.pr);
+    const alreadyAbsent = removeLeaseLabel(prNumber);
     const payload = {
       command: 'release',
-      pr: opts.pr,
+      pr: prNumber,
       released: true,
+      already_absent: alreadyAbsent,
       label: MERGE_LEASE_LABEL,
     };
     if (opts.json) {
@@ -311,7 +339,7 @@ function main() {
       }
     }
 
-    ghRun(['pr', 'edit', String(opts.pr), '--add-label', MERGE_LEASE_LABEL]);
+    addLeaseLabel(ctx.pr.number);
     const payload = {
       command: 'claim',
       pr: ctx.pr.number,

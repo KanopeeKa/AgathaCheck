@@ -208,6 +208,66 @@ function evaluateMergePreflight(input) {
   };
 }
 
+/**
+ * Numeric PR from a number or a GitHub pull/issue URL. Null when the caller
+ * must resolve the ref (for example a head branch name) another way.
+ * @param {string|number|null|undefined} ref
+ * @returns {string|null}
+ */
+function parsePrNumber(ref) {
+  const text = String(ref ?? '').trim();
+  if (/^\d+$/.test(text)) {
+    return text;
+  }
+  const match = text.match(/\/(?:pull|issues)\/(\d+)(?:[/?#]|$)/i);
+  return match ? match[1] : null;
+}
+
+/**
+ * `gh` argv that adds or removes `merge-lease` through the REST issue-labels
+ * API. `gh pr edit --add-label` fetches org team login/name/slug and Projects
+ * fields first; a `repo`-only token fails that GraphQL call, and the script
+ * would exit 3 (halt) on a clear preflight.
+ * @param {string|number} prNumber
+ * @param {'add'|'remove'} action
+ * @returns {string[]}
+ */
+function leaseLabelApiArgs(prNumber, action) {
+  const number = String(prNumber);
+  if (!/^\d+$/.test(number)) {
+    throw new Error(`lease label requires a numeric PR, got ${number}`);
+  }
+  if (action === 'add') {
+    return [
+      'api',
+      '--method',
+      'POST',
+      `repos/{owner}/{repo}/issues/${number}/labels`,
+      '-f',
+      `labels[]=${MERGE_LEASE_LABEL}`,
+    ];
+  }
+  if (action === 'remove') {
+    return [
+      'api',
+      '--method',
+      'DELETE',
+      `repos/{owner}/{repo}/issues/${number}/labels/${encodeURIComponent(MERGE_LEASE_LABEL)}`,
+    ];
+  }
+  throw new Error(`unknown lease label action: ${action}`);
+}
+
+/**
+ * DELETE of a label that is not on the issue. A missing issue is a different
+ * 404 and must still fail the release.
+ * @param {string|null|undefined} stderr
+ * @param {string|null|undefined} stdout
+ */
+function isLabelAlreadyAbsent(stderr, stdout) {
+  return /Label does not exist/i.test(`${stderr || ''}\n${stdout || ''}`);
+}
+
 module.exports = {
   DEFAULT_BASE_HOT_MINUTES,
   DEFAULT_LEASE_STALE_MINUTES,
@@ -219,4 +279,7 @@ module.exports = {
   isBaseHot,
   isLeaseStale,
   isPrCiGreen,
+  parsePrNumber,
+  leaseLabelApiArgs,
+  isLabelAlreadyAbsent,
 };
