@@ -6232,6 +6232,130 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get supportFormIntro =>
+      'Tell us what happened. We reply by email with your reference number.';
+
+  @override
+  String get supportFormCategoryLabel => 'Category';
+
+  @override
+  String get supportFormCategoryBug => 'Bug';
+
+  @override
+  String get supportFormCategorySuggestion => 'Suggestion';
+
+  @override
+  String get supportFormCategoryAccount => 'Account';
+
+  @override
+  String get supportFormCategoryBilling => 'Billing';
+
+  @override
+  String get supportFormTitleLabel => 'Title';
+
+  @override
+  String get supportFormDescriptionLabel => 'Description';
+
+  @override
+  String get supportFormEmailLabel => 'Your email';
+
+  @override
+  String get supportFormEmailHint => 'We send your receipt to this address.';
+
+  @override
+  String get supportFormExpectedLabel => 'What you expected';
+
+  @override
+  String get supportFormActualLabel => 'What happened instead';
+
+  @override
+  String get supportFormStepsLabel => 'Steps to reproduce';
+
+  @override
+  String get supportFormFrequencyLabel => 'How often';
+
+  @override
+  String get supportFormFrequencyAlways => 'Every time';
+
+  @override
+  String get supportFormFrequencySometimes => 'Sometimes';
+
+  @override
+  String get supportFormFrequencyOnce => 'Once';
+
+  @override
+  String get supportFormSubmit => 'Send request';
+
+  @override
+  String get supportFormSubmitting => 'Sending…';
+
+  @override
+  String get supportFormErrorSummaryTitle =>
+      'There is a problem with this form';
+
+  @override
+  String supportFormErrorSummaryFieldCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fields need your attention.',
+      one: '1 field needs your attention.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get supportFormValidationTitleRequired => 'Enter a title.';
+
+  @override
+  String get supportFormValidationTitleTooLong => 'Title is too long.';
+
+  @override
+  String get supportFormValidationDescriptionRequired => 'Enter a description.';
+
+  @override
+  String get supportFormValidationDescriptionTooLong =>
+      'Description is too long.';
+
+  @override
+  String get supportFormValidationEmailRequired => 'Enter your email address.';
+
+  @override
+  String get supportFormValidationEmailInvalid =>
+      'Enter a valid email address.';
+
+  @override
+  String get supportFormValidationEmailTooLong => 'Email address is too long.';
+
+  @override
+  String get supportFormSuccessTitle => 'Request received';
+
+  @override
+  String supportFormSuccessBody(String reference) {
+    return 'Your reference is $reference. Keep it for your records — we have emailed you a receipt.';
+  }
+
+  @override
+  String supportFormSuccessAnnouncement(String reference) {
+    return 'Request received. Your reference is $reference.';
+  }
+
+  @override
+  String get supportFormCopyReference => 'Copy reference';
+
+  @override
+  String get supportFormErrorGeneric =>
+      'We could not send your request. Try again or email support@agathatrack.com.';
+
+  @override
+  String get supportFormErrorRateLimited =>
+      'Too many requests. Wait a moment or email support@agathatrack.com.';
+
+  @override
+  String get supportFormErrorSessionExpired =>
+      'Your session expired. Reload the page and sign in again.';
+
+  @override
   String get continueButton => 'Continue';
 
   @override

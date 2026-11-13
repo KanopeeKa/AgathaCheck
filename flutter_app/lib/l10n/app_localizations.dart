@@ -10879,6 +10879,216 @@ abstract class AppLocalizations {
   /// **'You can also reach us any time at {email}.'**
   String contactHubGeneralLine(String email);
 
+  /// No description provided for @supportFormIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what happened. We reply by email with your reference number.'**
+  String get supportFormIntro;
+
+  /// No description provided for @supportFormCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get supportFormCategoryLabel;
+
+  /// No description provided for @supportFormCategoryBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug'**
+  String get supportFormCategoryBug;
+
+  /// No description provided for @supportFormCategorySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion'**
+  String get supportFormCategorySuggestion;
+
+  /// No description provided for @supportFormCategoryAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get supportFormCategoryAccount;
+
+  /// No description provided for @supportFormCategoryBilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing'**
+  String get supportFormCategoryBilling;
+
+  /// No description provided for @supportFormTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get supportFormTitleLabel;
+
+  /// No description provided for @supportFormDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get supportFormDescriptionLabel;
+
+  /// No description provided for @supportFormEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email'**
+  String get supportFormEmailLabel;
+
+  /// No description provided for @supportFormEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'We send your receipt to this address.'**
+  String get supportFormEmailHint;
+
+  /// No description provided for @supportFormExpectedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What you expected'**
+  String get supportFormExpectedLabel;
+
+  /// No description provided for @supportFormActualLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened instead'**
+  String get supportFormActualLabel;
+
+  /// No description provided for @supportFormStepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps to reproduce'**
+  String get supportFormStepsLabel;
+
+  /// No description provided for @supportFormFrequencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'How often'**
+  String get supportFormFrequencyLabel;
+
+  /// No description provided for @supportFormFrequencyAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Every time'**
+  String get supportFormFrequencyAlways;
+
+  /// No description provided for @supportFormFrequencySometimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes'**
+  String get supportFormFrequencySometimes;
+
+  /// No description provided for @supportFormFrequencyOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'Once'**
+  String get supportFormFrequencyOnce;
+
+  /// No description provided for @supportFormSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get supportFormSubmit;
+
+  /// No description provided for @supportFormSubmitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get supportFormSubmitting;
+
+  /// No description provided for @supportFormErrorSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'There is a problem with this form'**
+  String get supportFormErrorSummaryTitle;
+
+  /// No description provided for @supportFormErrorSummaryFieldCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 field needs your attention.} other{{count} fields need your attention.}}'**
+  String supportFormErrorSummaryFieldCount(int count);
+
+  /// No description provided for @supportFormValidationTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a title.'**
+  String get supportFormValidationTitleRequired;
+
+  /// No description provided for @supportFormValidationTitleTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is too long.'**
+  String get supportFormValidationTitleTooLong;
+
+  /// No description provided for @supportFormValidationDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a description.'**
+  String get supportFormValidationDescriptionRequired;
+
+  /// No description provided for @supportFormValidationDescriptionTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is too long.'**
+  String get supportFormValidationDescriptionTooLong;
+
+  /// No description provided for @supportFormValidationEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address.'**
+  String get supportFormValidationEmailRequired;
+
+  /// No description provided for @supportFormValidationEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get supportFormValidationEmailInvalid;
+
+  /// No description provided for @supportFormValidationEmailTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address is too long.'**
+  String get supportFormValidationEmailTooLong;
+
+  /// No description provided for @supportFormSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request received'**
+  String get supportFormSuccessTitle;
+
+  /// No description provided for @supportFormSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reference is {reference}. Keep it for your records — we have emailed you a receipt.'**
+  String supportFormSuccessBody(String reference);
+
+  /// No description provided for @supportFormSuccessAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Request received. Your reference is {reference}.'**
+  String supportFormSuccessAnnouncement(String reference);
+
+  /// No description provided for @supportFormCopyReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy reference'**
+  String get supportFormCopyReference;
+
+  /// No description provided for @supportFormErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not send your request. Try again or email support@agathatrack.com.'**
+  String get supportFormErrorGeneric;
+
+  /// No description provided for @supportFormErrorRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Wait a moment or email support@agathatrack.com.'**
+  String get supportFormErrorRateLimited;
+
+  /// No description provided for @supportFormErrorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Reload the page and sign in again.'**
+  String get supportFormErrorSessionExpired;
+
   /// No description provided for @continueButton.
   ///
   /// In en, this message translates to:

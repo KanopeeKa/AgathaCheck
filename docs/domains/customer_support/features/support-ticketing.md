@@ -35,7 +35,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | SUPPORT-TICKETING-R-004 | Show `contact@`, `support@`, `legal@`, `partnerships@` (mailboxes are an ops prerequisite). | In delivery |
 | SUPPORT-TICKETING-R-005 | `POST /api/support/tickets` (+ `/backend`); handler decides sign-in (no bearer = signed out; invalid bearer = 401); signed-in receipt uses `users.email`; signed-out requires email; reference `AT-` + 8 Crockford base32; UUIDs in app code; multipart for screenshots, JSON for text-only; coming-soon 403 before handler. | In delivery |
 | SUPPORT-TICKETING-R-006 | Categories `bug`, `suggestion`, `account`, `billing`; title + description always; bug fields (expected, actual, steps, frequency always/sometimes/once) without focus jump. | In delivery |
-| SUPPORT-TICKETING-R-007 | Context allowlist only: version/build from site-root `GET /version.json` (cache-bust; empty if missing); platform (`web` on web); coarse browser family; locale; route name; client time; server timestamp authoritative; CI asserts `version.json` beside `index.html`. | Planned |
+| SUPPORT-TICKETING-R-007 | Context allowlist only: version/build from site-root `GET /version.json` (cache-bust; empty if missing); platform (`web` on web); coarse browser family; locale; route name; client time; server timestamp authoritative; CI asserts `version.json` beside `index.html`. | In delivery |
 | SUPPORT-TICKETING-R-008 | Screenshots: signed-in only; max 3 files, 2 MB each, 6 MB total; PNG/JPEG/WebP via `safeUpload`; storage outside `uploads/`, not static; `fileDelete.js` key; staff-only `GET /api/support/attachments/:id` (403 before lookup for non-staff); PII notice before upload; re-encoding is debt (`sharp`). | Planned |
 | SUPPORT-TICKETING-R-009 | Ticket row: reporter (user or normalised email), category, title, description, bug fields, context, locale, `created_at`, `github_issue_number`; no priority; users cannot read tickets via API. | In delivery |
 | SUPPORT-TICKETING-R-010 | Tables `support_tickets`, `support_attachments`, `support_outbox` (message/status history and links deferred). | In delivery |
@@ -88,7 +88,7 @@ Worker: outbox drain and `support_retention` run from the existing cleanup poll;
 ## UX surfaces
 
 - Contact hub `/contact` — **in delivery** (`flutter_app/lib/features/support/hub/`): Account row + landing footer (`LegalFooterLinks`); `/contact/support` registers the intake form route (UI in phase 4).
-- Support form (phase 4): linked from hub; posts to phase 3 API.
+- Support form `/contact/support` — **in delivery** (`flutter_app/lib/features/support/form/`): categorised intake, error summary, `POST /api/support/tickets`, context from `version.json` + browser UA.
 - Staff read-only queue `/staff/support` (phase 5): no drawer entry; deep URL only.
 
 ## Out of scope (Phase 1)

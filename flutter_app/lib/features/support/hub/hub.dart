@@ -1,6 +1,6 @@
-/// Contact hub and support form route stubs (form UI ships in phase 4).
+/// Contact hub (form UI lives under `features/support/form/`).
 library;
 
+export '../form/presentation/screens/support_intake_form_screen.dart';
 export 'presentation/screens/contact_hub_screen.dart';
-export 'presentation/screens/support_intake_form_screen.dart';
 export 'support_contact_emails.dart';

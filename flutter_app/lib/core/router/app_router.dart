@@ -192,7 +192,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'support',
             name: 'contactSupport',
-            builder: (context, state) => const SupportIntakeFormScreen(),
+            builder: (context, state) => Consumer(
+              builder: (context, ref, _) {
+                final auth = ref.watch(authProvider);
+                return SupportIntakeFormScreen(
+                  signedIn: auth.isLoggedIn,
+                  accessToken: auth.accessToken,
+                );
+              },
+            ),
           ),
         ],
       ),
