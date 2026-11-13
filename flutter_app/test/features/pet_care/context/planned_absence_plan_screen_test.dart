@@ -166,6 +166,26 @@ void main() {
     );
   }
 
+  testWidgets('cancelled absence disables download handover control', (
+    tester,
+  ) async {
+    final handle = tester.ensureSemantics();
+    await tester.pumpWidget(buildScreen(overrideAbsence: cancelledAbsence));
+    await tester.pumpAndSettle();
+
+    final download = tester.widget<IconButton>(
+      find.byKey(const Key('away_plan_download_handover')),
+    );
+    expect(download.onPressed, isNull);
+    expect(
+      tester.getSemantics(
+        find.bySemanticsIdentifier('away_plan_download_handover'),
+      ),
+      isSemantics(hasEnabledState: true, isEnabled: false),
+    );
+    handle.dispose();
+  });
+
   testWidgets('absence screen shows pet pill without multi-pet care sections', (
     tester,
   ) async {

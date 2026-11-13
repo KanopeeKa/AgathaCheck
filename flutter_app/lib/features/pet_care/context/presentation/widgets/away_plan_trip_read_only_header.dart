@@ -45,8 +45,6 @@ class AwayPlanTripReadOnlyHeader extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Semantics(
                 identifier: 'away_plan_see_absence',
-                button: true,
-                label: l.careContextSeeAbsence,
                 child: TextButton(
                   key: const Key('away_plan_see_absence'),
                   onPressed: () {
