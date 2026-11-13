@@ -13,6 +13,7 @@ import { checkSupportSubmitRateLimits } from './rateLimit.js';
  *   accountEmail: string | null,
  *   body: object,
  *   clientIp: string,
+ *   attachments?: { id: string, storage_key: string, mime: string, bytes: number }[],
  * }} input
  */
 export async function createSupportTicket(pool, input) {
@@ -72,6 +73,21 @@ export async function createSupportTicket(pool, input) {
                   ($3, $2, 'github_issue', 'pending')`,
           [receiptId, ticketId, issueId],
         );
+
+        const attachments = input.attachments || [];
+        for (const attachment of attachments) {
+          await client.query(
+            `INSERT INTO support_attachments (id, ticket_id, storage_key, mime, bytes)
+             VALUES ($1, $2, $3, $4, $5)`,
+            [
+              attachment.id,
+              ticketId,
+              attachment.storage_key,
+              attachment.mime,
+              attachment.bytes,
+            ],
+          );
+        }
 
         return { reference };
       } catch (err) {

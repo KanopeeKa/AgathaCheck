@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../screenshots/support_screenshot_content_type.dart';
+import '../../screenshots/support_screenshot_upload.dart';
 import 'support_ticket_submit_payload.dart';
 
 class SupportTicketSubmitException implements Exception {
@@ -34,21 +36,50 @@ class SupportTicketsApi {
 
   Uri _uri(String path) => Uri.parse('$baseUrl$path');
 
-  Future<String> submitTicket(SupportTicketSubmitPayload payload) async {
-    final headers = <String, String>{
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-    };
+  Future<String> submitTicket(
+    SupportTicketSubmitPayload payload, {
+    List<SupportScreenshotUpload> screenshots = const [],
+  }) async {
     final token = accessToken;
-    if (token != null && token.isNotEmpty) {
-      headers['Authorization'] = 'Bearer $token';
-    }
+    final hasScreenshots = screenshots.isNotEmpty;
 
-    final response = await _client.post(
-      _uri('/api/support/tickets'),
-      headers: headers,
-      body: json.encode(payload.toJson()),
-    );
+    late final http.Response response;
+    if (hasScreenshots) {
+      final request = http.MultipartRequest(
+        'POST',
+        _uri('/api/support/tickets'),
+      );
+      request.headers['Accept'] = 'application/json';
+      if (token != null && token.isNotEmpty) {
+        request.headers['Authorization'] = 'Bearer $token';
+      }
+      request.fields['payload'] = json.encode(payload.toJson());
+      for (final shot in screenshots) {
+        request.files.add(
+          http.MultipartFile.fromBytes(
+            'screenshots',
+            shot.bytes,
+            filename: shot.filename,
+            contentType: contentTypeForSupportScreenshot(shot.filename),
+          ),
+        );
+      }
+      final streamed = await _client.send(request);
+      response = await http.Response.fromStream(streamed);
+    } else {
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      };
+      if (token != null && token.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $token';
+      }
+      response = await _client.post(
+        _uri('/api/support/tickets'),
+        headers: headers,
+        body: json.encode(payload.toJson()),
+      );
+    }
 
     if (response.statusCode == 201) {
       final decoded = json.decode(response.body);

@@ -6356,6 +6356,35 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your session expired. Reload the page and sign in again.';
 
   @override
+  String get supportScreenshotSectionTitle => 'Screenshots (optional)';
+
+  @override
+  String get supportScreenshotPiiNotice =>
+      'Screenshots may show personal information. Remove anything you do not want our team to store.';
+
+  @override
+  String get supportScreenshotAddButton => 'Add screenshot';
+
+  @override
+  String get supportScreenshotRemoveButton => 'Remove screenshot';
+
+  @override
+  String get supportScreenshotErrorTooMany =>
+      'You can attach at most three screenshots.';
+
+  @override
+  String get supportScreenshotErrorType =>
+      'Only PNG, JPEG, or WebP images are allowed.';
+
+  @override
+  String get supportScreenshotErrorFileTooLarge =>
+      'Each screenshot must be 2 MB or smaller.';
+
+  @override
+  String get supportScreenshotErrorTotalTooLarge =>
+      'Total screenshot size must be 6 MB or less.';
+
+  @override
   String get supportStaffQueueTitle => 'Support queue';
 
   @override

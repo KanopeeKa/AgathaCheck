@@ -18,6 +18,7 @@ import peopleRoutes from '../routes/people/index.js';
 import sharingRoutes from '../routes/sharing.js';
 import householdsRoutes from '../routes/households/index.js';
 import petTagsRoutes from '../routes/petTags.js';
+import supportAttachmentsRoutes from '../routes/support/attachments.js';
 import supportTicketsRoutes from '../routes/support/tickets.js';
 import supportStaffRoutes from '../routes/support/staff.js';
 import careContextRoutes from '../routes/careContext/index.js';
@@ -117,6 +118,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/api/households', householdsRoutes(pool));
   app.use('/api/pet-tags', petTagsRoutes(pool));
   app.use('/api/support', supportTicketsRoutes(pool));
+  app.use('/api/support/attachments', supportAttachmentsRoutes(pool));
   app.use('/api/support/staff', supportStaffRoutes(pool));
   app.use('/api/archived-pets', (req, res) => {
     res.json([]);
@@ -139,6 +141,7 @@ export function createApp(customPool, comparePassword) {
   app.use('/backend/api/households', householdsRoutes(pool));
   app.use('/backend/api/pet-tags', petTagsRoutes(pool));
   app.use('/backend/api/support', supportTicketsRoutes(pool));
+  app.use('/backend/api/support/attachments', supportAttachmentsRoutes(pool));
   app.use('/backend/api/support/staff', supportStaffRoutes(pool));
 
   app.use(createApiErrorMiddleware());

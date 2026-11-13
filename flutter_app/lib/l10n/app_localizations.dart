@@ -11089,6 +11089,54 @@ abstract class AppLocalizations {
   /// **'Your session expired. Reload the page and sign in again.'**
   String get supportFormErrorSessionExpired;
 
+  /// No description provided for @supportScreenshotSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots (optional)'**
+  String get supportScreenshotSectionTitle;
+
+  /// No description provided for @supportScreenshotPiiNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots may show personal information. Remove anything you do not want our team to store.'**
+  String get supportScreenshotPiiNotice;
+
+  /// No description provided for @supportScreenshotAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add screenshot'**
+  String get supportScreenshotAddButton;
+
+  /// No description provided for @supportScreenshotRemoveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove screenshot'**
+  String get supportScreenshotRemoveButton;
+
+  /// No description provided for @supportScreenshotErrorTooMany.
+  ///
+  /// In en, this message translates to:
+  /// **'You can attach at most three screenshots.'**
+  String get supportScreenshotErrorTooMany;
+
+  /// No description provided for @supportScreenshotErrorType.
+  ///
+  /// In en, this message translates to:
+  /// **'Only PNG, JPEG, or WebP images are allowed.'**
+  String get supportScreenshotErrorType;
+
+  /// No description provided for @supportScreenshotErrorFileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Each screenshot must be 2 MB or smaller.'**
+  String get supportScreenshotErrorFileTooLarge;
+
+  /// No description provided for @supportScreenshotErrorTotalTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Total screenshot size must be 6 MB or less.'**
+  String get supportScreenshotErrorTotalTooLarge;
+
   /// No description provided for @supportStaffQueueTitle.
   ///
   /// In en, this message translates to:
