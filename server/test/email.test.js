@@ -7,6 +7,7 @@ import {
 } from '../lib/email/locale.js';
 import { renderEmailLayout } from '../lib/email/layout.js';
 import { buildPasswordResetEmail } from '../lib/email/templates/passwordReset.js';
+import { buildSupportReceiptEmail } from '../lib/support/outbox/receiptEmail.js';
 import { buildHouseholdInvitationEmail } from '../lib/email/templates/householdInvitation.js';
 
 describe('email locale', () => {
@@ -158,6 +159,15 @@ describe('email layout', () => {
       if (prev === undefined) delete process.env.APP_PUBLIC_URL;
       else process.env.APP_PUBLIC_URL = prev;
     }
+  });
+});
+
+describe('support receipt email template', () => {
+  it('uses resolveEmailLocale language for subjects', () => {
+    const ref = 'AT-12345678';
+    expect(buildSupportReceiptEmail({ locale: 'fr', reference: ref }).subject).toBe(
+      `[${ref}] Nous avons reçu votre demande`,
+    );
   });
 });
 

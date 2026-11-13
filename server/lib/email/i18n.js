@@ -14,6 +14,20 @@ const MESSAGES = {
       textSecurity: "If you didn't request this, you can ignore this email.",
       textCta: 'Reset your password: {url}',
     },
+    supportReceipt: {
+      subject: '[{reference}] We received your request',
+      preheader: 'We will reply by email if we need more information.',
+      title: 'We received your request',
+      intro: 'Thank you for contacting AgathaTrack. Your reference is <strong>{reference}</strong>.',
+      bodyDetail:
+        'Our team will review your message and respond by email from support@ if we need more information. Please keep your reference for your records.',
+      footer: 'This email does not repeat the text you submitted.',
+      cta: 'Contact hub',
+      textIntro: 'Thank you for contacting AgathaTrack. Your reference is {reference}.',
+      textBody:
+        'Our team will review your message and respond by email from support@ if we need more information.',
+      textContact: 'Contact hub: {url}',
+    },
     externalProspectNotice: {
       subject: '{orgName} added you as an adoption prospect on AgathaTrack',
       preheader: 'Your contact details are stored to help coordinate adoption visits.',
@@ -44,6 +58,21 @@ const MESSAGES = {
       textExpiry: 'Il expire dans 15 minutes.',
       textSecurity: "Si vous n'avez pas demandé ceci, vous pouvez ignorer cet e-mail.",
       textCta: 'Réinitialiser votre mot de passe : {url}',
+    },
+    supportReceipt: {
+      subject: '[{reference}] Nous avons reçu votre demande',
+      preheader: 'Nous vous répondrons par e-mail si nous avons besoin de précisions.',
+      title: 'Nous avons reçu votre demande',
+      intro:
+        'Merci d\'avoir contacté AgathaTrack. Votre référence est <strong>{reference}</strong>.',
+      bodyDetail:
+        'Notre équipe examinera votre message et vous répondra par e-mail depuis support@ si nous avons besoin de précisions. Conservez votre référence.',
+      footer: 'Ce courriel ne reprend pas le texte que vous avez envoyé.',
+      cta: 'Hub Contact',
+      textIntro: 'Merci d\'avoir contacté AgathaTrack. Votre référence est {reference}.',
+      textBody:
+        'Notre équipe examinera votre message et vous répondra par e-mail depuis support@ si nous avons besoin de précisions.',
+      textContact: 'Hub Contact : {url}',
     },
     externalProspectNotice: {
       subject: '{orgName} vous a ajouté comme prospect d\'adoption sur AgathaTrack',
