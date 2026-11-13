@@ -3,12 +3,12 @@ import request from 'supertest';
 import jwt from 'jsonwebtoken';
 import { v4 as uuidv4 } from 'uuid';
 
-import { createApp } from '../../bin/server.js';
-import { createDbPool } from '../db/helpers/careHarness.js';
+import { createApp } from '../../../bin/server.js';
+import { createDbPool } from '../helpers/careHarness.js';
 import {
   applySupportIntakeDown,
   applySupportIntakeMigration,
-} from '../db/helpers/supportIntakeSql.js';
+} from '../helpers/supportIntakeSql.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'default_secret';
 
