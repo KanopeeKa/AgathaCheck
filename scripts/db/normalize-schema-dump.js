@@ -25,6 +25,21 @@ function isNoiseLine(trimmed, rawLine) {
   return NOISE_PREFIXES.some((prefix) => trimmed.startsWith(prefix));
 }
 
+/**
+ * PostgreSQL 18 pg_dump emits `ALTER COLUMN … SET (pg_attver=N)`.
+ * The number is a catalog counter, not schema, and differs between dumps.
+ * Drop a line whose SET list is only pg_attver; keep any other storage option.
+ */
+function withoutPgAttver(line) {
+  if (!/^\s*ALTER TABLE\b/.test(line) || !line.includes('pg_attver=')) return line;
+  const next = line
+    .replace(/\s*,\s*pg_attver=\d+/g, '')
+    .replace(/pg_attver=\d+\s*,\s*/g, '')
+    .replace(/pg_attver=\d+/g, '');
+  if (/\bSET\s*\(\s*\)/.test(next)) return null;
+  return next;
+}
+
 function canonicalizeCheckConstraintArrays(line) {
   if (!line.includes('::text = ANY')) return line;
   const castArrayMatch = line.match(
@@ -66,7 +81,9 @@ export function normalizeSchemaDump(raw) {
   for (const line of lines) {
     const trimmed = line.trimEnd();
     if (isNoiseLine(trimmed.trim(), line)) continue;
-    kept.push(canonicalizeCheckConstraintArrays(canonicalizePartialIndexArrays(trimmed)));
+    const stable = withoutPgAttver(trimmed);
+    if (stable === null) continue;
+    kept.push(canonicalizeCheckConstraintArrays(canonicalizePartialIndexArrays(stable)));
   }
 
   return `${kept.join('\n').trim()}\n`;

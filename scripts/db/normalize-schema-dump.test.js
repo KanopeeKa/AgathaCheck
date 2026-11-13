@@ -32,6 +32,22 @@ test('canonicalizeCheckConstraintArrays normalizes CHECK ANY variants', () => {
   assert.equal(normalizeSchemaDump(`${legacy}\n`), normalizeSchemaDump(`${canonical}\n`));
 });
 
+test('strips PostgreSQL 18 pg_attver and keeps other column options', () => {
+  const raw = `CREATE TABLE public._migrations (
+    id integer NOT NULL
+);
+ALTER TABLE ONLY public._migrations ALTER COLUMN id SET (pg_attver=26592512);
+ALTER TABLE ONLY public.users ALTER COLUMN name SET (fillfactor=70, pg_attver=12);
+`;
+  assert.equal(
+    normalizeSchemaDump(raw),
+    `CREATE TABLE public._migrations (
+    id integer NOT NULL
+);
+ALTER TABLE ONLY public.users ALTER COLUMN name SET (fillfactor=70);\n`
+  );
+});
+
 test('canonicalizePartialIndexArrays normalizes foster partial index variants', () => {
   const legacy =
     "CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE ((status)::text = ANY ((ARRAY['pending'::character varying, 'in_progress'::character varying])::text[]));";
