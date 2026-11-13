@@ -111,7 +111,8 @@
     "102_pet_vaccination_records.sql",
     "103_vet_visits.sql",
     "104_care_date_outcome.sql",
-    "105_care_item_closed.sql"
+    "105_care_item_closed.sql",
+    "106_support_intake_tables.sql"
   ],
   "code_migrations": [
     "016_migrate_family_events_placements.sql",
