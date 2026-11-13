@@ -15,6 +15,7 @@ import {
   emitErasureHouseholdNotices,
   releaseHouseholdsForDepartingUser,
 } from '../households/erasure/index.js';
+import { purgeSupportTicketsForAccountErasure } from '../support/retention/erasureForUser.js';
 
 const ERASURE_MESSAGE =
   'Your account has been deleted. Remaining files and analytics data are being removed in the background.';
@@ -311,6 +312,11 @@ export async function acceptAccountErasure(pool, { userId, userEmail, req = null
     erasureHouseholdMeta = householdContext.householdMeta;
 
     maybeFault('delete_user');
+    await purgeSupportTicketsForAccountErasure(client, {
+      userId,
+      userEmail,
+      operationId,
+    });
     const deleted = await client.query('DELETE FROM users WHERE id = $1', [userId]);
     if ((deleted.rowCount ?? 0) === 0) {
       throw new Error('user delete affected zero rows');

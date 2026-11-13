@@ -2376,6 +2376,126 @@
   "upcomingEvents": "Upcoming events",
   "invite": "Invite",
   "contact": "Contact",
+  "contactHubTitle": "Contact",
+  "contactHubSubtitle": "Choose the channel that fits your message. Help & Support uses our in-app form; other topics can reach us by email.",
+  "contactHubHelpSupportTitle": "Help & Support",
+  "contactHubHelpSupportDescription": "Report a bug, suggest an improvement, or ask about your account or billing.",
+  "contactHubPartnershipsTitle": "Partnerships",
+  "contactHubPartnershipsDescription": "Shelters, rescues, vets, and other organisations interested in AgathaTrack.",
+  "contactHubLegalPrivacyTitle": "Legal & Privacy",
+  "contactHubLegalPrivacyDescription": "Privacy rights, legal notices, and data-processing questions.",
+  "contactHubMailboxesTitle": "Email addresses",
+  "contactHubMailboxContact": "General",
+  "contactHubMailboxSupport": "Support",
+  "contactHubMailboxLegal": "Legal & privacy",
+  "contactHubMailboxPartnerships": "Partnerships",
+  "contactHubGeneralLine": "You can also reach us any time at {email}.",
+  "@contactHubGeneralLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormIntro": "Tell us what happened. We reply by email with your reference number.",
+  "supportFormCategoryLabel": "Category",
+  "supportFormCategoryBug": "Bug",
+  "supportFormCategorySuggestion": "Suggestion",
+  "supportFormCategoryAccount": "Account",
+  "supportFormCategoryBilling": "Billing",
+  "supportFormTitleLabel": "Title",
+  "supportFormDescriptionLabel": "Description",
+  "supportFormEmailLabel": "Your email",
+  "supportFormEmailHint": "We send your receipt to this address.",
+  "supportFormExpectedLabel": "What you expected",
+  "supportFormActualLabel": "What happened instead",
+  "supportFormStepsLabel": "Steps to reproduce",
+  "supportFormFrequencyLabel": "How often",
+  "supportFormFrequencyAlways": "Every time",
+  "supportFormFrequencySometimes": "Sometimes",
+  "supportFormFrequencyOnce": "Once",
+  "supportFormSubmit": "Send request",
+  "supportFormSubmitting": "Sending…",
+  "supportFormErrorSummaryTitle": "There is a problem with this form",
+  "supportFormErrorSummaryFieldCount": "{count, plural, one{1 field needs your attention.} other{{count} fields need your attention.}}",
+  "@supportFormErrorSummaryFieldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "supportFormValidationTitleRequired": "Enter a title.",
+  "supportFormValidationTitleTooLong": "Title is too long.",
+  "supportFormValidationDescriptionRequired": "Enter a description.",
+  "supportFormValidationDescriptionTooLong": "Description is too long.",
+  "supportFormValidationEmailRequired": "Enter your email address.",
+  "supportFormValidationEmailInvalid": "Enter a valid email address.",
+  "supportFormValidationEmailTooLong": "Email address is too long.",
+  "supportFormSuccessTitle": "Request received",
+  "supportFormSuccessBody": "Your reference is {reference}. Keep it for your records — we have emailed you a receipt.",
+  "@supportFormSuccessBody": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormSuccessAnnouncement": "Request received. Your reference is {reference}.",
+  "@supportFormSuccessAnnouncement": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormCopyReference": "Copy reference",
+  "supportFormErrorGeneric": "We could not send your request. Try again or email support@agathatrack.com.",
+  "supportFormErrorRateLimited": "Too many requests. Wait a moment or email support@agathatrack.com.",
+  "supportFormErrorSessionExpired": "Your session expired. Reload the page and sign in again.",
+  "supportScreenshotSectionTitle": "Screenshots (optional)",
+  "supportScreenshotPiiNotice": "Screenshots may show personal information. Remove anything you do not want our team to store.",
+  "supportScreenshotAddButton": "Add screenshot",
+  "supportScreenshotRemoveButton": "Remove screenshot",
+  "supportScreenshotErrorTooMany": "You can attach at most three screenshots.",
+  "supportScreenshotErrorType": "Only PNG, JPEG, or WebP images are allowed.",
+  "supportScreenshotErrorFileTooLarge": "Each screenshot must be 2 MB or smaller.",
+  "supportScreenshotErrorTotalTooLarge": "Total screenshot size must be 6 MB or less.",
+  "supportStaffQueueTitle": "Support queue",
+  "supportStaffQueueEmpty": "No support requests yet.",
+  "supportStaffQueueForbidden": "You do not have access to the support queue.",
+  "supportStaffQueueLoadError": "We could not load the support queue. Try again in a moment.",
+  "supportStaffTicketDetailTitle": "Support request",
+  "supportStaffOutboxSection": "Outbox",
+  "supportStaffOutboxEmpty": "No outbox rows for this ticket.",
+  "supportStaffAttachmentsSection": "Screenshots",
+  "supportStaffAttachmentsEmpty": "No screenshots on this ticket.",
+  "supportStaffOutboxAlertTooltip": "Blocked or failed outbox row",
+  "supportStaffDescriptionHeading": "Description",
+  "supportStaffReporterLine": "Reporter: {email}",
+  "@supportStaffReporterLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "supportStaffGitHubIssue": "GitHub issue #{number}",
+  "@supportStaffGitHubIssue": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "supportStaffAttachmentBytes": "{bytes} bytes",
+  "@supportStaffAttachmentBytes": {
+    "placeholders": {
+      "bytes": {
+        "type": "int"
+      }
+    }
+  },
   "continueButton": "Continue",
   "experienceChooserTitle": "How will you use AgathaTrack?",
   "experienceChooserSubtitle": "Choose the experience that fits what you need today.",

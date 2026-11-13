@@ -97,6 +97,7 @@ Certains traitements peuvent être nécessaires afin de satisfaire à des obliga
 Les données personnelles peuvent être communiquées :
 - aux prestataires techniques intervenant pour l’hébergement ou le support d’Agatha Track, y compris **o2switch** pour l’hébergement et, le cas échéant, les services liés à l’email ;
 - au prestataire de paiement **Qonversion** pour la gestion des abonnements et paiements ;
+- **GitHub** (Microsoft), lorsque vous envoyez une demande d’assistance, pour le suivi dans un dépôt **privé** réservé au support client. GitHub agit en qualité de **sous-traitant** pour ce traitement. Si nous purgeons une issue d’assistance après conservation ou effacement de compte, nous remplaçons son titre et son contenu par `[removed]` ; le propriétaire du dépôt supprime l’issue ainsi purgée dans un délai de **sept jours**. Tant que cette suppression n’a pas lieu, des versions antérieures peuvent subsister dans l’historique des modifications GitHub.
 - à l’organisation concernée et à ses administrateurs autorisés, lorsqu’un utilisateur participe à l’espace de cette organisation ou lorsqu’une organisation saisit des données concernant une famille d’accueil externe ;
 - aux autorités compétentes, juridictions, régulateurs ou conseils professionnels lorsque la loi l’exige ou lorsque cela est raisonnablement nécessaire à la protection des droits, de la sécurité ou du service.
 

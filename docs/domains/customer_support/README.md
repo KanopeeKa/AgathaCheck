@@ -44,7 +44,7 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 | Layer | Path | Notes |
 |-------|------|-------|
-| Flutter | `flutter_app/lib/features/support/` (TBD) | Contact hub, form, ticket history |
+| Flutter | `flutter_app/lib/features/support/` | Contact hub (`hub/`), form (`form/` planned), ticket history |
 | Node routes | `server/routes/support/` (TBD) | Tickets, attachments, admin |
 | Migrations | `db/migrations/` (TBD) | `support_*` tables |
 | Jest | `server/test/support/` (TBD) | |

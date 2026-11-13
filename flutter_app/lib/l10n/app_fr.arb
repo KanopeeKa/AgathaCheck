@@ -2226,6 +2226,126 @@
   "upcomingEvents": "Événements à venir",
   "invite": "Inviter",
   "contact": "Contact",
+  "contactHubTitle": "Contact",
+  "contactHubSubtitle": "Choisissez le canal adapté à votre message. Aide et assistance passent par notre formulaire in-app ; les autres sujets nous joignent par e-mail.",
+  "contactHubHelpSupportTitle": "Aide et assistance",
+  "contactHubHelpSupportDescription": "Signalez un bug, proposez une amélioration ou posez une question sur votre compte ou la facturation.",
+  "contactHubPartnershipsTitle": "Partenariats",
+  "contactHubPartnershipsDescription": "Refuges, associations, vétérinaires et autres organisations intéressées par AgathaTrack.",
+  "contactHubLegalPrivacyTitle": "Juridique et confidentialité",
+  "contactHubLegalPrivacyDescription": "Droits sur vos données, mentions légales et questions sur le traitement des données.",
+  "contactHubMailboxesTitle": "Adresses e-mail",
+  "contactHubMailboxContact": "Général",
+  "contactHubMailboxSupport": "Assistance",
+  "contactHubMailboxLegal": "Juridique et confidentialité",
+  "contactHubMailboxPartnerships": "Partenariats",
+  "contactHubGeneralLine": "Vous pouvez aussi nous écrire à tout moment à {email}.",
+  "@contactHubGeneralLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormIntro": "Décrivez votre demande. Nous vous répondrons par e-mail avec votre numéro de référence.",
+  "supportFormCategoryLabel": "Catégorie",
+  "supportFormCategoryBug": "Bug",
+  "supportFormCategorySuggestion": "Suggestion",
+  "supportFormCategoryAccount": "Compte",
+  "supportFormCategoryBilling": "Facturation",
+  "supportFormTitleLabel": "Titre",
+  "supportFormDescriptionLabel": "Description",
+  "supportFormEmailLabel": "Votre e-mail",
+  "supportFormEmailHint": "Nous enverrons l'accusé de réception à cette adresse.",
+  "supportFormExpectedLabel": "Comportement attendu",
+  "supportFormActualLabel": "Ce qui s'est passé",
+  "supportFormStepsLabel": "Étapes pour reproduire",
+  "supportFormFrequencyLabel": "Fréquence",
+  "supportFormFrequencyAlways": "À chaque fois",
+  "supportFormFrequencySometimes": "Parfois",
+  "supportFormFrequencyOnce": "Une fois",
+  "supportFormSubmit": "Envoyer la demande",
+  "supportFormSubmitting": "Envoi…",
+  "supportFormErrorSummaryTitle": "Ce formulaire contient des erreurs",
+  "supportFormErrorSummaryFieldCount": "{count, plural, one{1 champ à corriger.} other{{count} champs à corriger.}}",
+  "@supportFormErrorSummaryFieldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "supportFormValidationTitleRequired": "Saisissez un titre.",
+  "supportFormValidationTitleTooLong": "Le titre est trop long.",
+  "supportFormValidationDescriptionRequired": "Saisissez une description.",
+  "supportFormValidationDescriptionTooLong": "La description est trop longue.",
+  "supportFormValidationEmailRequired": "Saisissez votre adresse e-mail.",
+  "supportFormValidationEmailInvalid": "Saisissez une adresse e-mail valide.",
+  "supportFormValidationEmailTooLong": "L'adresse e-mail est trop longue.",
+  "supportFormSuccessTitle": "Demande reçue",
+  "supportFormSuccessBody": "Votre référence est {reference}. Conservez-la — nous vous avons envoyé un accusé de réception par e-mail.",
+  "@supportFormSuccessBody": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormSuccessAnnouncement": "Demande reçue. Votre référence est {reference}.",
+  "@supportFormSuccessAnnouncement": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormCopyReference": "Copier la référence",
+  "supportFormErrorGeneric": "Envoi impossible. Réessayez ou écrivez à support@agathatrack.com.",
+  "supportFormErrorRateLimited": "Trop de demandes. Patientez ou écrivez à support@agathatrack.com.",
+  "supportFormErrorSessionExpired": "Votre session a expiré. Rechargez la page et reconnectez-vous.",
+  "supportScreenshotSectionTitle": "Captures d'écran (facultatif)",
+  "supportScreenshotPiiNotice": "Les captures peuvent montrer des données personnelles. Retirez tout ce que vous ne voulez pas que nous conservions.",
+  "supportScreenshotAddButton": "Ajouter une capture",
+  "supportScreenshotRemoveButton": "Retirer la capture",
+  "supportScreenshotErrorTooMany": "Vous pouvez joindre au plus trois captures.",
+  "supportScreenshotErrorType": "Seuls les fichiers PNG, JPEG ou WebP sont acceptés.",
+  "supportScreenshotErrorFileTooLarge": "Chaque capture doit faire 2 Mo ou moins.",
+  "supportScreenshotErrorTotalTooLarge": "La taille totale des captures doit être de 6 Mo ou moins.",
+  "supportStaffQueueTitle": "File d'assistance",
+  "supportStaffQueueEmpty": "Aucune demande d'assistance pour le moment.",
+  "supportStaffQueueForbidden": "Vous n'avez pas accès à la file d'assistance.",
+  "supportStaffQueueLoadError": "Impossible de charger la file d'assistance. Réessayez dans un instant.",
+  "supportStaffTicketDetailTitle": "Demande d'assistance",
+  "supportStaffOutboxSection": "Boîte d'envoi",
+  "supportStaffOutboxEmpty": "Aucune ligne de boîte d'envoi pour ce ticket.",
+  "supportStaffAttachmentsSection": "Captures d'écran",
+  "supportStaffAttachmentsEmpty": "Aucune capture d'écran sur ce ticket.",
+  "supportStaffOutboxAlertTooltip": "Ligne bloquée ou en échec dans la boîte d'envoi",
+  "supportStaffDescriptionHeading": "Description",
+  "supportStaffReporterLine": "Demandeur : {email}",
+  "@supportStaffReporterLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "supportStaffGitHubIssue": "Issue GitHub n°{number}",
+  "@supportStaffGitHubIssue": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "supportStaffAttachmentBytes": "{bytes} octets",
+  "@supportStaffAttachmentBytes": {
+    "placeholders": {
+      "bytes": {
+        "type": "int"
+      }
+    }
+  },
   "continueButton": "Continuer",
   "experienceChooserTitle": "Comment utiliserez-vous AgathaTrack ?",
   "experienceChooserSubtitle": "Choisissez l'expérience adaptée à vos besoins du jour.",

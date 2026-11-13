@@ -6281,6 +6281,265 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contact => 'Contact';
 
   @override
+  String get contactHubTitle => 'Contact';
+
+  @override
+  String get contactHubSubtitle =>
+      'Choisissez le canal adapté à votre message. Aide et assistance passent par notre formulaire in-app ; les autres sujets nous joignent par e-mail.';
+
+  @override
+  String get contactHubHelpSupportTitle => 'Aide et assistance';
+
+  @override
+  String get contactHubHelpSupportDescription =>
+      'Signalez un bug, proposez une amélioration ou posez une question sur votre compte ou la facturation.';
+
+  @override
+  String get contactHubPartnershipsTitle => 'Partenariats';
+
+  @override
+  String get contactHubPartnershipsDescription =>
+      'Refuges, associations, vétérinaires et autres organisations intéressées par AgathaTrack.';
+
+  @override
+  String get contactHubLegalPrivacyTitle => 'Juridique et confidentialité';
+
+  @override
+  String get contactHubLegalPrivacyDescription =>
+      'Droits sur vos données, mentions légales et questions sur le traitement des données.';
+
+  @override
+  String get contactHubMailboxesTitle => 'Adresses e-mail';
+
+  @override
+  String get contactHubMailboxContact => 'Général';
+
+  @override
+  String get contactHubMailboxSupport => 'Assistance';
+
+  @override
+  String get contactHubMailboxLegal => 'Juridique et confidentialité';
+
+  @override
+  String get contactHubMailboxPartnerships => 'Partenariats';
+
+  @override
+  String contactHubGeneralLine(String email) {
+    return 'Vous pouvez aussi nous écrire à tout moment à $email.';
+  }
+
+  @override
+  String get supportFormIntro =>
+      'Décrivez votre demande. Nous vous répondrons par e-mail avec votre numéro de référence.';
+
+  @override
+  String get supportFormCategoryLabel => 'Catégorie';
+
+  @override
+  String get supportFormCategoryBug => 'Bug';
+
+  @override
+  String get supportFormCategorySuggestion => 'Suggestion';
+
+  @override
+  String get supportFormCategoryAccount => 'Compte';
+
+  @override
+  String get supportFormCategoryBilling => 'Facturation';
+
+  @override
+  String get supportFormTitleLabel => 'Titre';
+
+  @override
+  String get supportFormDescriptionLabel => 'Description';
+
+  @override
+  String get supportFormEmailLabel => 'Votre e-mail';
+
+  @override
+  String get supportFormEmailHint =>
+      'Nous enverrons l\'accusé de réception à cette adresse.';
+
+  @override
+  String get supportFormExpectedLabel => 'Comportement attendu';
+
+  @override
+  String get supportFormActualLabel => 'Ce qui s\'est passé';
+
+  @override
+  String get supportFormStepsLabel => 'Étapes pour reproduire';
+
+  @override
+  String get supportFormFrequencyLabel => 'Fréquence';
+
+  @override
+  String get supportFormFrequencyAlways => 'À chaque fois';
+
+  @override
+  String get supportFormFrequencySometimes => 'Parfois';
+
+  @override
+  String get supportFormFrequencyOnce => 'Une fois';
+
+  @override
+  String get supportFormSubmit => 'Envoyer la demande';
+
+  @override
+  String get supportFormSubmitting => 'Envoi…';
+
+  @override
+  String get supportFormErrorSummaryTitle =>
+      'Ce formulaire contient des erreurs';
+
+  @override
+  String supportFormErrorSummaryFieldCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count champs à corriger.',
+      one: '1 champ à corriger.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get supportFormValidationTitleRequired => 'Saisissez un titre.';
+
+  @override
+  String get supportFormValidationTitleTooLong => 'Le titre est trop long.';
+
+  @override
+  String get supportFormValidationDescriptionRequired =>
+      'Saisissez une description.';
+
+  @override
+  String get supportFormValidationDescriptionTooLong =>
+      'La description est trop longue.';
+
+  @override
+  String get supportFormValidationEmailRequired =>
+      'Saisissez votre adresse e-mail.';
+
+  @override
+  String get supportFormValidationEmailInvalid =>
+      'Saisissez une adresse e-mail valide.';
+
+  @override
+  String get supportFormValidationEmailTooLong =>
+      'L\'adresse e-mail est trop longue.';
+
+  @override
+  String get supportFormSuccessTitle => 'Demande reçue';
+
+  @override
+  String supportFormSuccessBody(String reference) {
+    return 'Votre référence est $reference. Conservez-la — nous vous avons envoyé un accusé de réception par e-mail.';
+  }
+
+  @override
+  String supportFormSuccessAnnouncement(String reference) {
+    return 'Demande reçue. Votre référence est $reference.';
+  }
+
+  @override
+  String get supportFormCopyReference => 'Copier la référence';
+
+  @override
+  String get supportFormErrorGeneric =>
+      'Envoi impossible. Réessayez ou écrivez à support@agathatrack.com.';
+
+  @override
+  String get supportFormErrorRateLimited =>
+      'Trop de demandes. Patientez ou écrivez à support@agathatrack.com.';
+
+  @override
+  String get supportFormErrorSessionExpired =>
+      'Votre session a expiré. Rechargez la page et reconnectez-vous.';
+
+  @override
+  String get supportScreenshotSectionTitle => 'Captures d\'écran (facultatif)';
+
+  @override
+  String get supportScreenshotPiiNotice =>
+      'Les captures peuvent montrer des données personnelles. Retirez tout ce que vous ne voulez pas que nous conservions.';
+
+  @override
+  String get supportScreenshotAddButton => 'Ajouter une capture';
+
+  @override
+  String get supportScreenshotRemoveButton => 'Retirer la capture';
+
+  @override
+  String get supportScreenshotErrorTooMany =>
+      'Vous pouvez joindre au plus trois captures.';
+
+  @override
+  String get supportScreenshotErrorType =>
+      'Seuls les fichiers PNG, JPEG ou WebP sont acceptés.';
+
+  @override
+  String get supportScreenshotErrorFileTooLarge =>
+      'Chaque capture doit faire 2 Mo ou moins.';
+
+  @override
+  String get supportScreenshotErrorTotalTooLarge =>
+      'La taille totale des captures doit être de 6 Mo ou moins.';
+
+  @override
+  String get supportStaffQueueTitle => 'File d\'assistance';
+
+  @override
+  String get supportStaffQueueEmpty =>
+      'Aucune demande d\'assistance pour le moment.';
+
+  @override
+  String get supportStaffQueueForbidden =>
+      'Vous n\'avez pas accès à la file d\'assistance.';
+
+  @override
+  String get supportStaffQueueLoadError =>
+      'Impossible de charger la file d\'assistance. Réessayez dans un instant.';
+
+  @override
+  String get supportStaffTicketDetailTitle => 'Demande d\'assistance';
+
+  @override
+  String get supportStaffOutboxSection => 'Boîte d\'envoi';
+
+  @override
+  String get supportStaffOutboxEmpty =>
+      'Aucune ligne de boîte d\'envoi pour ce ticket.';
+
+  @override
+  String get supportStaffAttachmentsSection => 'Captures d\'écran';
+
+  @override
+  String get supportStaffAttachmentsEmpty =>
+      'Aucune capture d\'écran sur ce ticket.';
+
+  @override
+  String get supportStaffOutboxAlertTooltip =>
+      'Ligne bloquée ou en échec dans la boîte d\'envoi';
+
+  @override
+  String get supportStaffDescriptionHeading => 'Description';
+
+  @override
+  String supportStaffReporterLine(String email) {
+    return 'Demandeur : $email';
+  }
+
+  @override
+  String supportStaffGitHubIssue(int number) {
+    return 'Issue GitHub n°$number';
+  }
+
+  @override
+  String supportStaffAttachmentBytes(int bytes) {
+    return '$bytes octets';
+  }
+
+  @override
   String get continueButton => 'Continuer';
 
   @override

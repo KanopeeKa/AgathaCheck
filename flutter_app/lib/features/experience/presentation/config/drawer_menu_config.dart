@@ -9,8 +9,6 @@ import '../../domain/entities/drawer_menu_item.dart';
 class DrawerMenuConfig {
   const DrawerMenuConfig._();
 
-  static const contactEmail = 'contact@agathatrack.com';
-
   /// Pet Care section roots (workspace toggle removed — D-MVP-1).
   static const sectionRootPaths = {'/pc/home', '/account'};
 

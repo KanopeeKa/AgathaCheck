@@ -6184,6 +6184,257 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contact => 'Contact';
 
   @override
+  String get contactHubTitle => 'Contact';
+
+  @override
+  String get contactHubSubtitle =>
+      'Choose the channel that fits your message. Help & Support uses our in-app form; other topics can reach us by email.';
+
+  @override
+  String get contactHubHelpSupportTitle => 'Help & Support';
+
+  @override
+  String get contactHubHelpSupportDescription =>
+      'Report a bug, suggest an improvement, or ask about your account or billing.';
+
+  @override
+  String get contactHubPartnershipsTitle => 'Partnerships';
+
+  @override
+  String get contactHubPartnershipsDescription =>
+      'Shelters, rescues, vets, and other organisations interested in AgathaTrack.';
+
+  @override
+  String get contactHubLegalPrivacyTitle => 'Legal & Privacy';
+
+  @override
+  String get contactHubLegalPrivacyDescription =>
+      'Privacy rights, legal notices, and data-processing questions.';
+
+  @override
+  String get contactHubMailboxesTitle => 'Email addresses';
+
+  @override
+  String get contactHubMailboxContact => 'General';
+
+  @override
+  String get contactHubMailboxSupport => 'Support';
+
+  @override
+  String get contactHubMailboxLegal => 'Legal & privacy';
+
+  @override
+  String get contactHubMailboxPartnerships => 'Partnerships';
+
+  @override
+  String contactHubGeneralLine(String email) {
+    return 'You can also reach us any time at $email.';
+  }
+
+  @override
+  String get supportFormIntro =>
+      'Tell us what happened. We reply by email with your reference number.';
+
+  @override
+  String get supportFormCategoryLabel => 'Category';
+
+  @override
+  String get supportFormCategoryBug => 'Bug';
+
+  @override
+  String get supportFormCategorySuggestion => 'Suggestion';
+
+  @override
+  String get supportFormCategoryAccount => 'Account';
+
+  @override
+  String get supportFormCategoryBilling => 'Billing';
+
+  @override
+  String get supportFormTitleLabel => 'Title';
+
+  @override
+  String get supportFormDescriptionLabel => 'Description';
+
+  @override
+  String get supportFormEmailLabel => 'Your email';
+
+  @override
+  String get supportFormEmailHint => 'We send your receipt to this address.';
+
+  @override
+  String get supportFormExpectedLabel => 'What you expected';
+
+  @override
+  String get supportFormActualLabel => 'What happened instead';
+
+  @override
+  String get supportFormStepsLabel => 'Steps to reproduce';
+
+  @override
+  String get supportFormFrequencyLabel => 'How often';
+
+  @override
+  String get supportFormFrequencyAlways => 'Every time';
+
+  @override
+  String get supportFormFrequencySometimes => 'Sometimes';
+
+  @override
+  String get supportFormFrequencyOnce => 'Once';
+
+  @override
+  String get supportFormSubmit => 'Send request';
+
+  @override
+  String get supportFormSubmitting => 'Sending…';
+
+  @override
+  String get supportFormErrorSummaryTitle =>
+      'There is a problem with this form';
+
+  @override
+  String supportFormErrorSummaryFieldCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count fields need your attention.',
+      one: '1 field needs your attention.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get supportFormValidationTitleRequired => 'Enter a title.';
+
+  @override
+  String get supportFormValidationTitleTooLong => 'Title is too long.';
+
+  @override
+  String get supportFormValidationDescriptionRequired => 'Enter a description.';
+
+  @override
+  String get supportFormValidationDescriptionTooLong =>
+      'Description is too long.';
+
+  @override
+  String get supportFormValidationEmailRequired => 'Enter your email address.';
+
+  @override
+  String get supportFormValidationEmailInvalid =>
+      'Enter a valid email address.';
+
+  @override
+  String get supportFormValidationEmailTooLong => 'Email address is too long.';
+
+  @override
+  String get supportFormSuccessTitle => 'Request received';
+
+  @override
+  String supportFormSuccessBody(String reference) {
+    return 'Your reference is $reference. Keep it for your records — we have emailed you a receipt.';
+  }
+
+  @override
+  String supportFormSuccessAnnouncement(String reference) {
+    return 'Request received. Your reference is $reference.';
+  }
+
+  @override
+  String get supportFormCopyReference => 'Copy reference';
+
+  @override
+  String get supportFormErrorGeneric =>
+      'We could not send your request. Try again or email support@agathatrack.com.';
+
+  @override
+  String get supportFormErrorRateLimited =>
+      'Too many requests. Wait a moment or email support@agathatrack.com.';
+
+  @override
+  String get supportFormErrorSessionExpired =>
+      'Your session expired. Reload the page and sign in again.';
+
+  @override
+  String get supportScreenshotSectionTitle => 'Screenshots (optional)';
+
+  @override
+  String get supportScreenshotPiiNotice =>
+      'Screenshots may show personal information. Remove anything you do not want our team to store.';
+
+  @override
+  String get supportScreenshotAddButton => 'Add screenshot';
+
+  @override
+  String get supportScreenshotRemoveButton => 'Remove screenshot';
+
+  @override
+  String get supportScreenshotErrorTooMany =>
+      'You can attach at most three screenshots.';
+
+  @override
+  String get supportScreenshotErrorType =>
+      'Only PNG, JPEG, or WebP images are allowed.';
+
+  @override
+  String get supportScreenshotErrorFileTooLarge =>
+      'Each screenshot must be 2 MB or smaller.';
+
+  @override
+  String get supportScreenshotErrorTotalTooLarge =>
+      'Total screenshot size must be 6 MB or less.';
+
+  @override
+  String get supportStaffQueueTitle => 'Support queue';
+
+  @override
+  String get supportStaffQueueEmpty => 'No support requests yet.';
+
+  @override
+  String get supportStaffQueueForbidden =>
+      'You do not have access to the support queue.';
+
+  @override
+  String get supportStaffQueueLoadError =>
+      'We could not load the support queue. Try again in a moment.';
+
+  @override
+  String get supportStaffTicketDetailTitle => 'Support request';
+
+  @override
+  String get supportStaffOutboxSection => 'Outbox';
+
+  @override
+  String get supportStaffOutboxEmpty => 'No outbox rows for this ticket.';
+
+  @override
+  String get supportStaffAttachmentsSection => 'Screenshots';
+
+  @override
+  String get supportStaffAttachmentsEmpty => 'No screenshots on this ticket.';
+
+  @override
+  String get supportStaffOutboxAlertTooltip => 'Blocked or failed outbox row';
+
+  @override
+  String get supportStaffDescriptionHeading => 'Description';
+
+  @override
+  String supportStaffReporterLine(String email) {
+    return 'Reporter: $email';
+  }
+
+  @override
+  String supportStaffGitHubIssue(int number) {
+    return 'GitHub issue #$number';
+  }
+
+  @override
+  String supportStaffAttachmentBytes(int bytes) {
+    return '$bytes bytes';
+  }
+
+  @override
   String get continueButton => 'Continue';
 
   @override

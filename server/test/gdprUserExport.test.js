@@ -16,6 +16,20 @@ describe('gdprUserExport', () => {
     };
   }
 
+  it('includes support tickets for the user and normalised email match', async () => {
+    const signedOutTicket = { id: 't-2', user_id: null, reporter_email_normalised: 'user@example.com' };
+    const pool = poolReturning({
+      'SELECT email FROM users': [{ email: 'User+alias@Example.com' }],
+      'FROM support_tickets': [signedOutTicket],
+    });
+
+    const data = await buildUserDataExport(pool, userId);
+    expect(data.support_tickets).toEqual([signedOutTicket]);
+
+    const ticketQuery = pool.query.mock.calls.find(([sql]) => sql.includes('FROM support_tickets'));
+    expect(ticketQuery[1]).toEqual([userId, 'user@example.com']);
+  });
+
   it('includes CARE ledger tables scoped via health_entries.user_id', async () => {
     const occurrence = { id: 'occ-1', health_entry_id: 'he-1' };
     const scheduleEvent = { id: 'cse-1', health_entry_id: 'he-1', event_type: 'completed' };
@@ -27,6 +41,7 @@ describe('gdprUserExport', () => {
     };
 
     const pool = poolReturning({
+      'SELECT email FROM users': [{ email: 'user@example.com' }],
       'FROM health_occurrences ho': [occurrence],
       'FROM care_schedule_events cse': [scheduleEvent],
       'FROM health_entry_absence_resolutions hear': [absenceResolution],
@@ -63,7 +78,9 @@ describe('gdprUserExport', () => {
   });
 
   it('does not query retired health_history', async () => {
-    const pool = poolReturning({});
+    const pool = poolReturning({
+      'SELECT email FROM users': [{ email: 'user@example.com' }],
+    });
     const data = await buildUserDataExport(pool, userId);
     expect(data).not.toHaveProperty('health_history');
     const historyQuery = pool.query.mock.calls.find(([sql]) =>

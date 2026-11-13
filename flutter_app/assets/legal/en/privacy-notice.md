@@ -98,6 +98,7 @@ Personal data may be shared with:
 - service providers that host or technically support Agatha Track, including **o2switch** for hosting and email-related infrastructure support as applicable;
 - payment provider **Qonversion** for billing and subscription processing;
 - **PostHog** (EU-hosted) for optional product analytics when you consent in the app;
+- **GitHub** (Microsoft), when you submit a support request, for workflow storage in a **private** repository used only for customer support. GitHub acts as a **processor** for that processing. If we redact a support issue after retention or account erasure, we replace its title and body with `[removed]`; the repository owner deletes the redacted issue within **seven days**. Until that deletion, earlier versions may remain in GitHub’s edit history.
 - the relevant organisation and its authorised admins, where a user participates in that organisation’s workspace or where the organisation enters external foster data;
 - competent authorities, courts, regulators, or professional advisers where required by law or reasonably necessary to protect rights, safety, or the service.
 

@@ -4,7 +4,7 @@ owner: Product / Documentation
 audience: both
 status: proposed
 status_since: 2026-11-11
-last_updated: 2026-11-11
+last_updated: 2026-11-13
 tags: [customer_support, roadmap, support]
 folds_into: docs/domains/customer_support/features/support-ticketing.md
 ---
@@ -76,7 +76,7 @@ Responsive hub (web/mobile): **Help & Support** (in-app form), **Partnerships** 
 
 ### 4.2 Email channels
 
-Visible addresses (routing TBD in audit): `support@`, `partnerships@`, `legal@`, `privacy@` — `SUPPORT-TICKETING-R-004`.
+Visible addresses (routing TBD in audit): `support@`, `partnerships@`, `legal@` (legal **and** privacy enquiries share `legal@`; no separate `privacy@`) — `SUPPORT-TICKETING-R-004`.
 
 ### 4.3 Support form
 
@@ -121,14 +121,14 @@ Goal: Five-minute, privacy-safe capture linked to a ticket.
 
 ## 7. Phase 4 — AI triage and investigation
 
-Goal: Organise reports and prepare engineering issues — **no automated code change in this phase**.
+Goal: Organise reports and prepare engineering handover — **no automated code change in this phase**. Phase 1 already opens the private AgathaTrackPrivate issue; this phase automates **SUPPORT-TICKETING-D-010** (cleaned technical summary and AgathaCheck issue linkage), not first-issue creation.
 
 - Classification with override — `SUPPORT-TRIAGE-R-001`–`R-002`
 - Duplicate grouping (PostHog fingerprints + DB) — `R-003`
-- GitHub technical issues (sanitised) — `R-004`–`R-005`
+- Engineering handover automation (sanitised AgathaCheck issues; `AT-` reference only) — `R-004`–`R-005`
 - AI-assisted diagnostic review (sanitised brief) — `R-006`
 
-**Phase 4 exit:** New ticket classified, optionally linked to GitHub, user gets appropriate status update.
+**Phase 4 exit:** New ticket classified, engineering handover assisted where appropriate, user gets appropriate status update.
 
 ## 8. Phase 5 — Automated bug fixes and release feedback
 
@@ -160,7 +160,7 @@ Native ticketing (no new SaaS), existing Postgres, PostHog EU (watch single-proj
 
 | Area | Rule |
 | ---- | ---- |
-| Authentication | Users see only their tickets and diagnostic sessions |
+| Authentication | Phase 1: no in-app ticket view for customers (`SUPPORT-TICKETING-R-009`); staff read-only queue only. Later phases: users see only their tickets and diagnostic sessions |
 | Administration | Server-enforced support roles |
 | Privacy/legal | Separate handling from automated bug triage |
 | Diagnostics | Predefined safe fields only |

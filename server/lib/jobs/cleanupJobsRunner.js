@@ -7,6 +7,8 @@ import {
 import { runCleanupJobsHousekeeping } from './cleanupJobsHousekeeping.js';
 import { maybeRunDailySuggestionGeneration } from '../suggestions/suggestionGenerationScheduler.js';
 import { runFileDeleteJob, runPosthogPersonDeleteJob } from './handlers/index.js';
+import { drainSupportOutbox } from '../support/outbox/drain.js';
+import { maybeRunDailySupportRetention } from '../support/retention/dailyScheduler.js';
 
 const TABLE_MISSING = '42P01';
 
@@ -111,6 +113,26 @@ export async function drainCleanupJobs(pool, { limit = 10 } = {}) {
     await maybeRunDailySuggestionGeneration(pool);
   } catch (err) {
     logger.warn({ err }, 'suggestion generation scheduler failed');
+  }
+
+  try {
+    await maybeRunDailySupportRetention(pool);
+  } catch (err) {
+    if (err?.code === TABLE_MISSING) {
+      // support tables or scheduler_daily_runs not migrated yet
+    } else {
+      logger.warn({ err }, 'support retention sweep failed');
+    }
+  }
+
+  try {
+    await drainSupportOutbox(pool, { limit });
+  } catch (err) {
+    if (err?.code === TABLE_MISSING) {
+      // support_outbox not migrated yet
+    } else {
+      logger.warn({ err }, 'support outbox drain failed');
+    }
   }
 
   logger.info(stats, 'cleanup jobs drain finished');

@@ -1,0 +1,250 @@
+{
+  "schema_version": 2,
+  "plan_id": "support-intake-1a6f",
+  "title": "Support intake phase 1",
+  "plan_file": ".agents/plans/support-intake-1a6f.md",
+  "plan_file_sha256": "29c11d3079b3f797b218b31d10345de033c1930f7e9f44196e95c19449731d5f",
+  "release_branch": "main",
+  "integration_branch": "cursor/support-intake-1a6f-integration-1a6f",
+  "control_issue": 2300,
+  "created_at": "2026-11-13T00:03:35Z",
+  "approved_until": "2026-11-27T00:03:00Z",
+  "settings": {
+    "release_owner_review": false,
+    "tier3_blocking": false,
+    "budgets": {
+      "ci_per_phase": 8,
+      "launches_per_phase": 15,
+      "remedial_rounds": 6,
+      "sync_attempts": 5,
+      "daily_launches": 80
+    }
+  },
+  "protected_paths_version": 1,
+  "phases": [
+    {
+      "id": "1",
+      "title": "Canonical spec and runbook",
+      "branch": "cursor/support-intake-1a6f-p1",
+      "allowed_paths": [
+        "docs/domains/customer_support/**",
+        "docs/ops/prod-backup-restore-plan.md",
+        "docs/ops/support-intake-runbook.md",
+        "flutter_app/assets/legal/en/privacy-notice.md",
+        "flutter_app/assets/legal/fr/politique-de-confidentialite.md"
+      ],
+      "forbidden_paths": [
+        ".github/**"
+      ],
+      "allowed_exceptions": [
+        "docs"
+      ],
+      "companions": [],
+      "exit_checklist": [
+        "canonical support-ticketing sections replaced from issue 2271",
+        "runbook and backup-plan line present",
+        "two debt issues linked from the PR body"
+      ]
+    },
+    {
+      "id": "2",
+      "title": "Contact hub",
+      "branch": "cursor/support-intake-1a6f-p2",
+      "allowed_paths": [
+        "flutter_app/lib/features/support/hub/**",
+        "flutter_app/lib/features/experience/presentation/screens/account_screen.dart",
+        "flutter_app/lib/features/experience/presentation/utils/drawer_menu_actions.dart",
+        "flutter_app/lib/features/experience/presentation/config/drawer_menu_config.dart",
+        "flutter_app/lib/core/widgets/legal_footer_links.dart",
+        "flutter_app/lib/core/legal/legal_document_id.dart",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/features/auth/presentation/widgets/landing/landing_operations_desk_page.dart"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "companions": [
+        "flutter_app/lib/l10n/app_localizations.dart",
+        "flutter_app/lib/l10n/app_localizations_en.dart",
+        "flutter_app/lib/l10n/app_localizations_fr.dart"
+      ],
+      "exit_checklist": [
+        "signed-out landing footer opens the hub",
+        "account mailto row removed and drawer_contact deleted",
+        "flutter analyze and hub tests green"
+      ],
+      "approved_sensitive_paths": [
+        "flutter_app/lib/features/auth/presentation/widgets/landing/landing_operations_desk_page.dart"
+      ]
+    },
+    {
+      "id": "3",
+      "title": "Ticket submit API and tables",
+      "branch": "cursor/support-intake-1a6f-p3",
+      "allowed_paths": [
+        "db/migrations/**",
+        "server/scripts/migrations/**",
+        "server/routes/support/tickets.js",
+        "server/lib/support/submit/**",
+        "server/lib/support/schema/**"
+      ],
+      "forbidden_paths": [
+        "server/routes/auth/**",
+        "server/lib/auth/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "companions": [
+        "server/bin/server.js"
+      ],
+      "exit_checklist": [
+        "migration applies and rolls back",
+        "submit tests cover 401, signed-in email, and 429",
+        "OpenAPI support contract validates"
+      ],
+      "approved_sensitive_paths": [
+        "db/migrations/**"
+      ]
+    },
+    {
+      "id": "4",
+      "title": "Support form",
+      "branch": "cursor/support-intake-1a6f-p4",
+      "allowed_paths": [
+        "flutter_app/lib/features/support/form/**",
+        "scripts/ci/verify-web-artifact.sh"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "companions": [
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/l10n/app_localizations.dart",
+        "flutter_app/lib/l10n/app_localizations_en.dart",
+        "flutter_app/lib/l10n/app_localizations_fr.dart"
+      ],
+      "exit_checklist": [
+        "verify-web-artifact asserts version.json",
+        "form error-summary and bug-field tests green",
+        "flutter analyze green"
+      ]
+    },
+    {
+      "id": "5",
+      "title": "Staff flag and read-only queue",
+      "branch": "cursor/support-intake-1a6f-p5",
+      "allowed_paths": [
+        "server/scripts/support_staff.js",
+        "server/lib/support/staff/**",
+        "server/routes/support/staff.js",
+        "flutter_app/lib/features/support/staff/**"
+      ],
+      "forbidden_paths": [
+        "server/routes/auth/**",
+        "server/lib/auth/**",
+        "server/routes/profile/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "companions": [
+        "server/bin/server.js",
+        "flutter_app/lib/core/router/app_router.dart",
+        "flutter_app/lib/l10n/app_localizations.dart",
+        "flutter_app/lib/l10n/app_localizations_en.dart",
+        "flutter_app/lib/l10n/app_localizations_fr.dart"
+      ],
+      "exit_checklist": [
+        "non-staff staff API returns 403",
+        "grant and revoke script covered by a test",
+        "staff flag absent from profile and token code"
+      ]
+    },
+    {
+      "id": "6",
+      "title": "Private screenshots",
+      "branch": "cursor/support-intake-1a6f-p6",
+      "allowed_paths": [
+        "server/lib/support/screenshots/**",
+        "server/routes/support/attachments.js",
+        "server/lib/jobs/handlers/fileDelete.js",
+        "flutter_app/lib/features/support/screenshots/**"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "companions": [
+        "server/bin/server.js",
+        "server/lib/support/submit/screenshot_gate.js",
+        "flutter_app/lib/l10n/app_localizations.dart",
+        "flutter_app/lib/l10n/app_localizations_en.dart",
+        "flutter_app/lib/l10n/app_localizations_fr.dart"
+      ],
+      "exit_checklist": [
+        "signed-out upload rejected",
+        "non-staff and guessed-id attachment GET return 403",
+        "screenshot keyboard controls tested in both languages"
+      ]
+    },
+    {
+      "id": "7",
+      "title": "Receipt and GitHub outbox",
+      "branch": "cursor/support-intake-1a6f-p7",
+      "allowed_paths": [
+        "server/lib/support/outbox/**",
+        "server/lib/email/i18n.js",
+        "server/services/mailService.js",
+        "server/config/mail.js"
+      ],
+      "forbidden_paths": [],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "companions": [
+        "server/lib/jobs/cleanupJobsRunner.js"
+      ],
+      "exit_checklist": [
+        "receipt subject covered in EN and FR",
+        "public-repo startup check blocks create-issue rows",
+        "write-back after a deleted ticket queues a redact row"
+      ]
+    },
+    {
+      "id": "8",
+      "title": "Retention, erasure, and export",
+      "branch": "cursor/support-intake-1a6f-p8",
+      "allowed_paths": [
+        "server/lib/support/retention/**",
+        "server/lib/account/accountErasureService.js",
+        "server/lib/gdprUserExport.js"
+      ],
+      "forbidden_paths": [
+        "server/routes/auth/**",
+        "server/lib/auth/**"
+      ],
+      "allowed_exceptions": [
+        "tests",
+        "docs"
+      ],
+      "companions": [
+        "server/lib/jobs/cleanupJobsRunner.js"
+      ],
+      "exit_checklist": [
+        "erasure test keeps issue numbers and screenshot paths",
+        "export includes signed-out tickets with the same normalised email",
+        "retention hook is once per UTC day"
+      ]
+    }
+  ],
+  "approval_hash": "sha256:29e315d3186873fd3c9d8ba223a386bf56b8f2d0c273cc70e0ad5dda9b94ee8c"
+}

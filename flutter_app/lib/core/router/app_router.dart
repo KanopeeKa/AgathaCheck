@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/auth.dart';
+import '../providers/api_base_url_provider.dart';
 import '../../features/care_taxonomy/care_taxonomy.dart';
 import '../../features/health_tracking/health_tracking.dart';
 import '../../features/notifications/notifications.dart';
@@ -15,6 +16,7 @@ import '../../features/people/people.dart';
 import '../../features/sharing/sharing.dart';
 import '../../features/about/about.dart';
 import '../../features/help/help.dart';
+import '../../features/support/support.dart';
 import '../../features/subscription/subscription.dart';
 import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
@@ -182,6 +184,56 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: '/about',
         name: 'about',
         builder: (context, state) => const AboutScreen(),
+      ),
+      GoRoute(
+        path: '/contact',
+        name: 'contact',
+        builder: (context, state) => const ContactHubScreen(),
+        routes: [
+          GoRoute(
+            path: 'support',
+            name: 'contactSupport',
+            builder: (context, state) => Consumer(
+              builder: (context, ref, _) {
+                final auth = ref.watch(authProvider);
+                return SupportIntakeFormScreen(
+                  signedIn: auth.isLoggedIn,
+                  accessToken: auth.accessToken,
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/staff/support',
+        name: 'supportStaffQueue',
+        builder: (context, state) => Consumer(
+          builder: (context, ref, _) {
+            final auth = ref.watch(authProvider);
+            return SupportStaffQueueScreen(
+              baseUrl: ref.watch(apiBaseUrlProvider),
+              accessToken: auth.accessToken,
+            );
+          },
+        ),
+        routes: [
+          GoRoute(
+            path: ':ticketId',
+            name: 'supportStaffTicketDetail',
+            builder: (context, state) => Consumer(
+              builder: (context, ref, _) {
+                final ticketId = state.pathParameters['ticketId']!;
+                final auth = ref.watch(authProvider);
+                return SupportStaffTicketDetailScreen(
+                  ticketId: ticketId,
+                  baseUrl: ref.watch(apiBaseUrlProvider),
+                  accessToken: auth.accessToken,
+                );
+              },
+            ),
+          ),
+        ],
       ),
       GoRoute(
         path: '/legal',

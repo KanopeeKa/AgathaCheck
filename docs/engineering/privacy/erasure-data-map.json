@@ -665,6 +665,14 @@
       "discovery_source": "foreign_key"
     },
     {
+      "table": "support_tickets",
+      "column": "user_id",
+      "erasure_action": "cascade",
+      "reason": "ON DELETE CASCADE from users(id). Support intake phase 8 extends erasure for signed-out email matches.",
+      "pg_on_delete": "c",
+      "discovery_source": "foreign_key"
+    },
+    {
       "table": "users",
       "column": "email",
       "erasure_action": "explicit_delete",

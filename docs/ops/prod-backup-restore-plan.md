@@ -105,6 +105,7 @@ Legend: ⬜ not started · 🟡 in progress · ✅ done (link PR)
 
 **Agent**
 - [ ] `scripts/ops/backup.sh`: `pg_dump -Fc` of the DB + `tar` of the uploads dir → timestamped files in `~/agatha-backups/<env>/`; SHA-256 manifest; strict mode; refuses to run without `APP_ENV`.
+- [ ] When `backup.sh` is implemented, include the **private support screenshot folder** as its own archive root (that folder lives outside `uploads/` per [support-ticketing.md](/docs/domains/customer_support/features/support-ticketing.md) R-008).
 - [ ] Verifies the dump before declaring success: `pg_restore --list` must succeed and contain `_migrations`.
 - [ ] Local retention pruning (keep last N, configurable).
 - [ ] Tests `scripts/ops/backup.test.sh` against the local dev Postgres: happy path, DB unreachable, disk-full simulation, pruning.

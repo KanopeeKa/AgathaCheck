@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { privateHealthDir } from '../../privateHealthStorage.js';
+import { supportScreenshotDir } from '../../support/screenshots/storage.js';
 import { resolvePathUnderRoot } from '../../safeUpload.js';
 
 const UPLOADS_ROOT = () => path.resolve(process.cwd(), 'uploads');
@@ -9,6 +10,9 @@ const UPLOADS_ROOT = () => path.resolve(process.cwd(), 'uploads');
 function uploadsRootForStorage(storage) {
   if (storage === 'private_health') {
     return privateHealthDir();
+  }
+  if (storage === 'support_screenshots') {
+    return supportScreenshotDir();
   }
   if (storage === 'uploads') {
     return UPLOADS_ROOT();

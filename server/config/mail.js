@@ -52,6 +52,10 @@ export function getMailFrom() {
   return mailFromValue;
 }
 
+export function getSupportReplyTo() {
+  return env('SUPPORT_REPLY_TO');
+}
+
 let transporter;
 export function getMailTransporter() {
   if (!transporter) {

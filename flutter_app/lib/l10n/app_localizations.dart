@@ -10795,6 +10795,432 @@ abstract class AppLocalizations {
   /// **'Contact'**
   String get contact;
 
+  /// No description provided for @contactHubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact'**
+  String get contactHubTitle;
+
+  /// No description provided for @contactHubSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the channel that fits your message. Help & Support uses our in-app form; other topics can reach us by email.'**
+  String get contactHubSubtitle;
+
+  /// No description provided for @contactHubHelpSupportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Help & Support'**
+  String get contactHubHelpSupportTitle;
+
+  /// No description provided for @contactHubHelpSupportDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Report a bug, suggest an improvement, or ask about your account or billing.'**
+  String get contactHubHelpSupportDescription;
+
+  /// No description provided for @contactHubPartnershipsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Partnerships'**
+  String get contactHubPartnershipsTitle;
+
+  /// No description provided for @contactHubPartnershipsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Shelters, rescues, vets, and other organisations interested in AgathaTrack.'**
+  String get contactHubPartnershipsDescription;
+
+  /// No description provided for @contactHubLegalPrivacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & Privacy'**
+  String get contactHubLegalPrivacyTitle;
+
+  /// No description provided for @contactHubLegalPrivacyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy rights, legal notices, and data-processing questions.'**
+  String get contactHubLegalPrivacyDescription;
+
+  /// No description provided for @contactHubMailboxesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Email addresses'**
+  String get contactHubMailboxesTitle;
+
+  /// No description provided for @contactHubMailboxContact.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get contactHubMailboxContact;
+
+  /// No description provided for @contactHubMailboxSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get contactHubMailboxSupport;
+
+  /// No description provided for @contactHubMailboxLegal.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal & privacy'**
+  String get contactHubMailboxLegal;
+
+  /// No description provided for @contactHubMailboxPartnerships.
+  ///
+  /// In en, this message translates to:
+  /// **'Partnerships'**
+  String get contactHubMailboxPartnerships;
+
+  /// No description provided for @contactHubGeneralLine.
+  ///
+  /// In en, this message translates to:
+  /// **'You can also reach us any time at {email}.'**
+  String contactHubGeneralLine(String email);
+
+  /// No description provided for @supportFormIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what happened. We reply by email with your reference number.'**
+  String get supportFormIntro;
+
+  /// No description provided for @supportFormCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get supportFormCategoryLabel;
+
+  /// No description provided for @supportFormCategoryBug.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug'**
+  String get supportFormCategoryBug;
+
+  /// No description provided for @supportFormCategorySuggestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Suggestion'**
+  String get supportFormCategorySuggestion;
+
+  /// No description provided for @supportFormCategoryAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get supportFormCategoryAccount;
+
+  /// No description provided for @supportFormCategoryBilling.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing'**
+  String get supportFormCategoryBilling;
+
+  /// No description provided for @supportFormTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get supportFormTitleLabel;
+
+  /// No description provided for @supportFormDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get supportFormDescriptionLabel;
+
+  /// No description provided for @supportFormEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email'**
+  String get supportFormEmailLabel;
+
+  /// No description provided for @supportFormEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'We send your receipt to this address.'**
+  String get supportFormEmailHint;
+
+  /// No description provided for @supportFormExpectedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What you expected'**
+  String get supportFormExpectedLabel;
+
+  /// No description provided for @supportFormActualLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What happened instead'**
+  String get supportFormActualLabel;
+
+  /// No description provided for @supportFormStepsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps to reproduce'**
+  String get supportFormStepsLabel;
+
+  /// No description provided for @supportFormFrequencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'How often'**
+  String get supportFormFrequencyLabel;
+
+  /// No description provided for @supportFormFrequencyAlways.
+  ///
+  /// In en, this message translates to:
+  /// **'Every time'**
+  String get supportFormFrequencyAlways;
+
+  /// No description provided for @supportFormFrequencySometimes.
+  ///
+  /// In en, this message translates to:
+  /// **'Sometimes'**
+  String get supportFormFrequencySometimes;
+
+  /// No description provided for @supportFormFrequencyOnce.
+  ///
+  /// In en, this message translates to:
+  /// **'Once'**
+  String get supportFormFrequencyOnce;
+
+  /// No description provided for @supportFormSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get supportFormSubmit;
+
+  /// No description provided for @supportFormSubmitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get supportFormSubmitting;
+
+  /// No description provided for @supportFormErrorSummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'There is a problem with this form'**
+  String get supportFormErrorSummaryTitle;
+
+  /// No description provided for @supportFormErrorSummaryFieldCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{1 field needs your attention.} other{{count} fields need your attention.}}'**
+  String supportFormErrorSummaryFieldCount(int count);
+
+  /// No description provided for @supportFormValidationTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a title.'**
+  String get supportFormValidationTitleRequired;
+
+  /// No description provided for @supportFormValidationTitleTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is too long.'**
+  String get supportFormValidationTitleTooLong;
+
+  /// No description provided for @supportFormValidationDescriptionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a description.'**
+  String get supportFormValidationDescriptionRequired;
+
+  /// No description provided for @supportFormValidationDescriptionTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Description is too long.'**
+  String get supportFormValidationDescriptionTooLong;
+
+  /// No description provided for @supportFormValidationEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email address.'**
+  String get supportFormValidationEmailRequired;
+
+  /// No description provided for @supportFormValidationEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email address.'**
+  String get supportFormValidationEmailInvalid;
+
+  /// No description provided for @supportFormValidationEmailTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address is too long.'**
+  String get supportFormValidationEmailTooLong;
+
+  /// No description provided for @supportFormSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request received'**
+  String get supportFormSuccessTitle;
+
+  /// No description provided for @supportFormSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your reference is {reference}. Keep it for your records — we have emailed you a receipt.'**
+  String supportFormSuccessBody(String reference);
+
+  /// No description provided for @supportFormSuccessAnnouncement.
+  ///
+  /// In en, this message translates to:
+  /// **'Request received. Your reference is {reference}.'**
+  String supportFormSuccessAnnouncement(String reference);
+
+  /// No description provided for @supportFormCopyReference.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy reference'**
+  String get supportFormCopyReference;
+
+  /// No description provided for @supportFormErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not send your request. Try again or email support@agathatrack.com.'**
+  String get supportFormErrorGeneric;
+
+  /// No description provided for @supportFormErrorRateLimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests. Wait a moment or email support@agathatrack.com.'**
+  String get supportFormErrorRateLimited;
+
+  /// No description provided for @supportFormErrorSessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session expired. Reload the page and sign in again.'**
+  String get supportFormErrorSessionExpired;
+
+  /// No description provided for @supportScreenshotSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots (optional)'**
+  String get supportScreenshotSectionTitle;
+
+  /// No description provided for @supportScreenshotPiiNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots may show personal information. Remove anything you do not want our team to store.'**
+  String get supportScreenshotPiiNotice;
+
+  /// No description provided for @supportScreenshotAddButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Add screenshot'**
+  String get supportScreenshotAddButton;
+
+  /// No description provided for @supportScreenshotRemoveButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove screenshot'**
+  String get supportScreenshotRemoveButton;
+
+  /// No description provided for @supportScreenshotErrorTooMany.
+  ///
+  /// In en, this message translates to:
+  /// **'You can attach at most three screenshots.'**
+  String get supportScreenshotErrorTooMany;
+
+  /// No description provided for @supportScreenshotErrorType.
+  ///
+  /// In en, this message translates to:
+  /// **'Only PNG, JPEG, or WebP images are allowed.'**
+  String get supportScreenshotErrorType;
+
+  /// No description provided for @supportScreenshotErrorFileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Each screenshot must be 2 MB or smaller.'**
+  String get supportScreenshotErrorFileTooLarge;
+
+  /// No description provided for @supportScreenshotErrorTotalTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Total screenshot size must be 6 MB or less.'**
+  String get supportScreenshotErrorTotalTooLarge;
+
+  /// No description provided for @supportStaffQueueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support queue'**
+  String get supportStaffQueueTitle;
+
+  /// No description provided for @supportStaffQueueEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No support requests yet.'**
+  String get supportStaffQueueEmpty;
+
+  /// No description provided for @supportStaffQueueForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have access to the support queue.'**
+  String get supportStaffQueueForbidden;
+
+  /// No description provided for @supportStaffQueueLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load the support queue. Try again in a moment.'**
+  String get supportStaffQueueLoadError;
+
+  /// No description provided for @supportStaffTicketDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support request'**
+  String get supportStaffTicketDetailTitle;
+
+  /// No description provided for @supportStaffOutboxSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbox'**
+  String get supportStaffOutboxSection;
+
+  /// No description provided for @supportStaffOutboxEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No outbox rows for this ticket.'**
+  String get supportStaffOutboxEmpty;
+
+  /// No description provided for @supportStaffAttachmentsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots'**
+  String get supportStaffAttachmentsSection;
+
+  /// No description provided for @supportStaffAttachmentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No screenshots on this ticket.'**
+  String get supportStaffAttachmentsEmpty;
+
+  /// No description provided for @supportStaffOutboxAlertTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked or failed outbox row'**
+  String get supportStaffOutboxAlertTooltip;
+
+  /// No description provided for @supportStaffDescriptionHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get supportStaffDescriptionHeading;
+
+  /// No description provided for @supportStaffReporterLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter: {email}'**
+  String supportStaffReporterLine(String email);
+
+  /// No description provided for @supportStaffGitHubIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub issue #{number}'**
+  String supportStaffGitHubIssue(int number);
+
+  /// No description provided for @supportStaffAttachmentBytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{bytes} bytes'**
+  String supportStaffAttachmentBytes(int bytes);
+
   /// No description provided for @continueButton.
   ///
   /// In en, this message translates to:

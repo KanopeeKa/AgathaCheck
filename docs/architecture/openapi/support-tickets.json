@@ -1,0 +1,309 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Agatha Track — Support intake API",
+    "version": "1.0.0",
+    "description": "Support ticket submit contract (phase 3). Mounted at /api/support and /backend/api/support."
+  },
+  "servers": [{ "url": "/api/support" }],
+  "paths": {
+    "/staff/tickets": {
+      "get": {
+        "operationId": "supportStaffListTickets",
+        "description": "List support tickets (staff only).",
+        "responses": {
+          "200": {
+            "description": "Ticket summaries",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportStaffTicketListResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Not support staff",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/staff/tickets/{id}": {
+      "get": {
+        "operationId": "supportStaffGetTicket",
+        "description": "Ticket detail with outbox and attachment metadata (staff only).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportStaffTicketDetailResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Not support staff",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Ticket not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attachments/{id}": {
+      "get": {
+        "operationId": "supportGetAttachment",
+        "description": "Stream a private support screenshot (support staff only).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Screenshot bytes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Unused for this route; bytes are returned as image/*.",
+                  "additionalProperties": false
+                }
+              },
+              "image/png": { "schema": { "type": "string", "format": "binary" } },
+              "image/jpeg": { "schema": { "type": "string", "format": "binary" } },
+              "image/webp": { "schema": { "type": "string", "format": "binary" } }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Not support staff",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Attachment not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tickets": {
+      "post": {
+        "operationId": "supportSubmitTicket",
+        "description": "Create a private support ticket (signed-in optional).",
+        "responses": {
+          "201": {
+            "description": "Ticket accepted",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportTicketCreatedResponse" }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid bearer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limited",
+            "headers": {
+              "Retry-After": {
+                "schema": { "type": "integer" },
+                "description": "Seconds until the client may retry"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "SupportTicketCreatedResponse": {
+        "type": "object",
+        "required": ["reference"],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "pattern": "^AT-[0-9A-HJKMNP-TV-Z]{8}$"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SupportErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": { "type": "string" },
+          "details": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "additionalProperties": true
+      },
+      "SupportStaffOutboxAlert": {
+        "type": "object",
+        "required": ["kind", "status"],
+        "properties": {
+          "kind": { "type": "string" },
+          "status": { "type": "string", "enum": ["blocked", "failed"] }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffTicketSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "category",
+          "title",
+          "signed_in",
+          "reporter_email",
+          "created_at",
+          "outbox_alerts"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "reference": { "type": "string" },
+          "category": { "type": "string" },
+          "title": { "type": "string" },
+          "signed_in": { "type": "boolean" },
+          "reporter_email": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "github_issue_number": { "type": ["integer", "null"] },
+          "outbox_alerts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffOutboxAlert" }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffTicketListResponse": {
+        "type": "object",
+        "required": ["tickets"],
+        "properties": {
+          "tickets": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffTicketSummary" }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffOutboxRow": {
+        "type": "object",
+        "required": ["id", "kind", "status", "attempts", "created_at", "updated_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "kind": { "type": "string" },
+          "status": { "type": "string" },
+          "attempts": { "type": "integer" },
+          "github_issue_number": { "type": ["integer", "null"] },
+          "last_error": { "type": ["string", "null"] },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffAttachmentMeta": {
+        "type": "object",
+        "required": ["id", "mime", "bytes", "created_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "mime": { "type": "string" },
+          "bytes": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffTicketDetailResponse": {
+        "type": "object",
+        "required": ["ticket", "attachments", "outbox"],
+        "properties": {
+          "ticket": { "type": "object", "additionalProperties": true },
+          "attachments": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffAttachmentMeta" }
+          },
+          "outbox": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffOutboxRow" }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  }
+}

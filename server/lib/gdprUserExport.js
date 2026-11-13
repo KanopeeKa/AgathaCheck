@@ -3,7 +3,12 @@
  * Used by GET /api/auth/me/export.
  */
 
+import { normalizeSupportReporterEmail } from './support/submit/normalizeReporterEmail.js';
+
 export async function buildUserDataExport(pool, userId) {
+  const userEmailResult = await pool.query('SELECT email FROM users WHERE id = $1', [userId]);
+  const emailNorm = normalizeSupportReporterEmail(userEmailResult.rows[0]?.email ?? '');
+
   const [
     petsResult,
     vetsResult,
@@ -26,6 +31,7 @@ export async function buildUserDataExport(pool, userId) {
     familyEventsResult,
     fosterPlacementsResult,
     orgFosterParentLinksResult,
+    supportTicketsResult,
   ] = await Promise.all([
     pool.query('SELECT * FROM pets WHERE user_id = $1', [userId]),
     pool.query('SELECT * FROM vets WHERE user_id = $1', [userId]),
@@ -93,6 +99,12 @@ export async function buildUserDataExport(pool, userId) {
       [userId],
     ),
     pool.query('SELECT * FROM org_foster_parents WHERE user_id = $1', [userId]),
+    pool.query(
+      `SELECT * FROM support_tickets
+       WHERE user_id = $1
+          OR ($2 <> '' AND reporter_email_normalised = $2)`,
+      [userId, emailNorm],
+    ),
   ]);
 
   return {
@@ -117,6 +129,7 @@ export async function buildUserDataExport(pool, userId) {
     family_events: familyEventsResult.rows,
     foster_placements: fosterPlacementsResult.rows,
     org_foster_parent_records: orgFosterParentLinksResult.rows,
+    support_tickets: supportTicketsResult.rows,
   };
 }
 
@@ -135,5 +148,6 @@ export function exportAuditMetadata(exportData) {
     organization_count: exportData.organizations.length,
     pet_access_count: exportData.pet_access.length,
     share_link_count: exportData.pet_share_links.length,
+    support_ticket_count: exportData.support_tickets?.length ?? 0,
   };
 }
