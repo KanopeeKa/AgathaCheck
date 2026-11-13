@@ -35,16 +35,16 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | SUPPORT-TICKETING-R-003 | One-column hub layout (stacked cards on all widths), consistent with Help and About. | Planned |
 | SUPPORT-TICKETING-R-004 | Show `contact@`, `support@`, `legal@`, `partnerships@` (mailboxes are an ops prerequisite). | Planned |
 | SUPPORT-TICKETING-R-005 | `POST /api/support/tickets` (+ `/backend`); handler decides sign-in (no bearer = signed out; invalid bearer = 401); signed-in receipt uses `users.email`; signed-out requires email; reference `AT-` + 8 Crockford base32; UUIDs in app code; multipart for screenshots, JSON for text-only; coming-soon 403 before handler. | Planned |
-| SUPPORT-TICKETING-R-006 | Categories `bug`, `suggestion`, `account`, `billing`; title + description always; bug fields (expected, actual, steps, frequency `always\|sometimes\|once`) without focus jump. | Planned |
+| SUPPORT-TICKETING-R-006 | Categories `bug`, `suggestion`, `account`, `billing`; title + description always; bug fields (expected, actual, steps, frequency always/sometimes/once) without focus jump. | Planned |
 | SUPPORT-TICKETING-R-007 | Context allowlist only: version/build from site-root `GET /version.json` (cache-bust; empty if missing); platform (`web` on web); coarse browser family; locale; route name; client time; server timestamp authoritative; CI asserts `version.json` beside `index.html`. | Planned |
 | SUPPORT-TICKETING-R-008 | Screenshots: signed-in only; max 3 files, 2 MB each, 6 MB total; PNG/JPEG/WebP via `safeUpload`; storage outside `uploads/`, not static; `fileDelete.js` key; staff-only `GET /api/support/attachments/:id` (403 before lookup for non-staff); PII notice before upload; re-encoding is debt (`sharp`). | Planned |
 | SUPPORT-TICKETING-R-009 | Ticket row: reporter (user or normalised email), category, title, description, bug fields, context, locale, `created_at`, `github_issue_number`; no priority; users cannot read tickets via API. | Planned |
 | SUPPORT-TICKETING-R-010 | Tables `support_tickets`, `support_attachments`, `support_outbox` (message/status history and links deferred). | Planned |
-| SUPPORT-TICKETING-R-011 | Diagnostic metadata not in the ticket blob; Phase 3 adds `support_diagnostic_sessions`. | Planned |
-| SUPPORT-TICKETING-R-012 | Customer-visible lifecycle states. | Deferred |
+| SUPPORT-TICKETING-R-011 | Design note: diagnostic metadata not in the ticket blob; Phase 3 adds `support_diagnostic_sessions`. | Planned |
+| SUPPORT-TICKETING-R-012 | Customer-visible lifecycle states (deferred beyond Phase 1; @ATSupport columns are internal only). | Planned |
 | SUPPORT-TICKETING-R-013 | DB category is sender choice; `category:*` label in GitHub is staff classification; priority is a GitHub label only. | Planned |
 | SUPPORT-TICKETING-R-014 | Read-only staff at `/staff/support` (list, detail, screenshots, blocked/failed outbox); no reply/assign/close; no menu entry; server enforces `is_support_staff`. | Planned |
-| SUPPORT-TICKETING-R-015 | Emails on status changes. | Deferred |
+| SUPPORT-TICKETING-R-015 | Emails on status changes (deferred beyond Phase 1). | Planned |
 | SUPPORT-TICKETING-R-016 | One receipt EN/FR via outbox; subjects `[AT-XXXXXXXX] We received your request` / `[AT-XXXXXXXX] Nous avons reçu votre demande`; Reply-To `support@`; body never repeats user text; `resolveEmailLocale`. | Planned |
 | SUPPORT-TICKETING-R-017 | Outbox: `receipt`, `github_issue`, `github_issue_delete`; Node `fetch`; create-issue title `[AT-XXXXXXXX] <category>: <title>`; fenced untrusted body + allowlisted context; labels `category:*`, `env:*`, `source:form`; statuses pending/sent/failed/blocked/disabled; skip receipt/create if ticket gone; redact from stored issue number; startup privacy check for repo; 422 label = config failure. | Planned |
 | SUPPORT-TICKETING-R-018 | SQL rate limits: signed-in 3/h and 10/24h per account; signed-out 3/h per IP and 5/24h per normalised email; 429 + `Retry-After`; field max lengths; express-rate-limit backstop only with default key. | Planned |
@@ -57,20 +57,20 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 
 | Given / When / Then | Requirement | Coverage |
 | ------------------- | ----------- | -------- |
-| Given a signed-out visitor on the landing page, when they open Contact and submit a valid bug report, then they see an `AT-` reference, a receipt is queued, and an issue is queued for AgathaTrackPrivate. | SUPPORT-TICKETING-R-001, SUPPORT-TICKETING-R-005, SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-017 | TBD (execute-plan) |
-| Given a signed-in user, when they submit with a different email in the body, then the receipt goes to their account email. | SUPPORT-TICKETING-R-005 | TBD (execute-plan) |
-| Given a request with an invalid token, when submitted, then the API returns 401 and no ticket is created. | SUPPORT-TICKETING-R-005 | TBD (execute-plan) |
-| Given the Partnerships card, when the email link cannot open, then a copy dialog shows `partnerships@`. | SUPPORT-TICKETING-R-002, SUPPORT-TICKETING-R-004 | TBD (execute-plan) |
-| Given a signed-out sender, when the request includes a screenshot, then the API rejects it. | SUPPORT-TICKETING-R-008 | TBD (execute-plan) |
-| Given a stored screenshot, when requested via `/uploads/…`, or by a signed-in non-staff user, or with a guessed id, then responses are 404, 403, and 403 respectively. | SUPPORT-TICKETING-R-008 | TBD (execute-plan) |
-| Given 3 tickets in the past hour from one account, when a 4th is submitted, then the API returns 429 with `Retry-After`. | SUPPORT-TICKETING-R-018 | TBD (execute-plan) |
-| Given SMTP and GitHub are down, when a ticket is submitted, then the ticket is saved and outbox rows retry later. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-017 | TBD (execute-plan) |
-| Given `SUPPORT_GITHUB_REPO` points at a public repo, when the worker starts, then create-issue rows are `blocked`; when a later check sees a private repo, those rows return to `pending`. | SUPPORT-TICKETING-R-017, SUPPORT-TICKETING-D-008 | TBD (execute-plan) |
-| Given a user with signed-in and signed-out tickets, when their account is erased, then tickets, screenshots, and pending outbox rows are gone, redact rows are queued, and erasure still commits. | SUPPORT-TICKETING-R-019 | TBD (execute-plan) |
-| Given a create-issue call that finishes after erasure deleted the ticket, when the worker writes the issue number back, then it queues a redact row for that number. | SUPPORT-TICKETING-R-017, SUPPORT-TICKETING-R-019 | TBD (execute-plan) |
-| Given a user exports their data, when they have tickets, then the export includes signed-out tickets with the same normalised email. | SUPPORT-TICKETING-R-019 | TBD (execute-plan) |
-| Given a user who is not staff, when they call the staff API, then the response is 403; `/staff/support` has no menu entry. | SUPPORT-TICKETING-R-014, SUPPORT-TICKETING-D-005 | TBD (execute-plan) |
-| Given French locale, when a ticket is submitted, then form, errors, confirmation, and receipt (including subject) are in French. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-020 | TBD (execute-plan) |
+| Given a signed-out visitor on the landing page, when they open Contact and submit a valid bug report, then they see an `AT-` reference, a receipt is queued, and an issue is queued for AgathaTrackPrivate. | SUPPORT-TICKETING-R-001, SUPPORT-TICKETING-R-005, SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-017 | none — #2271 |
+| Given a signed-in user, when they submit with a different email in the body, then the receipt goes to their account email. | SUPPORT-TICKETING-R-005 | none — #2271 |
+| Given a request with an invalid token, when submitted, then the API returns 401 and no ticket is created. | SUPPORT-TICKETING-R-005 | none — #2271 |
+| Given the Partnerships card, when the email link cannot open, then a copy dialog shows `partnerships@`. | SUPPORT-TICKETING-R-002, SUPPORT-TICKETING-R-004 | none — #2271 |
+| Given a signed-out sender, when the request includes a screenshot, then the API rejects it. | SUPPORT-TICKETING-R-008 | none — #2271 |
+| Given a stored screenshot, when requested via `/uploads/…`, or by a signed-in non-staff user, or with a guessed id, then responses are 404, 403, and 403 respectively. | SUPPORT-TICKETING-R-008 | none — #2271 |
+| Given 3 tickets in the past hour from one account, when a 4th is submitted, then the API returns 429 with `Retry-After`. | SUPPORT-TICKETING-R-018 | none — #2271 |
+| Given SMTP and GitHub are down, when a ticket is submitted, then the ticket is saved and outbox rows retry later. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-017 | none — #2271 |
+| Given `SUPPORT_GITHUB_REPO` points at a public repo, when the worker starts, then create-issue rows are `blocked`; when a later check sees a private repo, those rows return to `pending`. | SUPPORT-TICKETING-R-017 | none — #2271 |
+| Given a user with signed-in and signed-out tickets, when their account is erased, then tickets, screenshots, and pending outbox rows are gone, redact rows are queued, and erasure still commits. | SUPPORT-TICKETING-R-019 | none — #2271 |
+| Given a create-issue call that finishes after erasure deleted the ticket, when the worker writes the issue number back, then it queues a redact row for that number. | SUPPORT-TICKETING-R-017, SUPPORT-TICKETING-R-019 | none — #2271 |
+| Given a user exports their data, when they have tickets, then the export includes signed-out tickets with the same normalised email. | SUPPORT-TICKETING-R-019 | none — #2271 |
+| Given a user who is not staff, when they call the staff API, then the response is 403; `/staff/support` has no menu entry. | SUPPORT-TICKETING-R-014 | none — #2271 |
+| Given French locale, when a ticket is submitted, then form, errors, confirmation, and receipt (including subject) are in French. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-020 | none — #2271 |
 
 ## States & data
 
@@ -106,8 +106,8 @@ In-app replies or ticket history, customer-visible statuses, status-change email
 
 | ID | Decision | Rationale | Status | Date | PR |
 | ---- | -------- | --------- | ------ | ---- | -- |
-| SUPPORT-TICKETING-D-001 | Native ticketing in Postgres, no helpdesk SaaS | Own records for later automation | Live | 2026-11-11 | TBD |
-| SUPPORT-TICKETING-D-002 | Domain `customer_support`; code under `support/` | Disambiguate from People directory Contacts | Live | 2026-11-11 | TBD |
+| SUPPORT-TICKETING-D-001 | Native AgathaTrack ticketing in Postgres | Avoid helpdesk SaaS; own records for automation later | Live | 2026-11-11 | TBD |
+| SUPPORT-TICKETING-D-002 | `customer_support` domain slug; code under `support/` not `contact/` | Disambiguate from People directory Contacts | Live | 2026-11-11 | TBD |
 | SUPPORT-TICKETING-D-003 | Phase 1 is intake only; after receipt, conversation continues by email from `support@` | Clear support boundary for users | Live | 2026-11-13 | TBD |
 | SUPPORT-TICKETING-D-004 | Workflow on @ATSupport (`users/KanopeeKa/projects/4`); built-in auto-add `is:issue`; category/priority as GitHub labels; no `support` label | Confirmed auto-add; DB stores category + issue number only | Live | 2026-11-13 | TBD |
 | SUPPORT-TICKETING-D-005 | `users.is_support_staff` via `server/scripts/support_staff.js` only; not in profile or tokens; DB lookup per staff request; any staff can read all tickets | Simple ops model; closed former “admin role” open point | Live | 2026-11-13 | TBD |

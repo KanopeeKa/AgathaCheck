@@ -142,5 +142,5 @@ Run after the Phase 3 migration on each environment. Staff read tickets at `/sta
 
 Track implementation gaps opened during plan phase 1:
 
-- Screenshot re-encoding / metadata stripping (`sharp`) — see linked debt issue on the phase 1 PR.
-- `listProjectIssues` in `.github/scripts/github-project-lib.js` (first 100 items, no repository filter) — see linked debt issue on the phase 1 PR.
+- Screenshot re-encoding / metadata stripping (`sharp`) — [#2301](https://github.com/KanopeeKa/AgathaCheck/issues/2301).
+- `listProjectIssues` in `.github/scripts/github-project-lib.js` (first 100 items, no repository filter) — [#2302](https://github.com/KanopeeKa/AgathaCheck/issues/2302).
