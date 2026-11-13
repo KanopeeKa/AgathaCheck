@@ -29,10 +29,10 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 
 | ID | Rule | Status |
 | ---- | ------ | ------ |
-| SUPPORT-TICKETING-R-001 | Contact hub reachable from Account **and** the sign-in (landing) footer; route on the public allowlist; cards: Help & Support (form), Partnerships, Legal & Privacy; general line for `contact@agathatrack.com`. | Planned |
-| SUPPORT-TICKETING-R-002 | Help & Support opens the form; Partnerships and Legal & Privacy use `launchExternalLink` with copy fallback; Account mailto replaced; dead `drawer_contact` case deleted. | Planned |
-| SUPPORT-TICKETING-R-003 | One-column hub layout (stacked cards on all widths), consistent with Help and About. | Planned |
-| SUPPORT-TICKETING-R-004 | Show `contact@`, `support@`, `legal@`, `partnerships@` (mailboxes are an ops prerequisite). | Planned |
+| SUPPORT-TICKETING-R-001 | Contact hub reachable from Account **and** the sign-in (landing) footer; route on the public allowlist; cards: Help & Support (form), Partnerships, Legal & Privacy; general line for `contact@agathatrack.com`. | In delivery |
+| SUPPORT-TICKETING-R-002 | Help & Support opens the form; Partnerships and Legal & Privacy use `launchExternalLink` with copy fallback; Account mailto replaced; dead `drawer_contact` case deleted. | In delivery |
+| SUPPORT-TICKETING-R-003 | One-column hub layout (stacked cards on all widths), consistent with Help and About. | In delivery |
+| SUPPORT-TICKETING-R-004 | Show `contact@`, `support@`, `legal@`, `partnerships@` (mailboxes are an ops prerequisite). | In delivery |
 | SUPPORT-TICKETING-R-005 | `POST /api/support/tickets` (+ `/backend`); handler decides sign-in (no bearer = signed out; invalid bearer = 401); signed-in receipt uses `users.email`; signed-out requires email; reference `AT-` + 8 Crockford base32; UUIDs in app code; multipart for screenshots, JSON for text-only; coming-soon 403 before handler. | Planned |
 | SUPPORT-TICKETING-R-006 | Categories `bug`, `suggestion`, `account`, `billing`; title + description always; bug fields (expected, actual, steps, frequency always/sometimes/once) without focus jump. | Planned |
 | SUPPORT-TICKETING-R-007 | Context allowlist only: version/build from site-root `GET /version.json` (cache-bust; empty if missing); platform (`web` on web); coarse browser family; locale; route name; client time; server timestamp authoritative; CI asserts `version.json` beside `index.html`. | Planned |
@@ -48,8 +48,8 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | SUPPORT-TICKETING-R-017 | Outbox: `receipt`, `github_issue`, `github_issue_delete`; Node `fetch`; create-issue title `[AT-XXXXXXXX] <category>: <title>`; fenced untrusted body + allowlisted context; labels `category:*`, `env:*`, `source:form`; statuses pending/sent/failed/blocked/disabled; skip receipt/create if ticket gone; redact from stored issue number; startup privacy check for repo; 422 label = config failure. | Planned |
 | SUPPORT-TICKETING-R-018 | SQL rate limits: signed-in 3/h and 10/24h per account; signed-out 3/h per IP and 5/24h per normalised email; 429 + `Retry-After`; field max lengths; express-rate-limit backstop only with default key. | Planned |
 | SUPPORT-TICKETING-R-019 | Daily `support_retention` on `scheduler_daily_runs`; erasure in `acceptAccountErasure` before user delete (tickets, paths, issue numbers, outbox, redact rows); export matches normalised email; hand `source:email` issues per runbook. | Planned |
-| SUPPORT-TICKETING-R-020 | EN/FR UI (`app_*.arb`) and email copy (`server/lib/email/i18n.js`); no machine translation of free text. | Planned |
-| SUPPORT-TICKETING-R-021 | WCAG 2.2 AA across hub, form, screenshots (labels, error summary, keyboard controls, both languages). | Planned |
+| SUPPORT-TICKETING-R-020 | EN/FR UI (`app_*.arb`) and email copy (`server/lib/email/i18n.js`); no machine translation of free text. | In delivery |
+| SUPPORT-TICKETING-R-021 | WCAG 2.2 AA across hub, form, screenshots (labels, error summary, keyboard controls, both languages). | In delivery |
 | SUPPORT-TICKETING-R-022 | Support data is private customer data; GitHub only in AgathaTrackPrivate; engineering AgathaCheck issues carry no user text; privacy notice names GitHub and 7-day redacted-issue deletion. | Planned |
 
 ## Acceptance criteria
@@ -87,7 +87,7 @@ Worker: outbox drain and `support_retention` run from the existing cleanup poll;
 
 ## UX surfaces
 
-- Contact hub `/contact` (phase 2): Account row + landing footer (`LegalFooterLinks`).
+- Contact hub `/contact` — **in delivery** (`flutter_app/lib/features/support/hub/`): Account row + landing footer (`LegalFooterLinks`); `/contact/support` registers the intake form route (UI in phase 4).
 - Support form (phase 4): linked from hub; posts to phase 3 API.
 - Staff read-only queue `/staff/support` (phase 5): no drawer entry; deep URL only.
 
