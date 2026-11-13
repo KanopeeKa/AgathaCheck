@@ -208,6 +208,105 @@ function evaluateMergePreflight(input) {
   };
 }
 
+/**
+ * Numeric PR from a number or a GitHub pull/issue URL. Null when the caller
+ * must resolve the ref (for example a head branch name) another way.
+ * @param {string|number|null|undefined} ref
+ * @returns {string|null}
+ */
+function parsePrNumber(ref) {
+  const text = String(ref ?? '').trim();
+  if (/^\d+$/.test(text)) {
+    return text;
+  }
+  const match = text.match(/\/(?:pull|issues)\/(\d+)(?:[/?#]|$)/i);
+  return match ? match[1] : null;
+}
+
+/**
+ * Owner/repo/number embedded in a pull or issue URL. Null for a bare number
+ * or a branch name, which stay scoped to this checkout.
+ * @param {string|number|null|undefined} ref
+ * @returns {{ owner: string, repo: string, number: string }|null}
+ */
+function parsePrUrlRepo(ref) {
+  const text = String(ref ?? '').trim();
+  const match = text.match(
+    /^[a-z][a-z0-9+.-]*:\/\/[^/\s]+\/([^/\s]+)\/([^/\s]+?)(?:\.git)?\/(?:pull|issues)\/(\d+)(?:[/?#]|$)/i,
+  );
+  if (!match) {
+    return null;
+  }
+  return { owner: match[1], repo: match[2], number: match[3] };
+}
+
+/**
+ * Error text when a PR URL names a different repository than this checkout.
+ * The label API path uses the checkout's `{owner}/{repo}`, so a foreign URL
+ * must not be reduced to a number and applied here. Null when the ref is in
+ * this checkout or does not name a repository.
+ * @param {string|number|null|undefined} ref
+ * @param {string|null|undefined} checkoutSlug
+ * @returns {string|null}
+ */
+function prRefCheckoutMismatch(ref, checkoutSlug) {
+  const embedded = parsePrUrlRepo(ref);
+  if (!embedded) {
+    return null;
+  }
+  const urlSlug = `${embedded.owner}/${embedded.repo}`;
+  const checkout = String(checkoutSlug || '').trim();
+  if (checkout && urlSlug.toLowerCase() === checkout.toLowerCase()) {
+    return null;
+  }
+  return `PR URL targets ${urlSlug}#${embedded.number}; this checkout is ${checkout || '(unknown)'}`;
+}
+
+/**
+ * `gh` argv that adds or removes `merge-lease` through the REST issue-labels
+ * API. `gh pr edit --add-label` fetches org team login/name/slug and Projects
+ * fields first; a `repo`-only token fails that GraphQL call, and the script
+ * would exit 3 (halt) on a clear preflight.
+ * @param {string|number} prNumber
+ * @param {'add'|'remove'} action
+ * @returns {string[]}
+ */
+function leaseLabelApiArgs(prNumber, action) {
+  const number = String(prNumber);
+  if (!/^\d+$/.test(number)) {
+    throw new Error(`lease label requires a numeric PR, got ${number}`);
+  }
+  if (action === 'add') {
+    return [
+      'api',
+      '--method',
+      'POST',
+      `repos/{owner}/{repo}/issues/${number}/labels`,
+      '-f',
+      `labels[]=${MERGE_LEASE_LABEL}`,
+    ];
+  }
+  if (action === 'remove') {
+    return [
+      'api',
+      '--method',
+      'DELETE',
+      `repos/{owner}/{repo}/issues/${number}/labels/${encodeURIComponent(MERGE_LEASE_LABEL)}`,
+    ];
+  }
+  throw new Error(`unknown lease label action: ${action}`);
+}
+
+/**
+ * DELETE of a label that is not on the issue. A missing issue is a different
+ * 404 and must still fail the release.
+ * @param {string|null|undefined} stderr
+ * @param {string|null|undefined} stdout
+ */
+function isLabelAlreadyAbsent(stderr, stdout) {
+  return /Label does not exist/i.test(`${stderr || ''}\n${stdout || ''}`);
+}
+
 module.exports = {
   DEFAULT_BASE_HOT_MINUTES,
   DEFAULT_LEASE_STALE_MINUTES,
@@ -219,4 +318,9 @@ module.exports = {
   isBaseHot,
   isLeaseStale,
   isPrCiGreen,
+  parsePrNumber,
+  parsePrUrlRepo,
+  prRefCheckoutMismatch,
+  leaseLabelApiArgs,
+  isLabelAlreadyAbsent,
 };

@@ -8,9 +8,13 @@ const {
   findCompetingGreenPrs,
   findLeaseHolder,
   isBaseHot,
+  isLabelAlreadyAbsent,
   isLeaseStale,
   isPrCiGreen,
+  leaseLabelApiArgs,
   MERGE_LEASE_LABEL,
+  parsePrNumber,
+  prRefCheckoutMismatch,
 } = require('./lib/babysit_merge_preflight_lib.js');
 
 const NOW = Date.parse('2026-09-22T12:00:00.000Z');
@@ -155,5 +159,78 @@ assert.equal(isLeaseStale('2026-09-22T11:30:00.000Z', NOW, 45), false);
   assert.equal(result.exitCode, 3);
   assert.equal(result.reason, 'do_not_merge');
 }
+
+assert.equal(parsePrNumber(2188), '2188');
+assert.equal(parsePrNumber(' 2303 '), '2303');
+assert.equal(
+  parsePrNumber('https://github.com/KanopeeKa/AgathaCheck/pull/2303'),
+  '2303',
+);
+assert.equal(
+  parsePrNumber('https://github.com/KanopeeKa/AgathaCheck/pull/2303/files'),
+  '2303',
+);
+assert.equal(parsePrNumber('cursor/some-head'), null);
+
+const CHECKOUT = 'KanopeeKa/AgathaCheck';
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/KanopeeKa/AgathaCheck/pull/2303', CHECKOUT),
+  null,
+);
+assert.equal(
+  prRefCheckoutMismatch(
+    'https://github.com/kanopeeka/agathacheck/pull/2303/files',
+    CHECKOUT,
+  ),
+  null,
+);
+assert.equal(prRefCheckoutMismatch('2303', CHECKOUT), null);
+assert.equal(prRefCheckoutMismatch('cursor/some-head', CHECKOUT), null);
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/other/repo/pull/123', 'other/repo'),
+  null,
+);
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/other/repo/pull/123', CHECKOUT),
+  'PR URL targets other/repo#123; this checkout is KanopeeKa/AgathaCheck',
+);
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/other/repo/issues/2188', ''),
+  'PR URL targets other/repo#2188; this checkout is (unknown)',
+);
+
+{
+  const add = leaseLabelApiArgs(2188, 'add');
+  assert.deepEqual(add, [
+    'api',
+    '--method',
+    'POST',
+    'repos/{owner}/{repo}/issues/2188/labels',
+    '-f',
+    'labels[]=merge-lease',
+  ]);
+  assert.equal(add.includes('edit'), false);
+}
+
+{
+  const remove = leaseLabelApiArgs('2303', 'remove');
+  assert.equal(remove[0], 'api');
+  assert.equal(remove[2], 'DELETE');
+  assert.equal(
+    remove[3],
+    'repos/{owner}/{repo}/issues/2303/labels/merge-lease',
+  );
+}
+
+assert.equal(
+  isLabelAlreadyAbsent('gh: Label does not exist (HTTP 404)\n', ''),
+  true,
+);
+assert.equal(
+  isLabelAlreadyAbsent('', '{"message":"Not Found","status":"404"}'),
+  false,
+);
+assert.throws(() => leaseLabelApiArgs('https://github.com/x/y/pull/1', 'add'));
+assert.throws(() => leaseLabelApiArgs(1, 'rename'));
 
 console.log('babysit_merge_preflight.test.js: ok');
