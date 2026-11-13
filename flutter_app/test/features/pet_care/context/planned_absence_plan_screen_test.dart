@@ -169,6 +169,7 @@ void main() {
   testWidgets('cancelled absence disables download handover control', (
     tester,
   ) async {
+    final handle = tester.ensureSemantics();
     await tester.pumpWidget(buildScreen(overrideAbsence: cancelledAbsence));
     await tester.pumpAndSettle();
 
@@ -177,9 +178,12 @@ void main() {
     );
     expect(download.onPressed, isNull);
     expect(
-      find.bySemanticsIdentifier('away_plan_download_handover'),
-      findsOneWidget,
+      tester.getSemantics(
+        find.bySemanticsIdentifier('away_plan_download_handover'),
+      ),
+      isSemantics(hasEnabledState: true, isEnabled: false),
     );
+    handle.dispose();
   });
 
   testWidgets('absence screen shows pet pill without multi-pet care sections', (
