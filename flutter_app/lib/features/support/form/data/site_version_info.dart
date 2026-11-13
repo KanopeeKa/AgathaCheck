@@ -4,5 +4,6 @@ class SiteVersionInfo {
   final String version;
   final String build;
 
-  static SiteVersionInfo empty() => const SiteVersionInfo(version: '', build: '');
+  static SiteVersionInfo empty() =>
+      const SiteVersionInfo(version: '', build: '');
 }

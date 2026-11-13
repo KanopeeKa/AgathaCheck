@@ -11,9 +11,9 @@ Future<SiteVersionInfo> fetchSiteVersion({http.Client? client}) async {
     return SiteVersionInfo.empty();
   }
   final httpClient = client ?? http.Client();
-  final uri = Uri.parse(
-    '/version.json',
-  ).replace(queryParameters: {'_': DateTime.now().millisecondsSinceEpoch.toString()});
+  final uri = Uri.parse('/version.json').replace(
+    queryParameters: {'_': DateTime.now().millisecondsSinceEpoch.toString()},
+  );
   try {
     final response = await httpClient.get(uri);
     if (response.statusCode != 200) {

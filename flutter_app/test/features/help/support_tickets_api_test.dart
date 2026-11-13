@@ -22,7 +22,7 @@ void main() {
     });
 
     final api = SupportTicketsApi(baseUrl: 'http://example', client: client);
-  final reference = await api.submitTicket(
+    final reference = await api.submitTicket(
       SupportTicketSubmitPayload(
         category: SupportTicketCategory.bug,
         title: 'Title',

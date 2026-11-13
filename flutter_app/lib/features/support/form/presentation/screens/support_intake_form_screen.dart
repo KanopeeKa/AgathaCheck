@@ -33,7 +33,8 @@ class SupportIntakeFormScreen extends ConsumerStatefulWidget {
       _SupportIntakeFormScreenState();
 }
 
-class _SupportIntakeFormScreenState extends ConsumerState<SupportIntakeFormScreen> {
+class _SupportIntakeFormScreenState
+    extends ConsumerState<SupportIntakeFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final _summaryFocusNode = FocusNode();
   final _titleFocusNode = FocusNode();
@@ -134,10 +135,7 @@ class _SupportIntakeFormScreenState extends ConsumerState<SupportIntakeFormScree
       final baseApi = ref.read(supportTicketsApiProvider);
       final token = widget.accessToken;
       final api = token != null && token.isNotEmpty
-          ? SupportTicketsApi(
-              baseUrl: baseApi.baseUrl,
-              accessToken: token,
-            )
+          ? SupportTicketsApi(baseUrl: baseApi.baseUrl, accessToken: token)
           : baseApi;
       final reference = await api.submitTicket(payload);
       if (api != baseApi) {
@@ -248,35 +246,44 @@ class _SupportIntakeFormScreenState extends ConsumerState<SupportIntakeFormScree
                             AppFormLabeledField(
                               label: l.supportFormCategoryLabel,
                               isTextField: false,
-                              child: DropdownButtonFormField<SupportTicketCategory>(
-                                key: const Key('support_form_category'),
-                                value: _category,
-                                decoration: const InputDecoration(),
-                                items: [
-                                  DropdownMenuItem(
-                                    value: SupportTicketCategory.bug,
-                                    child: Text(l.supportFormCategoryBug),
+                              child:
+                                  DropdownButtonFormField<
+                                    SupportTicketCategory
+                                  >(
+                                    key: const Key('support_form_category'),
+                                    value: _category,
+                                    decoration: const InputDecoration(),
+                                    items: [
+                                      DropdownMenuItem(
+                                        value: SupportTicketCategory.bug,
+                                        child: Text(l.supportFormCategoryBug),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: SupportTicketCategory.suggestion,
+                                        child: Text(
+                                          l.supportFormCategorySuggestion,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: SupportTicketCategory.account,
+                                        child: Text(
+                                          l.supportFormCategoryAccount,
+                                        ),
+                                      ),
+                                      DropdownMenuItem(
+                                        value: SupportTicketCategory.billing,
+                                        child: Text(
+                                          l.supportFormCategoryBilling,
+                                        ),
+                                      ),
+                                    ],
+                                    onChanged: _submitting
+                                        ? null
+                                        : (value) {
+                                            if (value == null) return;
+                                            setState(() => _category = value);
+                                          },
                                   ),
-                                  DropdownMenuItem(
-                                    value: SupportTicketCategory.suggestion,
-                                    child: Text(l.supportFormCategorySuggestion),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: SupportTicketCategory.account,
-                                    child: Text(l.supportFormCategoryAccount),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: SupportTicketCategory.billing,
-                                    child: Text(l.supportFormCategoryBilling),
-                                  ),
-                                ],
-                                onChanged: _submitting
-                                    ? null
-                                    : (value) {
-                                        if (value == null) return;
-                                        setState(() => _category = value);
-                                      },
-                              ),
                             ),
                             const SizedBox(height: 12),
                             AppFormLabeledField(
@@ -311,8 +318,7 @@ class _SupportIntakeFormScreenState extends ConsumerState<SupportIntakeFormScree
                               ),
                             ),
                             SupportFormBugFields(
-                              visible:
-                                  _category == SupportTicketCategory.bug,
+                              visible: _category == SupportTicketCategory.bug,
                               expectedController: _expectedController,
                               actualController: _actualController,
                               stepsController: _stepsController,
@@ -343,7 +349,8 @@ class _SupportIntakeFormScreenState extends ConsumerState<SupportIntakeFormScree
                               onPressed: _submitting ? null : _submit,
                               child: _submitting
                                   ? Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         const SizedBox(
                                           width: 18,

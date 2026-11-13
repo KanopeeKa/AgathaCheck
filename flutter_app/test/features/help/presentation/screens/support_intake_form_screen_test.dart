@@ -74,15 +74,15 @@ void main() {
       tester,
       overrides: [
         supportTicketsApiProvider.overrideWith(
-          (ref) => SupportTicketsApi(
-            baseUrl: 'http://test',
-            client: client,
-          ),
+          (ref) => SupportTicketsApi(baseUrl: 'http://test', client: client),
         ),
       ],
     );
 
-    await tester.enterText(find.byKey(const Key('support_form_title')), 'Login bug');
+    await tester.enterText(
+      find.byKey(const Key('support_form_title')),
+      'Login bug',
+    );
     await tester.enterText(
       find.byKey(const Key('support_form_description')),
       'Cannot sign in on Safari.',
