@@ -71,12 +71,24 @@ void main() {
     expect(a.dueTodayCount, 3);
   });
 
-  test('one time group → one "Today\'s list" heading', () {
+  test('AG-1 only anytime items → one group, no sub-headings', () {
     final a = agenda([
       item('A', [occ('a', 10, CareOccurrenceStatus.due)]),
       item('B', [occ('b', 10, CareOccurrenceStatus.due)]),
     ]);
     expect(a.showTimeGroupHeadings, isFalse);
+    expect(a.today.keys, [CareTimeGroup.anytime]);
+  });
+
+  test('AG-2 morning and anytime → two headings', () {
+    final a = agenda([
+      item('Morning pill', [
+        occ('m', 10, CareOccurrenceStatus.due, time: '11:00'),
+      ]),
+      item('Brush', [occ('b', 10, CareOccurrenceStatus.due)]),
+    ]);
+    expect(a.showTimeGroupHeadings, isTrue);
+    expect(a.today.keys, [CareTimeGroup.morning, CareTimeGroup.anytime]);
   });
 
   test('a stack is one overdue row with its count (DN-1b)', () {
@@ -99,11 +111,12 @@ void main() {
     expect(a.isEmpty, isTrue);
   });
 
-  test('the reminder window never hides care: 200 days away is Upcoming', () {
+  test('AG-9 yearly vaccine 200 days away is Upcoming', () {
     final a = agenda([
       item('Rabies', [occ('r', 28, CareOccurrenceStatus.comingUp, month: 12)]),
     ]);
     expect(names(a.upcoming), ['Rabies']);
+    expect(a.dueSoon, isEmpty);
   });
 
   test('paused and ended items are left out', () {
@@ -116,7 +129,7 @@ void main() {
     expect(a.isEmpty, isTrue);
   });
 
-  test('done today stays at the end of Today, quiet', () {
+  test('AG-4 daily med done today stays in Today, not Due soon or Upcoming', () {
     final a = agenda([
       item(
         'Pill',
@@ -132,6 +145,36 @@ void main() {
     expect(names(a.doneToday), ['Pill']);
     expect(a.doneToday.single.occurrence, isNull);
     expect(a.hasToday, isTrue);
+    expect(a.dueSoon, isEmpty);
+    expect(a.upcoming, isEmpty);
+  });
+
+  test('AG-5 weekly due in 3 days is Due soon; 20 days is Upcoming', () {
+    final a = agenda([
+      item('Soon', [occ('s', 13, CareOccurrenceStatus.comingUp)], fixed: false),
+      item('Later', [occ('l', 30, CareOccurrenceStatus.comingUp)], fixed: false),
+    ]);
+    expect(names(a.dueSoon), ['Soon']);
+    expect(names(a.upcoming), ['Later']);
+  });
+
+  test('AG-6 every-3-days due tomorrow is Due soon', () {
+    final a = agenda([
+      item('Rhythm', [occ('r', 11, CareOccurrenceStatus.comingUp)], fixed: false),
+    ]);
+    expect(names(a.dueSoon), ['Rhythm']);
+    expect(a.upcoming, isEmpty);
+  });
+
+  test('AG-10 no overdue or due today still lists Due soon and Upcoming', () {
+    final a = agenda([
+      item('Groom', [occ('g', 15, CareOccurrenceStatus.comingUp)], fixed: false),
+      item('Yearly', [occ('y', 40, CareOccurrenceStatus.comingUp, month: 7)], fixed: false),
+    ]);
+    expect(a.overdue, isEmpty);
+    expect(a.today, isEmpty);
+    expect(names(a.dueSoon), ['Groom']);
+    expect(names(a.upcoming), ['Yearly']);
   });
 
   test('a timed due turns overdue as minutes pass (D-CIE-028)', () {
