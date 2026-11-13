@@ -48,6 +48,17 @@ ALTER TABLE ONLY public.users ALTER COLUMN name SET (fillfactor=70);\n`
   );
 });
 
+test('does not rewrite quoted identifiers that contain pg_attver text', () => {
+  const raw =
+    'ALTER TABLE ONLY public."pg_attver=12" ALTER COLUMN id SET STATISTICS 100;\n' +
+    'ALTER TABLE ONLY public."pg_attver=12" ALTER COLUMN id SET (fillfactor=70, pg_attver=99);\n';
+  assert.equal(
+    normalizeSchemaDump(raw),
+    'ALTER TABLE ONLY public."pg_attver=12" ALTER COLUMN id SET STATISTICS 100;\n' +
+      'ALTER TABLE ONLY public."pg_attver=12" ALTER COLUMN id SET (fillfactor=70);\n'
+  );
+});
+
 test('canonicalizePartialIndexArrays normalizes foster partial index variants', () => {
   const legacy =
     "CREATE UNIQUE INDEX idx_foster_placements_one_active_pet ON public.foster_placements USING btree (pet_id) WHERE ((status)::text = ANY ((ARRAY['pending'::character varying, 'in_progress'::character varying])::text[]));";

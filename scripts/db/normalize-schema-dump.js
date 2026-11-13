@@ -28,16 +28,24 @@ function isNoiseLine(trimmed, rawLine) {
 /**
  * PostgreSQL 18 pg_dump emits `ALTER COLUMN … SET (pg_attver=N)`.
  * The number is a catalog counter, not schema, and differs between dumps.
- * Drop a line whose SET list is only pg_attver; keep any other storage option.
+ * Only the parenthesized SET list is edited, so a quoted identifier that
+ * happens to contain the same text is left alone. Drop a statement whose
+ * SET list is only pg_attver; keep any other storage option.
  */
 function withoutPgAttver(line) {
-  if (!/^\s*ALTER TABLE\b/.test(line) || !line.includes('pg_attver=')) return line;
-  const next = line
-    .replace(/\s*,\s*pg_attver=\d+/g, '')
-    .replace(/pg_attver=\d+\s*,\s*/g, '')
-    .replace(/pg_attver=\d+/g, '');
-  if (/\bSET\s*\(\s*\)/.test(next)) return null;
-  return next;
+  if (!/^\s*ALTER TABLE\b/.test(line)) return line;
+  const match = line.match(/\bALTER COLUMN\b([\s\S]*?)\bSET\s*\(([^)]*)\)/);
+  if (!match || !/(^|,)\s*pg_attver=\d+\s*(,|$)/.test(match[2])) return line;
+  const kept = match[2]
+    .split(',')
+    .map((part) => part.trim())
+    .filter((part) => part && !/^pg_attver=\d+$/.test(part));
+  if (kept.length === 0) return null;
+  return (
+    line.slice(0, match.index) +
+    `ALTER COLUMN${match[1]}SET (${kept.join(', ')})` +
+    line.slice(match.index + match[0].length)
+  );
 }
 
 function canonicalizeCheckConstraintArrays(line) {
