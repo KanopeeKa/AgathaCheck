@@ -220,7 +220,6 @@ export class AwayPlanningPage {
   async saveCarerEditDialog(): Promise<void> {
     await this.page
       .getByRole('button', { name: /^Save carer$|Enregistrer le soignant/i })
-      .or(this.page.locator('[data-flutter-key="away_plan_carer_edit_save"]'))
       .click();
     await refreshFlutterAccessibility(this.page);
   }
@@ -302,25 +301,11 @@ export class AwayPlanningPage {
     await this.expectPlanPageLoaded();
   }
 
-  async expectCarerCoverageHeaderVisible(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(
-      this.page.getByText(/Carer coverage|Couverture des soignants/i).first(),
-    ).toBeVisible({ timeout: 30_000 });
-  }
-
   async expectCarerCoverageHeaderHidden(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     await expect(
       this.page.getByText(/Carer coverage|Couverture des soignants/i),
     ).toHaveCount(0, { timeout: 15_000 });
-  }
-
-  async expectCareCoverageHeaderVisible(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await expect(
-      this.page.getByText(/Care coverage|Couverture des soins/i).first(),
-    ).toBeVisible({ timeout: 30_000 });
   }
 
   async expectCareCoverageHeaderHidden(): Promise<void> {
@@ -333,23 +318,6 @@ export class AwayPlanningPage {
   async expectCoverageHeadersHidden(): Promise<void> {
     await this.expectCarerCoverageHeaderHidden();
     await this.expectCareCoverageHeaderHidden();
-  }
-
-  async expectPlannedCareSection(): Promise<void> {
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      const heading = semanticsKey(this.page, 'away_plan_planned_care_heading').or(
-        this.page.getByText(/Planned care|Soins planifiés/i).first(),
-      );
-      await expect(heading).toBeVisible();
-    }).toPass({ timeout: 45_000 });
-  }
-
-  async expectPlannedCareEntryVisible(entryName: string): Promise<void> {
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expect(this.page.getByText(entryName, { exact: false }).first()).toBeVisible();
-    }).toPass({ timeout: 45_000 });
   }
 
   plannedCareRow(entryId: string, entryName?: string) {
@@ -381,62 +349,6 @@ export class AwayPlanningPage {
   }
 
   /** When a care review queue is present, planned care lives under a collapsed tile (D-009). */
-  /** Expands **All planned care** when the review queue collapsed the schedule (D-009). */
-  async revealAllPlannedCareSchedule(): Promise<void> {
-    await this.waitForPetCareCoverageReady();
-    for (let attempt = 0; attempt < 3; attempt++) {
-      await this.expandAllPlannedCareIfCollapsed();
-      await refreshFlutterAccessibility(this.page);
-      const estimatedVisible = await this.page
-        .getByText(/Estimated:|Estimé:/i)
-        .first()
-        .isVisible()
-        .catch(() => false);
-      if (estimatedVisible) {
-        return;
-      }
-      const expandOpen = await this.page
-        .locator('[aria-expanded="true"]')
-        .filter({ hasText: /All planned care|Tous les soins prévus/i })
-        .first()
-        .isVisible()
-        .catch(() => false);
-      if (expandOpen) {
-        return;
-      }
-    }
-  }
-
-  async expectPetCareSectionForPet(petId: string, petName?: string): Promise<void> {
-    await expect(async () => {
-      await this.waitForPetCareCoverageReady();
-      await refreshFlutterAccessibility(this.page);
-      const byPetHeader = petName
-        ? this.page.getByRole('button', {
-            name: new RegExp(`View pet details for ${petName}|^${petName}\\b`, 'i'),
-          })
-        : null;
-      const careDuring = this.page.getByText(/Care during your absence|Soins pendant votre absence/i);
-      await expect((byPetHeader ?? careDuring)).toBeVisible();
-    }).toPass({ timeout: 60_000 });
-  }
-
-  async expectCareItemNamedOnPlan(name: string): Promise<void> {
-    await expect(async () => {
-      await this.waitForPetCareCoverageReady();
-      await refreshFlutterAccessibility(this.page);
-      const named = this.page
-        .getByText(name, { exact: false })
-        .or(this.page.getByRole('group', { name: new RegExp(name, 'i') }))
-        .first();
-      if (!(await named.isVisible().catch(() => false))) {
-        await this.expandAllPlannedCareIfCollapsed();
-        await refreshFlutterAccessibility(this.page);
-      }
-      await expect(named).toBeVisible();
-    }).toPass({ timeout: 60_000 });
-  }
-
   private async expandAllPlannedCareIfCollapsed(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
     const expandTile = semanticsKey(this.page, 'away_plan_planned_care_expand')
@@ -524,97 +436,6 @@ export class AwayPlanningPage {
       await refreshFlutterAccessibility(this.page);
       await expect(this.plannedCareRow(entryId, entryName)).toHaveCount(0);
     }).toPass({ timeout: 45_000 });
-  }
-
-  async expectCarerTaskSummaryVisible(): Promise<void> {
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page.getByText(/care tasks? for your carer|tâches? de soin pour votre soignant/i).first(),
-      ).toBeVisible();
-    }).toPass({ timeout: 45_000 });
-  }
-
-  async expectPlannedCareRowShowsOverdue(
-    entryId: string,
-    entryName: string,
-    overdueLabel: RegExp,
-  ): Promise<void> {
-    await expect(async () => {
-      await this.ensurePlannedCareRowAccessible(entryId, entryName);
-      await expect(this.plannedCareRow(entryId, entryName)).toBeVisible();
-      await expect(this.page.getByText(overdueLabel).first()).toBeVisible();
-    }).toPass({ timeout: 45_000 });
-  }
-
-  async expectPlannedCareRowShowsEstimated(entryId: string, entryName: string): Promise<void> {
-    await expect(async () => {
-      await this.expectPlanPageLoaded();
-      await this.waitForPetCareCoverageReady();
-      await this.expandAllPlannedCareIfCollapsed();
-      await refreshFlutterAccessibility(this.page);
-      const estimatedOnPage = this.page.getByText(/Estimated:|Estimé:/i);
-      const scheduleRow = semanticsKey(this.page, `away_plan_planned_care_${entryId}`).or(
-        this.page.getByRole('button', { name: new RegExp(entryName, 'i') }).first(),
-      );
-      if (await estimatedOnPage.first().isVisible().catch(() => false)) {
-        await expect(estimatedOnPage.first()).toBeVisible();
-        return;
-      }
-      await expect(scheduleRow).toBeVisible();
-      await expect(scheduleRow).toContainText(/Estimated:|Estimé:/i);
-    }).toPass({ timeout: 45_000 });
-  }
-
-  async expectPlannerSectionVisible(petId: string): Promise<void> {
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expect(semanticsKey(this.page, `away_plan_planner_heading_${petId}`)).toBeVisible();
-    }).toPass({ timeout: 45_000 });
-  }
-
-  async expectCarerTaskSummaryHidden(): Promise<void> {
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expect(
-        this.page.getByText(/care tasks? for your carer|tâches? de soin pour votre soignant/i),
-      ).toHaveCount(0);
-    }).toPass({ timeout: 45_000 });
-  }
-
-  async expectPlannerSuggestionVisible(petId: string, entryName: string): Promise<void> {
-    await expect(async () => {
-      await refreshFlutterAccessibility(this.page);
-      await expect(semanticsKey(this.page, `away_plan_planner_heading_${petId}`)).toBeVisible();
-      await expect(this.plannedCareRow('', entryName)).toBeVisible();
-      await expect(this.page.getByText(/Move from|Déplacer de/i).first()).toBeVisible();
-      await expect(
-        this.page.getByRole('button', { name: /^Accept$|^Accepter$/i }).first(),
-      ).toBeVisible();
-    }).toPass({ timeout: 45_000 });
-  }
-
-  async acceptPlannerSuggestion(): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    await this.page.getByRole('button', { name: /^Accept$|^Accepter$/i }).first().click();
-    await refreshFlutterAccessibility(this.page);
-  }
-
-  async openSeeOptions(entryId: string): Promise<void> {
-    await refreshFlutterAccessibility(this.page);
-    const row = this.plannedCareRow(entryId);
-    await expect(row).toBeVisible({ timeout: 30_000 });
-    const seeOptions = semanticsKey(this.page, `away_plan_see_options_${entryId}`).or(
-      row.getByRole('button', { name: /^See options$|^Voir les options/i }),
-    );
-    await expect(seeOptions.first()).toBeVisible({ timeout: 15_000 });
-    await seeOptions.first().click();
-    await refreshFlutterAccessibility(this.page);
-  }
-
-  /** @deprecated Away plan no longer offers inline Plan this — use openSeeOptions or openPlannedCareItem */
-  async openPlanThis(entryId: string): Promise<void> {
-    await this.openPlannedCareItem(entryId);
   }
 
   async openPlannedCareItem(entryId: string, entryName?: string): Promise<void> {
