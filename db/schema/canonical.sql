@@ -997,6 +997,58 @@ CREATE TABLE public.scheduler_daily_runs (
     claimed_at timestamp with time zone,
     completed_at timestamp with time zone
 );
+CREATE TABLE public.support_attachments (
+    id uuid NOT NULL,
+    ticket_id uuid NOT NULL,
+    storage_key text NOT NULL,
+    mime character varying(128) NOT NULL,
+    bytes integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT support_attachments_bytes_check CHECK ((bytes > 0))
+);
+CREATE TABLE public.support_outbox (
+    id uuid NOT NULL,
+    ticket_id uuid,
+    kind character varying(32) NOT NULL,
+    github_issue_number integer,
+    status character varying(20) DEFAULT 'pending'::character varying NOT NULL,
+    attempts integer DEFAULT 0 NOT NULL,
+    next_attempt_at timestamp with time zone DEFAULT now() NOT NULL,
+    last_error text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT support_outbox_attempts_check CHECK ((attempts >= 0)),
+    CONSTRAINT support_outbox_delete_issue_required CHECK ((((kind)::text <> 'github_issue_delete'::text) OR (github_issue_number IS NOT NULL))),
+    CONSTRAINT support_outbox_kind_check CHECK (((kind)::text = ANY ((ARRAY['receipt'::character varying, 'github_issue'::character varying, 'github_issue_delete'::character varying])::text[]))),
+    CONSTRAINT support_outbox_status_check CHECK (((status)::text = ANY ((ARRAY['pending'::character varying, 'sent'::character varying, 'failed'::character varying, 'blocked'::character varying, 'disabled'::character varying])::text[]))),
+    CONSTRAINT support_outbox_ticket_kind_required CHECK (((((kind)::text = ANY ((ARRAY['receipt'::character varying, 'github_issue'::character varying])::text[])) AND (ticket_id IS NOT NULL)) OR (((kind)::text = 'github_issue_delete'::text) AND (ticket_id IS NULL))))
+);
+CREATE TABLE public.support_tickets (
+    id uuid NOT NULL,
+    reference character varying(16) NOT NULL,
+    user_id uuid,
+    reporter_email character varying(254) NOT NULL,
+    reporter_email_normalised character varying(254) NOT NULL,
+    signed_in boolean NOT NULL,
+    submit_ip character varying(64),
+    category character varying(32) NOT NULL,
+    title character varying(120) NOT NULL,
+    description text NOT NULL,
+    expected text,
+    actual text,
+    steps text,
+    frequency character varying(16),
+    context jsonb DEFAULT '{}'::jsonb NOT NULL,
+    locale character varying(16) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    github_issue_number integer,
+    CONSTRAINT support_tickets_actual_check CHECK (((actual IS NULL) OR (char_length(actual) <= 2000))),
+    CONSTRAINT support_tickets_category_check CHECK (((category)::text = ANY ((ARRAY['bug'::character varying, 'suggestion'::character varying, 'account'::character varying, 'billing'::character varying])::text[]))),
+    CONSTRAINT support_tickets_description_check CHECK ((char_length(description) <= 5000)),
+    CONSTRAINT support_tickets_expected_check CHECK (((expected IS NULL) OR (char_length(expected) <= 2000))),
+    CONSTRAINT support_tickets_frequency_check CHECK (((frequency IS NULL) OR ((frequency)::text = ANY ((ARRAY['always'::character varying, 'sometimes'::character varying, 'once'::character varying])::text[])))),
+    CONSTRAINT support_tickets_steps_check CHECK (((steps IS NULL) OR (char_length(steps) <= 3000)))
+);
 CREATE TABLE public.users (
     id uuid NOT NULL,
     email character varying(255) NOT NULL,
@@ -1012,6 +1064,7 @@ CREATE TABLE public.users (
     pinned_organization_id uuid,
     timezone character varying(64) DEFAULT 'UTC'::character varying NOT NULL,
     weight_unit character varying(2) DEFAULT 'kg'::character varying NOT NULL,
+    is_support_staff boolean DEFAULT false NOT NULL,
     CONSTRAINT users_weight_unit_check CHECK (((weight_unit)::text = ANY ((ARRAY['kg'::character varying, 'lb'::character varying])::text[])))
 );
 CREATE TABLE public.vet_visit_occurrence_links (
@@ -1271,6 +1324,14 @@ ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_token_key UNIQUE (token);
 ALTER TABLE ONLY public.scheduler_daily_runs
     ADD CONSTRAINT scheduler_daily_runs_pkey PRIMARY KEY (job_key);
+ALTER TABLE ONLY public.support_attachments
+    ADD CONSTRAINT support_attachments_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.support_outbox
+    ADD CONSTRAINT support_outbox_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.support_tickets
+    ADD CONSTRAINT support_tickets_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.support_tickets
+    ADD CONSTRAINT support_tickets_reference_key UNIQUE (reference);
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_email_key UNIQUE (email);
 ALTER TABLE ONLY public.users
@@ -1403,12 +1464,19 @@ CREATE INDEX idx_prospects_org_id ON public.prospects USING btree (organization_
 CREATE INDEX idx_refresh_sessions_family_id ON public.refresh_sessions USING btree (family_id);
 CREATE UNIQUE INDEX idx_refresh_sessions_token_hash ON public.refresh_sessions USING btree (token_hash);
 CREATE INDEX idx_refresh_sessions_user_id ON public.refresh_sessions USING btree (user_id);
+CREATE INDEX idx_support_attachments_ticket_id ON public.support_attachments USING btree (ticket_id);
+CREATE INDEX idx_support_outbox_status_next_attempt ON public.support_outbox USING btree (status, next_attempt_at);
+CREATE INDEX idx_support_tickets_email_norm_created ON public.support_tickets USING btree (reporter_email_normalised, created_at);
+CREATE INDEX idx_support_tickets_submit_ip_created ON public.support_tickets USING btree (submit_ip, created_at) WHERE ((signed_in = false) AND (submit_ip IS NOT NULL));
+CREATE INDEX idx_support_tickets_user_created ON public.support_tickets USING btree (user_id, created_at) WHERE (user_id IS NOT NULL);
 CREATE INDEX idx_users_pinned_organization_id ON public.users USING btree (pinned_organization_id) WHERE (pinned_organization_id IS NOT NULL);
 CREATE INDEX idx_vets_organization_id ON public.vets USING btree (organization_id);
 CREATE UNIQUE INDEX idx_weight_entries_health_occurrence_id ON public.weight_entries USING btree (health_occurrence_id) WHERE (health_occurrence_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_household_unique ON public.people_directories USING btree (household_id) WHERE (household_id IS NOT NULL);
 CREATE UNIQUE INDEX people_directories_owner_user_unique ON public.people_directories USING btree (owner_user_id) WHERE (owner_user_id IS NOT NULL);
 CREATE INDEX pet_vaccination_records_pet_administered_idx ON public.pet_vaccination_records USING btree (pet_id, administered_on DESC);
+CREATE UNIQUE INDEX support_outbox_delete_kind_issue_uidx ON public.support_outbox USING btree (kind, github_issue_number) WHERE ((kind)::text = 'github_issue_delete'::text);
+CREATE UNIQUE INDEX support_outbox_ticket_kind_uidx ON public.support_outbox USING btree (ticket_id, kind) WHERE ((kind)::text = ANY ((ARRAY['receipt'::character varying, 'github_issue'::character varying])::text[]));
 CREATE INDEX vet_visit_occurrence_links_visit_idx ON public.vet_visit_occurrence_links USING btree (vet_visit_id);
 CREATE INDEX vet_visits_pet_visited_idx ON public.vet_visits USING btree (pet_id, visited_on DESC);
 CREATE UNIQUE INDEX welfare_suggestions_pet_dedupe_idx ON public.welfare_suggestions USING btree (pet_id, dedupe_key);
@@ -1769,6 +1837,12 @@ ALTER TABLE ONLY public.refresh_sessions
     ADD CONSTRAINT refresh_sessions_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.refresh_tokens
     ADD CONSTRAINT refresh_tokens_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.support_attachments
+    ADD CONSTRAINT support_attachments_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES public.support_tickets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.support_outbox
+    ADD CONSTRAINT support_outbox_ticket_id_fkey FOREIGN KEY (ticket_id) REFERENCES public.support_tickets(id) ON DELETE CASCADE;
+ALTER TABLE ONLY public.support_tickets
+    ADD CONSTRAINT support_tickets_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pinned_organization_id_fkey FOREIGN KEY (pinned_organization_id) REFERENCES public.organizations(id) ON DELETE SET NULL;
 ALTER TABLE ONLY public.vet_visit_occurrence_links
