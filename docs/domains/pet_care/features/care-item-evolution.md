@@ -5,7 +5,7 @@ audience: both
 domain: pet_care
 feature_id: care_item
 status: active
-last_updated: 2026-11-11
+last_updated: 2026-11-13
 related_prs: [1797, 1805, 1812, 1817, 2129, 2145]
 ---
 
@@ -50,6 +50,7 @@ Historical profile refactor and 2026-09-13 delivery plan text: [archive/care-ite
 | CARE-ITEM-R-023 | History one-line pills (inline + pop-up): `dd MMM yy` / `HH:mm`; icons not words; **See history** only over inline cap; pop-up from `status=past` list (CARE-ITEM-D-010). Coverage: `test: past_occurrence_history_pill_test.dart`, `test: pet_event_administration_history_dialog_test.dart`, `test: pet_event_past_occurrences_section_test.dart` | Live |
 | CARE-ITEM-R-024 | Multi-line care-item cards (**Today** + **Upcoming**, no Due soon): global **All care** (`/pc/events`); guardian **dashboard** (Today only); **pet profile** (Today + Upcoming capped at five cards); Care tab badge counts open Today slots (`care_list_*` semantics). [all-care-by-item delivery](../changes/all-care-by-item-delivery-plan.md) | In delivery |
 | CARE-ITEM-R-025 | Global **All care**: multi-select pet chips synced to `?pet=` on the route | In delivery |
+| CARE-ITEM-R-026 | Paused item: Needs attention on the Care item view shows the paused banner only — no per-occurrence or bulk actions; Resume via the care item menu (D-CIE-043) | Live |
 
 ## Verdict
 
@@ -134,6 +135,7 @@ Four principles:
 | D-CIE-040 | History has no inline Unmark done | Past-occurrence rows in Care item History open the occurrence record; undo Done and other edits happen there, not via list shortcuts | Live | 2026-11-03 | — |
 | D-CIE-041 | Documents on Care item view | Own **Documents** module directly above **History** (mobile and web main column). Hidden when the entry has no attachments; while loading, the section shows the strip progress indicator. Closed care: same muted styling as other modules. History lists only resolved past occurrences plus **See history**; shows **No history yet** when none qualify. Supersedes placing documents under History / future Details placement (line §Details). | Live | 2026-11-07 | — |
 | D-CIE-042 | History refreshes after care commands | After a successful Done, Skip, or Undo (including snackbar undo), the Care item **History** module and other detail occurrence surfaces reflect server state without leaving the screen or reloading the page. Shared `careDataChangedProvider` invalidates past/open occurrence caches. | Live | 2026-11-08 | — |
+| D-CIE-043 | Paused hides occurrence actions on the Care item view | While an item is paused, per-occurrence Mark as done, Skip, Change date and bulk skip are not offered on the Care item view; acting on occurrences happens after Resume (care item menu, D-CSM-028). Per-occurrence controls live only on `CareItemNeedsAttentionSection` when the item is active with a server schedule (`as_of` on list reads). | Live | 2026-11-08 | — |
 
 ## Vet visit schema (API slice — PR-14)
 
@@ -285,7 +287,7 @@ The area at the top holds what needs doing now. For most items that's one occurr
 | Looked after by someone | "Looked after by Jamie" on the occurrence | — |
 | One-off record | "Recorded · 12 Sep 2026" | Add details |
 | Finished | "Finished · 12 Sep 2026" | — |
-| Paused | "Paused since 1 Sep" (or "Paused until 12 Oct"), plus "N doses not recorded · Review" when a stack remains | Resume (asks the date, D-CSM-028) |
+| Paused | "Paused since 1 Sep" (or "Paused until 12 Oct") — no stack Review line on this view | Resume (care item menu, D-CSM-028) |
 | Archived | "Archived", muted | Restore |
 
 - The leading occurrence is the most recent open one that is Due or Overdue. Without one, it's the next occurrence coming up. This matches today's "mark latest" rule.
@@ -776,6 +778,7 @@ New FR wording is proposed and needs the FR copy pass.
 | DOSE-1 — When two pending doses same calendar day then Selector opens; future-day head uses date confirmation not missed stack | CARE-ITEM-R-012 | none — #1770 |
 | MOB-1 — When mobile row marked done then Item stays in preview with Undo until server refresh completes | CARE-ITEM-R-013 | none — #1770 |
 | NBR-1 — When Care date neighbour replace hops A→B→C then Each screen loads that occurrence; Previous returns to B | CARE-ITEM-R-020 | test: flutter_app/test/features/experience/presentation/care_item/occurrence/occurrence_neighbor_go_router_test.dart#replace neighbour hops reload occurrence data through two next and one previous |
+| PAUSE-1 — When item is paused with open occurrences on Care item view then Paused banner only; no per-occurrence or bulk action keys | CARE-ITEM-R-026 | test: flutter_app/test/features/care_item/presentation/detail/care_item_dates_section_test.dart#paused item with open occurrences shows only the paused banner |
 
 Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770).
 
