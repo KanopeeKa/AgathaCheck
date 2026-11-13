@@ -108,8 +108,6 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
               actions: [
                 Semantics(
                   identifier: 'away_plan_download_handover',
-                  button: true,
-                  label: l.downloadReport,
                   child: IconButton(
                     key: const Key('away_plan_download_handover'),
                     tooltip: l.downloadReport,
@@ -155,8 +153,6 @@ class PlannedAbsencePlanScreen extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Semantics(
                         identifier: 'absence_add_pet',
-                        button: true,
-                        label: l.careContextAddPetToAbsence,
                         child: OutlinedButton.icon(
                           key: const Key('absence_add_pet'),
                           onPressed: () =>

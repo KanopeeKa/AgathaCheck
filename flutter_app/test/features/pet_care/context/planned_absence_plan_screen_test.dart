@@ -166,6 +166,22 @@ void main() {
     );
   }
 
+  testWidgets('cancelled absence disables download handover control', (
+    tester,
+  ) async {
+    await tester.pumpWidget(buildScreen(overrideAbsence: cancelledAbsence));
+    await tester.pumpAndSettle();
+
+    final download = tester.widget<IconButton>(
+      find.byKey(const Key('away_plan_download_handover')),
+    );
+    expect(download.onPressed, isNull);
+    expect(
+      find.bySemanticsIdentifier('away_plan_download_handover'),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('absence screen shows pet pill without multi-pet care sections', (
     tester,
   ) async {

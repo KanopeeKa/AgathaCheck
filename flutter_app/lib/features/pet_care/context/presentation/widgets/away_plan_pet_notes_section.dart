@@ -123,8 +123,6 @@ class _AwayPlanPetNotesSectionState
             alignment: Alignment.centerRight,
             child: Semantics(
               identifier: 'away_plan_pet_notes_save_${widget.petId}',
-              button: true,
-              label: l.save,
               child: FilledButton(
                 key: Key('away_plan_pet_notes_save_${widget.petId}'),
                 onPressed: _saving ? null : _save,
