@@ -216,6 +216,19 @@ describe('next-date choice (D-CSM-026)', () => {
     expect(rows.find((r) => r.id === morning.id).status).toBe('pending');
     expect(rows.find((r) => r.id === evening.id).status).toBe('pending');
   });
+
+  it('UN-3 FX dose done then undo reopens the slot only', async () => {
+    const entry = await created(twiceDaily('2026-06-05'), '2026-06-05T07:00');
+    const morning = entry.open_occurrences[0];
+    const done = await api.at('2026-06-05T09:00').complete(entry.id, morning.id, {});
+    expect(done.statusCode).toBe(200);
+    const undone = await api.at('2026-06-05T09:01').undo(entry.id, { undo_token: done.body.undo_token });
+    expect(undone.statusCode).toBe(200);
+    const rows = await occurrenceRows(harness.pool, entry.id);
+    expect(rows.find((r) => r.id === morning.id).status).toBe('pending');
+    expect(done.body.entry.open_occurrences.length).toBeGreaterThanOrEqual(1);
+    expect(undone.body.entry.open_occurrences.some((o) => o.id === morning.id)).toBe(true);
+  });
 });
 
 describe('change date, postpone, type switch', () => {
