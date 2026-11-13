@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pet_profile_app/core/providers/shared_preferences_provider.dart';
 import 'package:pet_profile_app/features/support/hub/hub.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 GoRouter _hubRouter() {
   return GoRouter(
@@ -17,12 +20,17 @@ GoRouter _hubRouter() {
 }
 
 Future<void> _pumpHub(WidgetTester tester, Locale locale) async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
   await tester.pumpWidget(
-    MaterialApp.router(
-      locale: locale,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
-      routerConfig: _hubRouter(),
+    ProviderScope(
+      overrides: [sharedPreferencesProvider.overrideWithValue(prefs)],
+      child: MaterialApp.router(
+        locale: locale,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        routerConfig: _hubRouter(),
+      ),
     ),
   );
   await tester.pumpAndSettle();

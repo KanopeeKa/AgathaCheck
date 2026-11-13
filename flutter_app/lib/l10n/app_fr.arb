@@ -2247,6 +2247,62 @@
       }
     }
   },
+  "supportFormIntro": "Décrivez votre demande. Nous vous répondrons par e-mail avec votre numéro de référence.",
+  "supportFormCategoryLabel": "Catégorie",
+  "supportFormCategoryBug": "Bug",
+  "supportFormCategorySuggestion": "Suggestion",
+  "supportFormCategoryAccount": "Compte",
+  "supportFormCategoryBilling": "Facturation",
+  "supportFormTitleLabel": "Titre",
+  "supportFormDescriptionLabel": "Description",
+  "supportFormEmailLabel": "Votre e-mail",
+  "supportFormEmailHint": "Nous enverrons l'accusé de réception à cette adresse.",
+  "supportFormExpectedLabel": "Comportement attendu",
+  "supportFormActualLabel": "Ce qui s'est passé",
+  "supportFormStepsLabel": "Étapes pour reproduire",
+  "supportFormFrequencyLabel": "Fréquence",
+  "supportFormFrequencyAlways": "À chaque fois",
+  "supportFormFrequencySometimes": "Parfois",
+  "supportFormFrequencyOnce": "Une fois",
+  "supportFormSubmit": "Envoyer la demande",
+  "supportFormSubmitting": "Envoi…",
+  "supportFormErrorSummaryTitle": "Ce formulaire contient des erreurs",
+  "supportFormErrorSummaryFieldCount": "{count, plural, one{1 champ à corriger.} other{{count} champs à corriger.}}",
+  "@supportFormErrorSummaryFieldCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "supportFormValidationTitleRequired": "Saisissez un titre.",
+  "supportFormValidationTitleTooLong": "Le titre est trop long.",
+  "supportFormValidationDescriptionRequired": "Saisissez une description.",
+  "supportFormValidationDescriptionTooLong": "La description est trop longue.",
+  "supportFormValidationEmailRequired": "Saisissez votre adresse e-mail.",
+  "supportFormValidationEmailInvalid": "Saisissez une adresse e-mail valide.",
+  "supportFormValidationEmailTooLong": "L'adresse e-mail est trop longue.",
+  "supportFormSuccessTitle": "Demande reçue",
+  "supportFormSuccessBody": "Votre référence est {reference}. Conservez-la — nous vous avons envoyé un accusé de réception par e-mail.",
+  "@supportFormSuccessBody": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormSuccessAnnouncement": "Demande reçue. Votre référence est {reference}.",
+  "@supportFormSuccessAnnouncement": {
+    "placeholders": {
+      "reference": {
+        "type": "String"
+      }
+    }
+  },
+  "supportFormCopyReference": "Copier la référence",
+  "supportFormErrorGeneric": "Envoi impossible. Réessayez ou écrivez à support@agathatrack.com.",
+  "supportFormErrorRateLimited": "Trop de demandes. Patientez ou écrivez à support@agathatrack.com.",
+  "supportFormErrorSessionExpired": "Votre session a expiré. Rechargez la page et reconnectez-vous.",
   "continueButton": "Continuer",
   "experienceChooserTitle": "Comment utiliserez-vous AgathaTrack ?",
   "experienceChooserSubtitle": "Choisissez l'expérience adaptée à vos besoins du jour.",
