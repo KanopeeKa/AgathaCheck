@@ -42,7 +42,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | SUPPORT-TICKETING-R-011 | Design note: diagnostic metadata not in the ticket blob; Phase 3 adds `support_diagnostic_sessions`. | Planned |
 | SUPPORT-TICKETING-R-012 | Customer-visible lifecycle states (deferred beyond Phase 1; @ATSupport columns are internal only). | Planned |
 | SUPPORT-TICKETING-R-013 | DB category is sender choice; `category:*` label in GitHub is staff classification; priority is a GitHub label only. | Planned |
-| SUPPORT-TICKETING-R-014 | Read-only staff at `/staff/support` (list, detail, screenshots, blocked/failed outbox); no reply/assign/close; no menu entry; server enforces `is_support_staff`. | Planned |
+| SUPPORT-TICKETING-R-014 | Read-only staff at `/staff/support` (list, detail, screenshots, blocked/failed outbox); no reply/assign/close; no menu entry; server enforces `is_support_staff`. | In delivery |
 | SUPPORT-TICKETING-R-015 | Emails on status changes (deferred beyond Phase 1). | Planned |
 | SUPPORT-TICKETING-R-016 | One receipt EN/FR via outbox; subjects `[AT-XXXXXXXX] We received your request` / `[AT-XXXXXXXX] Nous avons reçu votre demande`; Reply-To `support@`; body never repeats user text; `resolveEmailLocale`. | Planned |
 | SUPPORT-TICKETING-R-017 | Outbox: `receipt`, `github_issue`, `github_issue_delete`; Node `fetch`; create-issue title `[AT-XXXXXXXX] <category>: <title>`; fenced untrusted body + allowlisted context; labels `category:*`, `env:*`, `source:form`; statuses pending/sent/failed/blocked/disabled; skip receipt/create if ticket gone; redact from stored issue number; startup privacy check for repo; 422 label = config failure. | Planned |
@@ -68,7 +68,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | Given a user with signed-in and signed-out tickets, when their account is erased, then tickets, screenshots, and pending outbox rows are gone, redact rows are queued, and erasure still commits. | SUPPORT-TICKETING-R-019 | none — #2271 |
 | Given a create-issue call that finishes after erasure deleted the ticket, when the worker writes the issue number back, then it queues a redact row for that number. | SUPPORT-TICKETING-R-017, SUPPORT-TICKETING-R-019 | none — #2271 |
 | Given a user exports their data, when they have tickets, then the export includes signed-out tickets with the same normalised email. | SUPPORT-TICKETING-R-019 | none — #2271 |
-| Given a user who is not staff, when they call the staff API, then the response is 403; `/staff/support` has no menu entry. | SUPPORT-TICKETING-R-014 | none — #2271 |
+| Given a user who is not staff, when they call the staff API, then the response is 403; `/staff/support` has no menu entry. | SUPPORT-TICKETING-R-014 | test: `server/test/support/staffTickets.test.js`, `server/test/support/supportStaffFlag.test.js` |
 | Given French locale, when a ticket is submitted, then form, errors, confirmation, and receipt (including subject) are in French. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-020 | none — #2271 |
 
 ## States & data
@@ -89,7 +89,7 @@ Worker: outbox drain and `support_retention` run from the existing cleanup poll;
 
 - Contact hub `/contact` — **in delivery** (`flutter_app/lib/features/support/hub/`): Account row + landing footer (`LegalFooterLinks`); `/contact/support` registers the intake form route (UI in phase 4).
 - Support form `/contact/support` — **in delivery** (`flutter_app/lib/features/support/form/`): categorised intake, error summary, `POST /api/support/tickets`, context from `version.json` + browser UA.
-- Staff read-only queue `/staff/support` (phase 5): no drawer entry; deep URL only.
+- Staff read-only queue `/staff/support` — **in delivery** (`flutter_app/lib/features/support/staff/`): no drawer entry; deep URL only; staff API at `GET /api/support/staff/tickets` (+ `/:id`).
 
 ## Out of scope (Phase 1)
 

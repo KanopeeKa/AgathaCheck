@@ -6356,6 +6356,56 @@ class AppLocalizationsEn extends AppLocalizations {
       'Your session expired. Reload the page and sign in again.';
 
   @override
+  String get supportStaffQueueTitle => 'Support queue';
+
+  @override
+  String get supportStaffQueueEmpty => 'No support requests yet.';
+
+  @override
+  String get supportStaffQueueForbidden =>
+      'You do not have access to the support queue.';
+
+  @override
+  String get supportStaffQueueLoadError =>
+      'We could not load the support queue. Try again in a moment.';
+
+  @override
+  String get supportStaffTicketDetailTitle => 'Support request';
+
+  @override
+  String get supportStaffOutboxSection => 'Outbox';
+
+  @override
+  String get supportStaffOutboxEmpty => 'No outbox rows for this ticket.';
+
+  @override
+  String get supportStaffAttachmentsSection => 'Screenshots';
+
+  @override
+  String get supportStaffAttachmentsEmpty => 'No screenshots on this ticket.';
+
+  @override
+  String get supportStaffOutboxAlertTooltip => 'Blocked or failed outbox row';
+
+  @override
+  String get supportStaffDescriptionHeading => 'Description';
+
+  @override
+  String supportStaffReporterLine(String email) {
+    return 'Reporter: $email';
+  }
+
+  @override
+  String supportStaffGitHubIssue(int number) {
+    return 'GitHub issue #$number';
+  }
+
+  @override
+  String supportStaffAttachmentBytes(int bytes) {
+    return '$bytes bytes';
+  }
+
+  @override
   String get continueButton => 'Continue';
 
   @override

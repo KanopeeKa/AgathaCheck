@@ -11089,6 +11089,90 @@ abstract class AppLocalizations {
   /// **'Your session expired. Reload the page and sign in again.'**
   String get supportFormErrorSessionExpired;
 
+  /// No description provided for @supportStaffQueueTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support queue'**
+  String get supportStaffQueueTitle;
+
+  /// No description provided for @supportStaffQueueEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No support requests yet.'**
+  String get supportStaffQueueEmpty;
+
+  /// No description provided for @supportStaffQueueForbidden.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have access to the support queue.'**
+  String get supportStaffQueueForbidden;
+
+  /// No description provided for @supportStaffQueueLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not load the support queue. Try again in a moment.'**
+  String get supportStaffQueueLoadError;
+
+  /// No description provided for @supportStaffTicketDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Support request'**
+  String get supportStaffTicketDetailTitle;
+
+  /// No description provided for @supportStaffOutboxSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Outbox'**
+  String get supportStaffOutboxSection;
+
+  /// No description provided for @supportStaffOutboxEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No outbox rows for this ticket.'**
+  String get supportStaffOutboxEmpty;
+
+  /// No description provided for @supportStaffAttachmentsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Screenshots'**
+  String get supportStaffAttachmentsSection;
+
+  /// No description provided for @supportStaffAttachmentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No screenshots on this ticket.'**
+  String get supportStaffAttachmentsEmpty;
+
+  /// No description provided for @supportStaffOutboxAlertTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked or failed outbox row'**
+  String get supportStaffOutboxAlertTooltip;
+
+  /// No description provided for @supportStaffDescriptionHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get supportStaffDescriptionHeading;
+
+  /// No description provided for @supportStaffReporterLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter: {email}'**
+  String supportStaffReporterLine(String email);
+
+  /// No description provided for @supportStaffGitHubIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'GitHub issue #{number}'**
+  String supportStaffGitHubIssue(int number);
+
+  /// No description provided for @supportStaffAttachmentBytes.
+  ///
+  /// In en, this message translates to:
+  /// **'{bytes} bytes'**
+  String supportStaffAttachmentBytes(int bytes);
+
   /// No description provided for @continueButton.
   ///
   /// In en, this message translates to:

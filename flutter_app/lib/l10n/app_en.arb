@@ -2453,6 +2453,41 @@
   "supportFormErrorGeneric": "We could not send your request. Try again or email support@agathatrack.com.",
   "supportFormErrorRateLimited": "Too many requests. Wait a moment or email support@agathatrack.com.",
   "supportFormErrorSessionExpired": "Your session expired. Reload the page and sign in again.",
+  "supportStaffQueueTitle": "Support queue",
+  "supportStaffQueueEmpty": "No support requests yet.",
+  "supportStaffQueueForbidden": "You do not have access to the support queue.",
+  "supportStaffQueueLoadError": "We could not load the support queue. Try again in a moment.",
+  "supportStaffTicketDetailTitle": "Support request",
+  "supportStaffOutboxSection": "Outbox",
+  "supportStaffOutboxEmpty": "No outbox rows for this ticket.",
+  "supportStaffAttachmentsSection": "Screenshots",
+  "supportStaffAttachmentsEmpty": "No screenshots on this ticket.",
+  "supportStaffOutboxAlertTooltip": "Blocked or failed outbox row",
+  "supportStaffDescriptionHeading": "Description",
+  "supportStaffReporterLine": "Reporter: {email}",
+  "@supportStaffReporterLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "supportStaffGitHubIssue": "GitHub issue #{number}",
+  "@supportStaffGitHubIssue": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "supportStaffAttachmentBytes": "{bytes} bytes",
+  "@supportStaffAttachmentBytes": {
+    "placeholders": {
+      "bytes": {
+        "type": "int"
+      }
+    }
+  },
   "continueButton": "Continue",
   "experienceChooserTitle": "How will you use AgathaTrack?",
   "experienceChooserSubtitle": "Choose the experience that fits what you need today.",

@@ -205,6 +205,21 @@ final routerProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
+        path: '/staff/support',
+        name: 'supportStaffQueue',
+        builder: (context, state) => const SupportStaffQueueScreen(),
+        routes: [
+          GoRoute(
+            path: ':ticketId',
+            name: 'supportStaffTicketDetail',
+            builder: (context, state) {
+              final ticketId = state.pathParameters['ticketId']!;
+              return SupportStaffTicketDetailScreen(ticketId: ticketId);
+            },
+          ),
+        ],
+      ),
+      GoRoute(
         path: '/legal',
         name: 'legal',
         builder: (context, state) => const LegalDocumentsScreen(),
