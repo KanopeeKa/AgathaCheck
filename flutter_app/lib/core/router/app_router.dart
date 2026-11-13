@@ -15,7 +15,7 @@ import '../../features/people/people.dart';
 import '../../features/sharing/sharing.dart';
 import '../../features/about/about.dart';
 import '../../features/help/help.dart';
-import '../../features/support/hub/hub.dart';
+import '../../features/support/support.dart';
 import '../../features/subscription/subscription.dart';
 import '../widgets/consent_banner.dart';
 import '../providers/analytics_providers.dart';
