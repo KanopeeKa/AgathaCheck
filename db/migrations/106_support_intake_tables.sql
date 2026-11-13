@@ -1,7 +1,5 @@
 -- Support intake: tickets, attachments, outbox, staff flag (phase 3).
 
-BEGIN;
-
 ALTER TABLE users
   ADD COLUMN IF NOT EXISTS is_support_staff BOOLEAN NOT NULL DEFAULT false;
 
@@ -83,5 +81,3 @@ CREATE UNIQUE INDEX IF NOT EXISTS support_outbox_delete_kind_issue_uidx
 
 CREATE INDEX IF NOT EXISTS idx_support_outbox_status_next_attempt
   ON support_outbox (status, next_attempt_at);
-
-COMMIT;
