@@ -27,6 +27,7 @@ afterEach(() => {
     fs.rmSync(root, { recursive: true, force: true });
   }
   delete process.env.PRIVATE_HEALTH_UPLOAD_DIR;
+  delete process.env.PRIVATE_SUPPORT_SCREENSHOT_DIR;
 });
 
 describe('file_delete handler', () => {
@@ -110,6 +111,21 @@ describe('file_delete handler', () => {
         fs.chmodSync(sub, 0o755);
       }
     });
+  });
+
+  it('deletes under support_screenshots storage', async () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'support-screenshot-delete-'));
+    roots.push(root);
+    process.env.PRIVATE_SUPPORT_SCREENSHOT_DIR = root;
+    const fileId = '00000000-0000-4000-8000-000000000088';
+    const file = path.join(root, `${fileId}.png`);
+    fs.writeFileSync(file, 'support');
+    const outcome = await runFileDeleteJob({
+      storage: 'support_screenshots',
+      relative_path: `${fileId}.png`,
+    });
+    expect(outcome).toEqual({ retryable: false });
+    expect(fs.existsSync(file)).toBe(false);
   });
 
   it('deletes under private_health storage', async () => {

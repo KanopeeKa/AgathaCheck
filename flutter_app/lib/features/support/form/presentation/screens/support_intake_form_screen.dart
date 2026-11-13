@@ -11,6 +11,7 @@ import '../../data/site_version_info.dart';
 import '../../data/support_ticket_submit_payload.dart';
 import '../../data/support_tickets_api.dart';
 import '../../domain/support_ticket_category.dart';
+import '../../../screenshots/screenshots.dart';
 import '../widgets/support_form_bug_fields.dart';
 import '../widgets/support_form_error_summary.dart';
 import '../widgets/support_form_success_panel.dart';
@@ -54,6 +55,7 @@ class _SupportIntakeFormScreenState
   int _validationErrorCount = 0;
   String? _serverError;
   String? _submittedReference;
+  List<SupportScreenshotUpload> _screenshots = const [];
 
   @override
   void initState() {
@@ -137,7 +139,10 @@ class _SupportIntakeFormScreenState
       final api = token != null && token.isNotEmpty
           ? SupportTicketsApi(baseUrl: baseApi.baseUrl, accessToken: token)
           : baseApi;
-      final reference = await api.submitTicket(payload);
+      final reference = await api.submitTicket(
+        payload,
+        screenshots: signedIn ? _screenshots : const [],
+      );
       if (api != baseApi) {
         api.close();
       }
@@ -328,6 +333,18 @@ class _SupportIntakeFormScreenState
                                 setState(() => _frequency = value);
                               },
                             ),
+                            if (signedIn) ...[
+                              const SizedBox(height: 16),
+                              SupportScreenshotSection(
+                                key: const Key('support_screenshot_section'),
+                                screenshots: _screenshots,
+                                disabled: _submitting,
+                                onChanged: (next) {
+                                  if (_submitting) return;
+                                  setState(() => _screenshots = next);
+                                },
+                              ),
+                            ],
                             if (!signedIn) ...[
                               const SizedBox(height: 12),
                               AppFormLabeledField(

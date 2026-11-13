@@ -3,7 +3,7 @@ title: Support ticketing and contact hub
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-13
+last_updated: 2026-11-14
 tags: [domain, customer_support, support-ticketing]
 domain: customer_support
 feature_id: support-ticketing
@@ -36,7 +36,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | SUPPORT-TICKETING-R-005 | `POST /api/support/tickets` (+ `/backend`); handler decides sign-in (no bearer = signed out; invalid bearer = 401); signed-in receipt uses `users.email`; signed-out requires email; reference `AT-` + 8 Crockford base32; UUIDs in app code; multipart for screenshots, JSON for text-only; coming-soon 403 before handler. | In delivery |
 | SUPPORT-TICKETING-R-006 | Categories `bug`, `suggestion`, `account`, `billing`; title + description always; bug fields (expected, actual, steps, frequency always/sometimes/once) without focus jump. | In delivery |
 | SUPPORT-TICKETING-R-007 | Context allowlist only: version/build from site-root `GET /version.json` (cache-bust; empty if missing); platform (`web` on web); coarse browser family; locale; route name; client time; server timestamp authoritative; CI asserts `version.json` beside `index.html`. | In delivery |
-| SUPPORT-TICKETING-R-008 | Screenshots: signed-in only; max 3 files, 2 MB each, 6 MB total; PNG/JPEG/WebP via `safeUpload`; storage outside `uploads/`, not static; `fileDelete.js` key; staff-only `GET /api/support/attachments/:id` (403 before lookup for non-staff); PII notice before upload; re-encoding is debt (`sharp`). | Planned |
+| SUPPORT-TICKETING-R-008 | Screenshots: signed-in only; max 3 files, 2 MB each, 6 MB total; PNG/JPEG/WebP via `safeUpload`; storage outside `uploads/`, not static; `fileDelete.js` key `support_screenshots`; staff-only `GET /api/support/attachments/:id` (403 before lookup for non-staff); PII notice before upload; re-encoding is debt (`sharp`). | In delivery |
 | SUPPORT-TICKETING-R-009 | Ticket row: reporter (user or normalised email), category, title, description, bug fields, context, locale, `created_at`, `github_issue_number`; no priority; users cannot read tickets via API. | In delivery |
 | SUPPORT-TICKETING-R-010 | Tables `support_tickets`, `support_attachments`, `support_outbox` (message/status history and links deferred). | In delivery |
 | SUPPORT-TICKETING-R-011 | Design note: diagnostic metadata not in the ticket blob; Phase 3 adds `support_diagnostic_sessions`. | Planned |
@@ -60,8 +60,8 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | Given a signed-in user, when they submit with a different email in the body, then the receipt goes to their account email. | SUPPORT-TICKETING-R-005 | test: server/test/support/ticketsSubmit.test.js |
 | Given a request with an invalid token, when submitted, then the API returns 401 and no ticket is created. | SUPPORT-TICKETING-R-005 | test: server/test/support/ticketsSubmit.test.js |
 | Given the Partnerships card, when the email link cannot open, then a copy dialog shows `partnerships@`. | SUPPORT-TICKETING-R-002, SUPPORT-TICKETING-R-004 | none — #2271 |
-| Given a signed-out sender, when the request includes a screenshot, then the API rejects it. | SUPPORT-TICKETING-R-008 | none — #2271 |
-| Given a stored screenshot, when requested via `/uploads/…`, or by a signed-in non-staff user, or with a guessed id, then responses are 404, 403, and 403 respectively. | SUPPORT-TICKETING-R-008 | none — #2271 |
+| Given a signed-out sender, when the request includes a screenshot, then the API rejects it. | SUPPORT-TICKETING-R-008 | test: server/test/support/supportScreenshots.test.js |
+| Given a stored screenshot, when requested via `/uploads/…`, or by a signed-in non-staff user, or with a guessed id, then responses are 404, 403, and 403 respectively. | SUPPORT-TICKETING-R-008 | test: server/test/support/supportScreenshots.test.js |
 | Given 3 tickets in the past hour from one account, when a 4th is submitted, then the API returns 429 with `Retry-After`. | SUPPORT-TICKETING-R-018 | test: server/test/db/support/ticketsRateLimit.integration.test.js |
 | Given SMTP and GitHub are down, when a ticket is submitted, then the ticket is saved and outbox rows retry later. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-017 | none — #2271 |
 | Given `SUPPORT_GITHUB_REPO` points at a public repo, when the worker starts, then create-issue rows are `blocked`; when a later check sees a private repo, those rows return to `pending`. | SUPPORT-TICKETING-R-017 | none — #2271 |
@@ -88,7 +88,7 @@ Worker: outbox drain and `support_retention` run from the existing cleanup poll;
 ## UX surfaces
 
 - Contact hub `/contact` — **in delivery** (`flutter_app/lib/features/support/hub/`): Account row + landing footer (`LegalFooterLinks`); `/contact/support` registers the intake form route (UI in phase 4).
-- Support form `/contact/support` — **in delivery** (`flutter_app/lib/features/support/form/`): categorised intake, error summary, `POST /api/support/tickets`, context from `version.json` + browser UA.
+- Support form `/contact/support` — **in delivery** (`flutter_app/lib/features/support/form/`): categorised intake, error summary, optional signed-in screenshots (`flutter_app/lib/features/support/screenshots/`), `POST /api/support/tickets`, context from `version.json` + browser UA.
 - Staff read-only queue `/staff/support` — **in delivery** (`flutter_app/lib/features/support/staff/`): no drawer entry; deep URL only; staff API at `GET /api/support/staff/tickets` (+ `/:id`).
 
 ## Out of scope (Phase 1)

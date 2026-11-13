@@ -6457,6 +6457,35 @@ class AppLocalizationsFr extends AppLocalizations {
       'Votre session a expiré. Rechargez la page et reconnectez-vous.';
 
   @override
+  String get supportScreenshotSectionTitle => 'Captures d\'écran (facultatif)';
+
+  @override
+  String get supportScreenshotPiiNotice =>
+      'Les captures peuvent montrer des données personnelles. Retirez tout ce que vous ne voulez pas que nous conservions.';
+
+  @override
+  String get supportScreenshotAddButton => 'Ajouter une capture';
+
+  @override
+  String get supportScreenshotRemoveButton => 'Retirer la capture';
+
+  @override
+  String get supportScreenshotErrorTooMany =>
+      'Vous pouvez joindre au plus trois captures.';
+
+  @override
+  String get supportScreenshotErrorType =>
+      'Seuls les fichiers PNG, JPEG ou WebP sont acceptés.';
+
+  @override
+  String get supportScreenshotErrorFileTooLarge =>
+      'Chaque capture doit faire 2 Mo ou moins.';
+
+  @override
+  String get supportScreenshotErrorTotalTooLarge =>
+      'La taille totale des captures doit être de 6 Mo ou moins.';
+
+  @override
   String get supportStaffQueueTitle => 'File d\'assistance';
 
   @override

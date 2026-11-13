@@ -87,6 +87,61 @@
         }
       }
     },
+    "/attachments/{id}": {
+      "get": {
+        "operationId": "supportGetAttachment",
+        "description": "Stream a private support screenshot (support staff only).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Screenshot bytes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "Unused for this route; bytes are returned as image/*.",
+                  "additionalProperties": false
+                }
+              },
+              "image/png": { "schema": { "type": "string", "format": "binary" } },
+              "image/jpeg": { "schema": { "type": "string", "format": "binary" } },
+              "image/webp": { "schema": { "type": "string", "format": "binary" } }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Not support staff",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Attachment not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tickets": {
       "post": {
         "operationId": "supportSubmitTicket",
