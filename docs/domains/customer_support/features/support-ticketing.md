@@ -68,7 +68,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | Given a user with signed-in and signed-out tickets, when their account is erased, then tickets, screenshots, and pending outbox rows are gone, redact rows are queued, and erasure still commits. | SUPPORT-TICKETING-R-019 | none — #2271 |
 | Given a create-issue call that finishes after erasure deleted the ticket, when the worker writes the issue number back, then it queues a redact row for that number. | SUPPORT-TICKETING-R-017, SUPPORT-TICKETING-R-019 | none — #2271 |
 | Given a user exports their data, when they have tickets, then the export includes signed-out tickets with the same normalised email. | SUPPORT-TICKETING-R-019 | none — #2271 |
-| Given a user who is not staff, when they call the staff API, then the response is 403; `/staff/support` has no menu entry. | SUPPORT-TICKETING-R-014 | test: `server/test/support/staffTickets.test.js`, `server/test/support/supportStaffFlag.test.js` |
+| Given a user who is not staff, when they call the staff API, then the response is 403; `/staff/support` has no menu entry. | SUPPORT-TICKETING-R-014 | test: server/test/support/staffTickets.test.js |
 | Given French locale, when a ticket is submitted, then form, errors, confirmation, and receipt (including subject) are in French. | SUPPORT-TICKETING-R-016, SUPPORT-TICKETING-R-020 | none — #2271 |
 
 ## States & data

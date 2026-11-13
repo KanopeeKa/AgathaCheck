@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/auth.dart';
+import '../providers/api_base_url_provider.dart';
 import '../../features/care_taxonomy/care_taxonomy.dart';
 import '../../features/health_tracking/health_tracking.dart';
 import '../../features/notifications/notifications.dart';
@@ -207,15 +208,30 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/staff/support',
         name: 'supportStaffQueue',
-        builder: (context, state) => const SupportStaffQueueScreen(),
+        builder: (context, state) => Consumer(
+          builder: (context, ref, _) {
+            final auth = ref.watch(authProvider);
+            return SupportStaffQueueScreen(
+              baseUrl: ref.watch(apiBaseUrlProvider),
+              accessToken: auth.accessToken,
+            );
+          },
+        ),
         routes: [
           GoRoute(
             path: ':ticketId',
             name: 'supportStaffTicketDetail',
-            builder: (context, state) {
-              final ticketId = state.pathParameters['ticketId']!;
-              return SupportStaffTicketDetailScreen(ticketId: ticketId);
-            },
+            builder: (context, state) => Consumer(
+              builder: (context, ref, _) {
+                final ticketId = state.pathParameters['ticketId']!;
+                final auth = ref.watch(authProvider);
+                return SupportStaffTicketDetailScreen(
+                  ticketId: ticketId,
+                  baseUrl: ref.watch(apiBaseUrlProvider),
+                  accessToken: auth.accessToken,
+                );
+              },
+            ),
           ),
         ],
       ),

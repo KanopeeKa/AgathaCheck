@@ -1,24 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../../../core/providers/api_base_url_provider.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
-import '../../../../../features/auth/auth.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../data/support_staff_api.dart';
 
-class SupportStaffTicketDetailScreen extends ConsumerStatefulWidget {
-  const SupportStaffTicketDetailScreen({super.key, required this.ticketId});
+class SupportStaffTicketDetailScreen extends StatefulWidget {
+  const SupportStaffTicketDetailScreen({
+    super.key,
+    required this.ticketId,
+    required this.baseUrl,
+    this.accessToken,
+  });
 
   final String ticketId;
+  final String baseUrl;
+  final String? accessToken;
 
   @override
-  ConsumerState<SupportStaffTicketDetailScreen> createState() =>
+  State<SupportStaffTicketDetailScreen> createState() =>
       _SupportStaffTicketDetailScreenState();
 }
 
 class _SupportStaffTicketDetailScreenState
-    extends ConsumerState<SupportStaffTicketDetailScreen> {
+    extends State<SupportStaffTicketDetailScreen> {
   SupportStaffTicketDetailResponse? _detail;
   String? _error;
   bool _loading = true;
@@ -30,7 +33,7 @@ class _SupportStaffTicketDetailScreenState
   }
 
   Future<void> _loadDetail() async {
-    final token = ref.read(authProvider).accessToken;
+    final token = widget.accessToken;
     if (token == null || token.isEmpty) {
       setState(() {
         _loading = false;
@@ -39,10 +42,7 @@ class _SupportStaffTicketDetailScreenState
       return;
     }
 
-    final api = SupportStaffApi(
-      baseUrl: ref.read(apiBaseUrlProvider),
-      accessToken: token,
-    );
+    final api = SupportStaffApi(baseUrl: widget.baseUrl, accessToken: token);
     try {
       final detail = await api.getTicket(widget.ticketId);
       if (!mounted) return;
@@ -74,7 +74,9 @@ class _SupportStaffTicketDetailScreenState
     final theme = Theme.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: AppLogoTitle(title: l.supportStaffTicketDetailTitle)),
+      appBar: AppBar(
+        title: AppLogoTitle(title: l.supportStaffTicketDetailTitle),
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -103,15 +105,9 @@ class _SupportStaffTicketDetailScreenState
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        Text(
-          ticket.reference,
-          style: theme.textTheme.headlineSmall,
-        ),
+        Text(ticket.reference, style: theme.textTheme.headlineSmall),
         const SizedBox(height: 8),
-        Text(
-          ticket.title,
-          style: theme.textTheme.titleLarge,
-        ),
+        Text(ticket.title, style: theme.textTheme.titleLarge),
         const SizedBox(height: 16),
         Text(
           l.supportStaffReporterLine(ticket.reporterEmail),
@@ -122,7 +118,10 @@ class _SupportStaffTicketDetailScreenState
           Text(l.supportStaffGitHubIssue(ticket.githubIssueNumber!)),
         ],
         const SizedBox(height: 24),
-        Text(l.supportStaffDescriptionHeading, style: theme.textTheme.titleMedium),
+        Text(
+          l.supportStaffDescriptionHeading,
+          style: theme.textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
         Text(ticket.description),
         if (ticket.expected != null && ticket.expected!.isNotEmpty) ...[
@@ -179,7 +178,10 @@ class _SupportStaffTicketDetailScreenState
             ),
           ),
         const SizedBox(height: 16),
-        Text(l.supportStaffAttachmentsSection, style: theme.textTheme.titleMedium),
+        Text(
+          l.supportStaffAttachmentsSection,
+          style: theme.textTheme.titleMedium,
+        ),
         const SizedBox(height: 8),
         if (detail.attachments.isEmpty)
           Text(

@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../../core/providers/api_base_url_provider.dart';
 import '../../../../../core/widgets/app_logo_title.dart';
-import '../../../../../features/auth/auth.dart';
 import '../../../../../l10n/app_localizations.dart';
 import '../../data/support_staff_api.dart';
 
-class SupportStaffQueueScreen extends ConsumerStatefulWidget {
-  const SupportStaffQueueScreen({super.key});
+class SupportStaffQueueScreen extends StatefulWidget {
+  const SupportStaffQueueScreen({
+    super.key,
+    required this.baseUrl,
+    this.accessToken,
+  });
+
+  final String baseUrl;
+
+  /// Bearer token when signed in (wired from [app_router.dart]).
+  final String? accessToken;
 
   @override
-  ConsumerState<SupportStaffQueueScreen> createState() =>
+  State<SupportStaffQueueScreen> createState() =>
       _SupportStaffQueueScreenState();
 }
 
-class _SupportStaffQueueScreenState extends ConsumerState<SupportStaffQueueScreen> {
+class _SupportStaffQueueScreenState extends State<SupportStaffQueueScreen> {
   List<SupportStaffTicketSummary>? _tickets;
   String? _error;
   bool _loading = true;
@@ -29,7 +35,7 @@ class _SupportStaffQueueScreenState extends ConsumerState<SupportStaffQueueScree
   }
 
   Future<void> _loadTickets() async {
-    final token = ref.read(authProvider).accessToken;
+    final token = widget.accessToken;
     if (token == null || token.isEmpty) {
       setState(() {
         _loading = false;
@@ -40,10 +46,7 @@ class _SupportStaffQueueScreenState extends ConsumerState<SupportStaffQueueScree
       return;
     }
 
-    final api = SupportStaffApi(
-      baseUrl: ref.read(apiBaseUrlProvider),
-      accessToken: token,
-    );
+    final api = SupportStaffApi(baseUrl: widget.baseUrl, accessToken: token);
     try {
       final tickets = await api.listTickets();
       if (!mounted) return;
@@ -103,10 +106,7 @@ class _SupportStaffQueueScreenState extends ConsumerState<SupportStaffQueueScree
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
         children: [
-          Text(
-            l.supportStaffQueueForbidden,
-            style: theme.textTheme.bodyLarge,
-          ),
+          Text(l.supportStaffQueueForbidden, style: theme.textTheme.bodyLarge),
         ],
       );
     }
@@ -116,10 +116,7 @@ class _SupportStaffQueueScreenState extends ConsumerState<SupportStaffQueueScree
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.all(24),
         children: [
-          Text(
-            l.supportStaffQueueLoadError,
-            style: theme.textTheme.bodyLarge,
-          ),
+          Text(l.supportStaffQueueLoadError, style: theme.textTheme.bodyLarge),
         ],
       );
     }
@@ -149,9 +146,7 @@ class _SupportStaffQueueScreenState extends ConsumerState<SupportStaffQueueScree
         final ticket = tickets[index];
         return ListTile(
           title: Text('${ticket.reference} · ${ticket.title}'),
-          subtitle: Text(
-            '${ticket.category} · ${ticket.reporterEmail}',
-          ),
+          subtitle: Text('${ticket.category} · ${ticket.reporterEmail}'),
           trailing: ticket.outboxAlerts.isEmpty
               ? null
               : Tooltip(
