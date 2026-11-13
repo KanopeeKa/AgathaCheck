@@ -6457,6 +6457,60 @@ class AppLocalizationsFr extends AppLocalizations {
       'Votre session a expiré. Rechargez la page et reconnectez-vous.';
 
   @override
+  String get supportStaffQueueTitle => 'File d\'assistance';
+
+  @override
+  String get supportStaffQueueEmpty =>
+      'Aucune demande d\'assistance pour le moment.';
+
+  @override
+  String get supportStaffQueueForbidden =>
+      'Vous n\'avez pas accès à la file d\'assistance.';
+
+  @override
+  String get supportStaffQueueLoadError =>
+      'Impossible de charger la file d\'assistance. Réessayez dans un instant.';
+
+  @override
+  String get supportStaffTicketDetailTitle => 'Demande d\'assistance';
+
+  @override
+  String get supportStaffOutboxSection => 'Boîte d\'envoi';
+
+  @override
+  String get supportStaffOutboxEmpty =>
+      'Aucune ligne de boîte d\'envoi pour ce ticket.';
+
+  @override
+  String get supportStaffAttachmentsSection => 'Captures d\'écran';
+
+  @override
+  String get supportStaffAttachmentsEmpty =>
+      'Aucune capture d\'écran sur ce ticket.';
+
+  @override
+  String get supportStaffOutboxAlertTooltip =>
+      'Ligne bloquée ou en échec dans la boîte d\'envoi';
+
+  @override
+  String get supportStaffDescriptionHeading => 'Description';
+
+  @override
+  String supportStaffReporterLine(String email) {
+    return 'Demandeur : $email';
+  }
+
+  @override
+  String supportStaffGitHubIssue(int number) {
+    return 'Issue GitHub n°$number';
+  }
+
+  @override
+  String supportStaffAttachmentBytes(int bytes) {
+    return '$bytes octets';
+  }
+
+  @override
   String get continueButton => 'Continuer';
 
   @override

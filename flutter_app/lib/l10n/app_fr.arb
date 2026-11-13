@@ -2303,6 +2303,41 @@
   "supportFormErrorGeneric": "Envoi impossible. Réessayez ou écrivez à support@agathatrack.com.",
   "supportFormErrorRateLimited": "Trop de demandes. Patientez ou écrivez à support@agathatrack.com.",
   "supportFormErrorSessionExpired": "Votre session a expiré. Rechargez la page et reconnectez-vous.",
+  "supportStaffQueueTitle": "File d'assistance",
+  "supportStaffQueueEmpty": "Aucune demande d'assistance pour le moment.",
+  "supportStaffQueueForbidden": "Vous n'avez pas accès à la file d'assistance.",
+  "supportStaffQueueLoadError": "Impossible de charger la file d'assistance. Réessayez dans un instant.",
+  "supportStaffTicketDetailTitle": "Demande d'assistance",
+  "supportStaffOutboxSection": "Boîte d'envoi",
+  "supportStaffOutboxEmpty": "Aucune ligne de boîte d'envoi pour ce ticket.",
+  "supportStaffAttachmentsSection": "Captures d'écran",
+  "supportStaffAttachmentsEmpty": "Aucune capture d'écran sur ce ticket.",
+  "supportStaffOutboxAlertTooltip": "Ligne bloquée ou en échec dans la boîte d'envoi",
+  "supportStaffDescriptionHeading": "Description",
+  "supportStaffReporterLine": "Demandeur : {email}",
+  "@supportStaffReporterLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "supportStaffGitHubIssue": "Issue GitHub n°{number}",
+  "@supportStaffGitHubIssue": {
+    "placeholders": {
+      "number": {
+        "type": "int"
+      }
+    }
+  },
+  "supportStaffAttachmentBytes": "{bytes} octets",
+  "@supportStaffAttachmentBytes": {
+    "placeholders": {
+      "bytes": {
+        "type": "int"
+      }
+    }
+  },
   "continueButton": "Continuer",
   "experienceChooserTitle": "Comment utiliserez-vous AgathaTrack ?",
   "experienceChooserSubtitle": "Choisissez l'expérience adaptée à vos besoins du jour.",

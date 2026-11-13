@@ -7,6 +7,86 @@
   },
   "servers": [{ "url": "/api/support" }],
   "paths": {
+    "/staff/tickets": {
+      "get": {
+        "operationId": "supportStaffListTickets",
+        "description": "List support tickets (staff only).",
+        "responses": {
+          "200": {
+            "description": "Ticket summaries",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportStaffTicketListResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Not support staff",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/staff/tickets/{id}": {
+      "get": {
+        "operationId": "supportStaffGetTicket",
+        "description": "Ticket detail with outbox and attachment metadata (staff only).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ticket detail",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportStaffTicketDetailResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid bearer",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "403": {
+            "description": "Not support staff",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Ticket not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SupportErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tickets": {
       "post": {
         "operationId": "supportSubmitTicket",
@@ -78,6 +158,96 @@
           }
         },
         "additionalProperties": true
+      },
+      "SupportStaffOutboxAlert": {
+        "type": "object",
+        "required": ["kind", "status"],
+        "properties": {
+          "kind": { "type": "string" },
+          "status": { "type": "string", "enum": ["blocked", "failed"] }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffTicketSummary": {
+        "type": "object",
+        "required": [
+          "id",
+          "reference",
+          "category",
+          "title",
+          "signed_in",
+          "reporter_email",
+          "created_at",
+          "outbox_alerts"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "reference": { "type": "string" },
+          "category": { "type": "string" },
+          "title": { "type": "string" },
+          "signed_in": { "type": "boolean" },
+          "reporter_email": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "github_issue_number": { "type": ["integer", "null"] },
+          "outbox_alerts": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffOutboxAlert" }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffTicketListResponse": {
+        "type": "object",
+        "required": ["tickets"],
+        "properties": {
+          "tickets": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffTicketSummary" }
+          }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffOutboxRow": {
+        "type": "object",
+        "required": ["id", "kind", "status", "attempts", "created_at", "updated_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "kind": { "type": "string" },
+          "status": { "type": "string" },
+          "attempts": { "type": "integer" },
+          "github_issue_number": { "type": ["integer", "null"] },
+          "last_error": { "type": ["string", "null"] },
+          "created_at": { "type": "string", "format": "date-time" },
+          "updated_at": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffAttachmentMeta": {
+        "type": "object",
+        "required": ["id", "mime", "bytes", "created_at"],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "mime": { "type": "string" },
+          "bytes": { "type": "integer" },
+          "created_at": { "type": "string", "format": "date-time" }
+        },
+        "additionalProperties": false
+      },
+      "SupportStaffTicketDetailResponse": {
+        "type": "object",
+        "required": ["ticket", "attachments", "outbox"],
+        "properties": {
+          "ticket": { "type": "object", "additionalProperties": true },
+          "attachments": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffAttachmentMeta" }
+          },
+          "outbox": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/SupportStaffOutboxRow" }
+          }
+        },
+        "additionalProperties": false
       }
     }
   }
