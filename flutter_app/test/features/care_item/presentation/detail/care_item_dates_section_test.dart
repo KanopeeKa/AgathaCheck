@@ -41,11 +41,7 @@ CareItemSchedule _minimalSchedule() {
         origin: CareOccurrenceOrigin.computed,
       ),
     ],
-    asOf: CareAsOf(
-      date: today,
-      time: '12:00',
-      timezone: 'UTC',
-    ),
+    asOf: CareAsOf(date: today, time: '12:00', timezone: 'UTC'),
   );
 }
 
@@ -128,9 +124,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            entryOccurrencesProvider('entry-1').overrideWith(
-              (ref) async => [_occ(id: 'occ-open', date: today)],
-            ),
+            entryOccurrencesProvider(
+              'entry-1',
+            ).overrideWith((ref) async => [_occ(id: 'occ-open', date: today)]),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -146,10 +142,22 @@ void main() {
       expect(find.byKey(const Key('care_item_paused_banner')), findsOneWidget);
       expect(find.text('Mark as done'), findsNothing);
       expect(find.byKey(const Key('care_item_skip_all_missed')), findsNothing);
-      expect(find.byKey(const Key('care_item_occurrence_done_occ-open')), findsNothing);
-      expect(find.byKey(const Key('care_item_occurrence_mark_done_occ-open')), findsNothing);
-      expect(find.byKey(const Key('care_item_occurrence_skip_occ-open')), findsNothing);
-      expect(find.byKey(const Key('care_item_occurrence_reschedule_occ-open')), findsNothing);
+      expect(
+        find.byKey(const Key('care_item_occurrence_done_occ-open')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('care_item_occurrence_mark_done_occ-open')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('care_item_occurrence_skip_occ-open')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('care_item_occurrence_reschedule_occ-open')),
+        findsNothing,
+      );
     },
   );
 
@@ -166,9 +174,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            entryOccurrencesProvider('entry-1').overrideWith(
-              (ref) async => [_occ(id: 'occ-open', date: today)],
-            ),
+            entryOccurrencesProvider(
+              'entry-1',
+            ).overrideWith((ref) async => [_occ(id: 'occ-open', date: today)]),
           ],
           child: MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
