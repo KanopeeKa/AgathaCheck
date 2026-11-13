@@ -14,3 +14,12 @@ test('validate_openapi.js exits 0 for pet-care-critical.json', () => {
   });
   assert.match(out, /validate_openapi: OK/);
 });
+
+test('validate_openapi.js exits 0 for support-tickets.json', () => {
+  const out = execFileSync(
+    'node',
+    ['scripts/validate_openapi.js', '--spec', 'docs/architecture/openapi/support-tickets.json'],
+    { cwd: REPO_ROOT, encoding: 'utf8' },
+  );
+  assert.match(out, /support-tickets\.json/);
+});
