@@ -30,6 +30,8 @@ import {
   isLeaseStale,
   leaseLabelApiArgs,
   parsePrNumber,
+  parsePrUrlRepo,
+  prRefCheckoutMismatch,
 } from './lib/babysit_merge_preflight_lib.js';
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -74,7 +76,23 @@ function failGh(result) {
   process.exit(3);
 }
 
-/** Issue number for the labels API. `gh pr edit` accepted a URL; this does too. */
+/**
+ * A pull/issue URL for another repository must not become a number on this
+ * checkout. `{owner}/{repo}` in the labels API is always the checkout.
+ */
+function refuseForeignPrUrl(prRef) {
+  if (!parsePrUrlRepo(prRef)) {
+    return;
+  }
+  const repo = ghJson(['repo', 'view', '--json', 'nameWithOwner']);
+  const mismatch = prRefCheckoutMismatch(prRef, repo && repo.nameWithOwner);
+  if (mismatch) {
+    console.error(`babysit_merge_preflight: ${mismatch}`);
+    process.exit(3);
+  }
+}
+
+/** Issue number for the labels API. A same-repo URL is accepted; a foreign URL is refused first. */
 function resolvePrNumber(prRef) {
   const parsed = parsePrNumber(prRef);
   if (parsed) {
@@ -284,6 +302,7 @@ function printResult(payload, opts) {
 
 function main() {
   const opts = parseArgs();
+  refuseForeignPrUrl(opts.pr);
 
   if (opts.release) {
     const prNumber = resolvePrNumber(opts.pr);

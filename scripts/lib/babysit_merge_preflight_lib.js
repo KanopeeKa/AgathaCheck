@@ -224,6 +224,45 @@ function parsePrNumber(ref) {
 }
 
 /**
+ * Owner/repo/number embedded in a pull or issue URL. Null for a bare number
+ * or a branch name, which stay scoped to this checkout.
+ * @param {string|number|null|undefined} ref
+ * @returns {{ owner: string, repo: string, number: string }|null}
+ */
+function parsePrUrlRepo(ref) {
+  const text = String(ref ?? '').trim();
+  const match = text.match(
+    /^[a-z][a-z0-9+.-]*:\/\/[^/\s]+\/([^/\s]+)\/([^/\s]+?)(?:\.git)?\/(?:pull|issues)\/(\d+)(?:[/?#]|$)/i,
+  );
+  if (!match) {
+    return null;
+  }
+  return { owner: match[1], repo: match[2], number: match[3] };
+}
+
+/**
+ * Error text when a PR URL names a different repository than this checkout.
+ * The label API path uses the checkout's `{owner}/{repo}`, so a foreign URL
+ * must not be reduced to a number and applied here. Null when the ref is in
+ * this checkout or does not name a repository.
+ * @param {string|number|null|undefined} ref
+ * @param {string|null|undefined} checkoutSlug
+ * @returns {string|null}
+ */
+function prRefCheckoutMismatch(ref, checkoutSlug) {
+  const embedded = parsePrUrlRepo(ref);
+  if (!embedded) {
+    return null;
+  }
+  const urlSlug = `${embedded.owner}/${embedded.repo}`;
+  const checkout = String(checkoutSlug || '').trim();
+  if (checkout && urlSlug.toLowerCase() === checkout.toLowerCase()) {
+    return null;
+  }
+  return `PR URL targets ${urlSlug}#${embedded.number}; this checkout is ${checkout || '(unknown)'}`;
+}
+
+/**
  * `gh` argv that adds or removes `merge-lease` through the REST issue-labels
  * API. `gh pr edit --add-label` fetches org team login/name/slug and Projects
  * fields first; a `repo`-only token fails that GraphQL call, and the script
@@ -280,6 +319,8 @@ module.exports = {
   isLeaseStale,
   isPrCiGreen,
   parsePrNumber,
+  parsePrUrlRepo,
+  prRefCheckoutMismatch,
   leaseLabelApiArgs,
   isLabelAlreadyAbsent,
 };

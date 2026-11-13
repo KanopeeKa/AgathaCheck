@@ -14,6 +14,7 @@ const {
   leaseLabelApiArgs,
   MERGE_LEASE_LABEL,
   parsePrNumber,
+  prRefCheckoutMismatch,
 } = require('./lib/babysit_merge_preflight_lib.js');
 
 const NOW = Date.parse('2026-09-22T12:00:00.000Z');
@@ -170,6 +171,33 @@ assert.equal(
   '2303',
 );
 assert.equal(parsePrNumber('cursor/some-head'), null);
+
+const CHECKOUT = 'KanopeeKa/AgathaCheck';
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/KanopeeKa/AgathaCheck/pull/2303', CHECKOUT),
+  null,
+);
+assert.equal(
+  prRefCheckoutMismatch(
+    'https://github.com/kanopeeka/agathacheck/pull/2303/files',
+    CHECKOUT,
+  ),
+  null,
+);
+assert.equal(prRefCheckoutMismatch('2303', CHECKOUT), null);
+assert.equal(prRefCheckoutMismatch('cursor/some-head', CHECKOUT), null);
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/other/repo/pull/123', 'other/repo'),
+  null,
+);
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/other/repo/pull/123', CHECKOUT),
+  'PR URL targets other/repo#123; this checkout is KanopeeKa/AgathaCheck',
+);
+assert.equal(
+  prRefCheckoutMismatch('https://github.com/other/repo/issues/2188', ''),
+  'PR URL targets other/repo#2188; this checkout is (unknown)',
+);
 
 {
   const add = leaseLabelApiArgs(2188, 'add');
