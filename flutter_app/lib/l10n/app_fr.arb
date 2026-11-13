@@ -2226,6 +2226,27 @@
   "upcomingEvents": "Événements à venir",
   "invite": "Inviter",
   "contact": "Contact",
+  "contactHubTitle": "Contact",
+  "contactHubSubtitle": "Choisissez le canal adapté à votre message. Aide et assistance passent par notre formulaire in-app ; les autres sujets nous joignent par e-mail.",
+  "contactHubHelpSupportTitle": "Aide et assistance",
+  "contactHubHelpSupportDescription": "Signalez un bug, proposez une amélioration ou posez une question sur votre compte ou la facturation.",
+  "contactHubPartnershipsTitle": "Partenariats",
+  "contactHubPartnershipsDescription": "Refuges, associations, vétérinaires et autres organisations intéressées par AgathaTrack.",
+  "contactHubLegalPrivacyTitle": "Juridique et confidentialité",
+  "contactHubLegalPrivacyDescription": "Droits sur vos données, mentions légales et questions sur le traitement des données.",
+  "contactHubMailboxesTitle": "Adresses e-mail",
+  "contactHubMailboxContact": "Général",
+  "contactHubMailboxSupport": "Assistance",
+  "contactHubMailboxLegal": "Juridique et confidentialité",
+  "contactHubMailboxPartnerships": "Partenariats",
+  "contactHubGeneralLine": "Vous pouvez aussi nous écrire à tout moment à {email}.",
+  "@contactHubGeneralLine": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "continueButton": "Continuer",
   "experienceChooserTitle": "Comment utiliserez-vous AgathaTrack ?",
   "experienceChooserSubtitle": "Choisissez l'expérience adaptée à vos besoins du jour.",

@@ -49,5 +49,7 @@ enum LegalDocumentId {
     '/privacy-policy',
     '/terms-of-service',
     '/about',
+    '/contact',
+    '/contact/support',
   ];
 }
