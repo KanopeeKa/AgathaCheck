@@ -1,3 +1,5 @@
+/* global fetch -- Node 22 built-in */
+
 import { getSupportGithubRepo, getSupportGithubToken } from './config.js';
 import { safeOutboxError } from './safeError.js';
 
