@@ -4,11 +4,8 @@ import 'package:intl/intl.dart';
 
 import 'package:pet_profile_app/core/utils/calendar_date.dart';
 import 'package:pet_profile_app/l10n/app_localizations.dart';
-import 'package:pet_profile_app/features/care_item/care_item.dart';
 import 'package:pet_profile_app/features/pet_care/pet_care.dart';
 import 'package:pet_profile_app/features/health_tracking/health_tracking.dart';
-
-import 'care_item_occurrence_trailing_controls.dart';
 
 /// Upcoming and recent dates for a care item (spec §4.3 — **Needs attention** module).
 class CareItemDatesSection extends ConsumerWidget {
@@ -36,7 +33,6 @@ class CareItemDatesSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context)!;
     final occurrencesAsync = ref.watch(entryOccurrencesProvider(entry.id));
-    final summary = ref.watch(occurrenceSummaryProvider(entry.id));
 
     return occurrencesAsync.when(
       loading: () => const Padding(
@@ -104,16 +100,17 @@ class CareItemDatesSection extends ConsumerWidget {
                   entry: entry,
                   muted: muted,
                 ),
-              if (!muted && summary.missedCount > 0) ...[
-                const SizedBox(height: 4),
-                OutlinedButton(
-                  key: const Key('care_item_skip_all_missed'),
-                  onPressed: () => PetEventOccurrenceActions.skipAllMissed(
-                    context,
-                    ref,
-                    entry,
+              if (!muted && entry.schedule == null) ...[
+                const SizedBox(height: 8),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: OutlinedButton(
+                    key: const Key('care_item_needs_attention_refresh'),
+                    onPressed: () {
+                      invalidateCareItemDetailData(ref, entry.id);
+                    },
+                    child: Text(l.retry),
                   ),
-                  child: Text(l.occurrenceSkipAllMissed),
                 ),
               ],
             ],
@@ -244,74 +241,6 @@ class _OccurrenceRow extends ConsumerWidget {
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
-            ],
-            if (!muted) ...[
-              const SizedBox(height: 12),
-              if (entry.schedule != null &&
-                  entry.schedule!.openOccurrences.any(
-                    (o) => o.id == occurrence.id,
-                  ))
-                CareItemOccurrenceTrailingControls(
-                  entry: entry,
-                  schedule: entry.schedule!,
-                  occurrence: entry.schedule!.openOccurrences.firstWhere(
-                    (o) => o.id == occurrence.id,
-                  ),
-                  muted: muted,
-                  healthOccurrence: occurrence,
-                  showChangeDate: true,
-                  onChanged: () async {
-                    await ref.read(careDataChangedProvider)();
-                  },
-                  onSkip: () => PetEventOccurrenceActions.skip(
-                    context,
-                    ref,
-                    entry,
-                    occurrence,
-                  ),
-                )
-              else
-                Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: [
-                    FilledButton.icon(
-                      key: Key(
-                        'care_item_occurrence_mark_done_${occurrence.id}',
-                      ),
-                      onPressed: () => PetEventOccurrenceActions.markDone(
-                        context,
-                        ref,
-                        entry,
-                        occurrence,
-                      ),
-                      icon: const Icon(Icons.check, size: 18),
-                      label: Text(l.markAsDone),
-                    ),
-                    OutlinedButton(
-                      key: Key('care_item_occurrence_skip_${occurrence.id}'),
-                      onPressed: () => PetEventOccurrenceActions.skip(
-                        context,
-                        ref,
-                        entry,
-                        occurrence,
-                      ),
-                      child: Text(l.skipOccurrence),
-                    ),
-                    OutlinedButton(
-                      key: Key(
-                        'care_item_occurrence_reschedule_${occurrence.id}',
-                      ),
-                      onPressed: () => PetEventOccurrenceActions.changeDate(
-                        context,
-                        ref,
-                        entry,
-                        occurrence,
-                      ),
-                      child: Text(l.rescheduleActionLabel),
-                    ),
-                  ],
-                ),
             ],
           ],
         ),
