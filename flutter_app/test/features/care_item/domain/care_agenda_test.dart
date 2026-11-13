@@ -129,30 +129,35 @@ void main() {
     expect(a.isEmpty, isTrue);
   });
 
-  test('AG-4 daily med done today stays in Today, not Due soon or Upcoming', () {
-    final a = agenda([
-      item(
-        'Pill',
-        [occ('n', 11, CareOccurrenceStatus.comingUp)],
-        daily: true,
-        lastDone: LastDone(
-          occurrenceId: 'x',
-          completedOn: DateTime(2026, 6, 10),
-          time: '08:12',
+  test(
+    'AG-4 daily med done today stays in Today, not Due soon or Upcoming',
+    () {
+      final a = agenda([
+        item(
+          'Pill',
+          [occ('n', 11, CareOccurrenceStatus.comingUp)],
+          daily: true,
+          lastDone: LastDone(
+            occurrenceId: 'x',
+            completedOn: DateTime(2026, 6, 10),
+            time: '08:12',
+          ),
         ),
-      ),
-    ]);
-    expect(names(a.doneToday), ['Pill']);
-    expect(a.doneToday.single.occurrence, isNull);
-    expect(a.hasToday, isTrue);
-    expect(a.dueSoon, isEmpty);
-    expect(a.upcoming, isEmpty);
-  });
+      ]);
+      expect(names(a.doneToday), ['Pill']);
+      expect(a.doneToday.single.occurrence, isNull);
+      expect(a.hasToday, isTrue);
+      expect(a.dueSoon, isEmpty);
+      expect(a.upcoming, isEmpty);
+    },
+  );
 
   test('AG-5 weekly due in 3 days is Due soon; 20 days is Upcoming', () {
     final a = agenda([
       item('Soon', [occ('s', 13, CareOccurrenceStatus.comingUp)], fixed: false),
-      item('Later', [occ('l', 30, CareOccurrenceStatus.comingUp)], fixed: false),
+      item('Later', [
+        occ('l', 30, CareOccurrenceStatus.comingUp),
+      ], fixed: false),
     ]);
     expect(names(a.dueSoon), ['Soon']);
     expect(names(a.upcoming), ['Later']);
@@ -160,7 +165,9 @@ void main() {
 
   test('AG-6 every-3-days due tomorrow is Due soon', () {
     final a = agenda([
-      item('Rhythm', [occ('r', 11, CareOccurrenceStatus.comingUp)], fixed: false),
+      item('Rhythm', [
+        occ('r', 11, CareOccurrenceStatus.comingUp),
+      ], fixed: false),
     ]);
     expect(names(a.dueSoon), ['Rhythm']);
     expect(a.upcoming, isEmpty);
@@ -168,8 +175,12 @@ void main() {
 
   test('AG-10 no overdue or due today still lists Due soon and Upcoming', () {
     final a = agenda([
-      item('Groom', [occ('g', 15, CareOccurrenceStatus.comingUp)], fixed: false),
-      item('Yearly', [occ('y', 40, CareOccurrenceStatus.comingUp, month: 7)], fixed: false),
+      item('Groom', [
+        occ('g', 15, CareOccurrenceStatus.comingUp),
+      ], fixed: false),
+      item('Yearly', [
+        occ('y', 40, CareOccurrenceStatus.comingUp, month: 7),
+      ], fixed: false),
     ]);
     expect(a.overdue, isEmpty);
     expect(a.today, isEmpty);
