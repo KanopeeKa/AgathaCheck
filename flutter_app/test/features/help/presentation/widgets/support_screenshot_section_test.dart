@@ -37,7 +37,9 @@ Uint8List _onePixelPng() => base64.decode(
 );
 
 void main() {
-  testWidgets('EN screenshot section exposes keyboard add control', (tester) async {
+  testWidgets('EN screenshot section exposes keyboard add control', (
+    tester,
+  ) async {
     await _pumpSection(
       tester,
       locale: const Locale('en'),
@@ -64,10 +66,7 @@ void main() {
     );
 
     expect(find.text('Ajouter une capture'), findsOneWidget);
-    expect(
-      find.textContaining('données personnelles'),
-      findsOneWidget,
-    );
+    expect(find.textContaining('données personnelles'), findsOneWidget);
   });
 
   testWidgets('remove button drops a pending screenshot', (tester) async {

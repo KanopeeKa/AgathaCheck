@@ -121,7 +121,9 @@ class SupportScreenshotSection extends StatelessWidget {
                 contentPadding: EdgeInsets.zero,
                 leading: _ScreenshotThumb(bytes: file.bytes),
                 title: Text(file.filename),
-                subtitle: Text(l.supportStaffAttachmentBytes(file.bytes.length)),
+                subtitle: Text(
+                  l.supportStaffAttachmentBytes(file.bytes.length),
+                ),
                 trailing: IconButton(
                   key: Key('support_screenshot_remove_$index'),
                   tooltip: l.supportScreenshotRemoveButton,
