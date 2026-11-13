@@ -149,12 +149,7 @@ class _MailboxLine extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 6),
           child: Row(
             children: [
-              Expanded(
-                child: Text(
-                  label,
-                  style: theme.textTheme.bodyMedium,
-                ),
-              ),
+              Expanded(child: Text(label, style: theme.textTheme.bodyMedium)),
               Text(
                 email,
                 style: theme.textTheme.bodyMedium?.copyWith(
