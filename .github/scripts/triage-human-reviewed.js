@@ -70,7 +70,7 @@ async function main() {
         ? 'Ready'
         : result.decision === 'question'
           ? 'Backlog'
-          : 'Human Reviewed';
+          : 'In Analysis';
 
     await updateProjectStatus({
       issue,

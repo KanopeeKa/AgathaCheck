@@ -3,7 +3,7 @@ title: GitHub issue workflow
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-11
+last_updated: 2026-11-14
 tags: [documentation]
 ---
 # GitHub issue workflow
@@ -26,19 +26,20 @@ New issues from these forms receive type labels (`bug`, `feature`, or `task`) an
 
 ## Project status field
 
-Use a single Project **Status** field with these values:
+Engineering work is tracked on the org Project **Pawpet** (`AgathaTrack` org). The **Status** single-select matches the live board:
 
-| Status | Meaning |
-|--------|---------|
-| **Backlog** | New or unreviewed issue. Default entry point. |
-| **Human Reviewed** | A human has reviewed the issue and confirmed it is worth processing. |
-| **Ready** | Passed the deterministic policy gate; eligible for implementation (including Cursor handoff). |
-| **In Progress** | Work is actively underway. |
-| **In Main** | Implementation merged to `main`. |
-| **In UAT** | Change is deployed or being validated in UAT. |
-| **Done** | Verified complete; issue can be closed. |
+| Status | Meaning | Automation |
+|--------|---------|------------|
+| **Backlog** | New or unreviewed issue. Default entry point. | Triage sets this when information is missing. |
+| **To do** | Optional human prioritisation column. | Not set by Actions. |
+| **In Analysis** | A human has reviewed the issue (`human-reviewed` label) and it awaits or failed auto-triage. | Maintainers set this when adding `human-reviewed`; triage keeps **In Analysis** for `manual-only`. |
+| **Ready** | Passed the deterministic policy gate; eligible for Cursor dispatch. | Triage sets on pass; dispatch requires this status when project secrets are configured. |
+| **In progress** | Work is actively underway (agent or human). | Dispatch/monitor set on agent launch (matched case-insensitively). |
+| **In Main** | Implementation merged to `main`. | Merge handler. |
+| **In UAT** | Change is deployed or being validated in UAT. | `deploy-uat.yml` notify job. |
+| **Done** | Verified complete; issue can be closed. | Human / programme close. |
 
-**Auto Check is not a status.** After an issue moves to **Human Reviewed**, an automated deterministic checker runs as a process step. It does not appear as a durable status value on the board.
+**Auto Check is not a status.** After an issue is **In Analysis** with `human-reviewed`, the deterministic triage workflow runs as a process step.
 
 ## Labels
 
@@ -49,24 +50,24 @@ Use a single Project **Status** field with these values:
 | `busy` | A process or agent is currently working on this issue. Do not pick it up concurrently. Remove when work stops or ownership transfers. |
 | `manual-only` | Never send this issue to autonomous implementation. Requires human execution only. |
 | `agent-approved` | The issue passed the deterministic policy gate and is eligible for Cursor. |
-| `blocked` | Agent run started but could not finish; issue stays **In Progress** and needs human input. |
+| `blocked` | Agent run started but could not finish; issue stays **In progress** and needs human input. |
 
 ## Workflow
 
 ```
-Backlog → Human Reviewed → [Auto Check] → Ready → In Progress → In Main → In UAT → Done
+Backlog → In Analysis (+ human-reviewed) → [Auto Check] → Ready → In progress → In Main → In UAT → Done
                                     ↓
               remove human-reviewed (pause) — re-add when answered
 ```
 
 1. **Backlog** — New issues enter here after filing via a form.
-2. **Human Reviewed** — A maintainer reviews the issue: confirms clarity, priority, and that it belongs in the backlog. Move the status to **Human Reviewed** and add the `human-reviewed` label.
+2. **In Analysis** — A maintainer reviews the issue: confirms clarity, priority, and that it belongs in the backlog. Move Project status to **In Analysis** and add the `human-reviewed` label.
 3. **Auto Check** (process, not a status) — The [triage workflow](../.github/workflows/triage-human-reviewed.yml) runs when `human-reviewed` is applied:
    - If the issue is complete and safe → move to **Ready** and apply `agent-approved`.
    - If more information is needed → add `question`, **remove `human-reviewed`** (pauses the workflow), comment on what is missing, and move the issue to **Backlog** until resolved.
-   - If the issue must not be automated → add `manual-only` and leave status in **Human Reviewed**.
+   - If the issue must not be automated → add `manual-only` and leave status **In Analysis**.
 4. **Ready** — Issue is approved for implementation. The [agent dispatch workflow](../.github/workflows/agent-dispatch.yml) picks it up automatically when `agent-approved` is present and status is **Ready**.
-5. **In Progress** — Cursor agent dispatched (`busy` added). Stays here while the PR is open. If blocked, add `blocked` + `question`, **remove `human-reviewed`** (pauses dispatch), but keep **In Progress**.
+5. **In progress** — Cursor agent dispatched (`busy` added). Stays here while the PR is open. If blocked, add `blocked` + `question`, **remove `human-reviewed`** (pauses dispatch), but keep **In progress**.
 6. **In Main** — After the agent PR merges to `main` ([merge handler](../.github/workflows/issue-agent-pr-merge.yml)).
 7. **In UAT** — After UAT deploy succeeds for the linked `uat-YYMMDD-PR#` tag (`deploy-uat.yml` notify job).
 8. **Done** — Validation complete; close the issue.
@@ -130,9 +131,9 @@ The agent must run `./scripts/pre-push-changed.sh` and open a PR with `Refs #<n>
 
 | Outcome | Labels | Project status | Assignee |
 |---------|--------|----------------|----------|
-| Dispatched | +`busy` | **In Progress** | — |
-| PR opened | keep `busy` | **In Progress** | — |
-| Blocked / failed | +`blocked`, +`question`, −`busy`, −`human-reviewed` | **In Progress** | `KanopeeKa` |
+| Dispatched | +`busy` | **In progress** | — |
+| PR opened | keep `busy` | **In progress** | — |
+| Blocked / failed | +`blocked`, +`question`, −`busy`, −`human-reviewed` | **In progress** | `KanopeeKa` |
 | PR merged | −`busy` | **In Main** | — |
 | UAT deploy OK | — | **In UAT** | — |
 | UAT deploy fail | +`question`, −`human-reviewed` | unchanged | `KanopeeKa` |
@@ -206,13 +207,13 @@ This repository uses a **dedicated User API Key** (non-Enterprise plans do not e
 2. GitHub → repo → **Settings → Secrets and variables → Actions** → repository secret `cursor_api_key`.
 3. Verify repo access: `curl -H "Authorization: Bearer $KEY" https://api.cursor.com/v1/repositories`
 
-#### Project IDs (user-owned repo)
+#### Project IDs (org Project Pawpet)
 
 ```bash
-GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --user KanopeeKa
+GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --org AgathaTrack
 ```
 
-For organization-owned repos, use `--org <login>` instead.
+Pick the **Pawpet** project from the script output (not **ATSupport**). Legacy user-owned boards used `--user <login>`.
 
 ### Monitoring and debugging
 
@@ -335,7 +336,7 @@ The **Security or Sensitive Area** form field also flags the issue when the answ
 |--------|--------|----------------|---------|
 | Pass | add `agent-approved`; remove `question`, `manual-only` | **Ready** | Approval summary |
 | Missing info | add `question`; remove `agent-approved` | **Backlog** | Lists missing fields; asks author to update and re-add `human-reviewed` |
-| Risky scope | add `manual-only`; remove `agent-approved` | **Human Reviewed** | Explains sensitive scope; do not send to Cursor |
+| Risky scope | add `manual-only`; remove `agent-approved` | **In Analysis** | Explains sensitive scope; do not send to Cursor |
 
 ### Required secrets
 
@@ -362,13 +363,12 @@ Use a machine/bot account PAT where possible rather than a personal developer to
 From a clone of this repository:
 
 ```bash
-GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --user <github-login>
-# or: --org <org-login>
+GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --org AgathaTrack
 ```
 
 The script prints `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`, and the option IDs for each status value.
 
-**Repository ownership:** This repo is **user-owned**. Use `--user <login>` when discovering project IDs. Organization-owned repos can use `--org <login>`.
+**Repository ownership:** `AgathaTrack/AgathaTrack` is **org-owned**; the engineering board is org Project **Pawpet**. Use `--org AgathaTrack` when discovering project IDs.
 
 If secrets are not configured, triage and agent workflows still update labels and comments but skip Project status changes and log a warning.
 
