@@ -96,7 +96,7 @@ AT-XXXXXXXX (category: <bug|suggestion|account|billing>)
 
 After creation, put the AgathaTrack issue URL in the card's **Engineering issue** field on @ATSupport.
 
-## Redacted issues (D-009)
+## Redacted issues (D-014)
 
 When retention or account erasure runs, the worker replaces the GitHub issue title and body with `[removed]` and adds `label:redacted`.
 
@@ -113,7 +113,7 @@ Until you delete the issue, original text may remain in GitHub edit history.
 Email that bypasses the web form: create an issue in AgathaTrackPrivate with template **Support request from email** (default label `source:email` only).
 
 - No Postgres ticket row — retention is manual on a 12-month clock.
-- Erasure requests for these issues: handle manually (redact + delete per D-009).
+- Erasure requests for these issues: handle manually (redact + delete per D-014).
 - Board auto-add still applies.
 
 ## Staff access
