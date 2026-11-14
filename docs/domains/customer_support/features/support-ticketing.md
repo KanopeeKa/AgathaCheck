@@ -50,7 +50,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | SUPPORT-TICKETING-R-019 | Daily `support_retention` on `scheduler_daily_runs`; erasure in `acceptAccountErasure` before user delete (tickets, paths, issue numbers, outbox, redact rows); export matches normalised email; hand `source:email` issues per runbook. | In delivery |
 | SUPPORT-TICKETING-R-020 | EN/FR UI (`app_*.arb`) and email copy (`server/lib/email/i18n.js`); no machine translation of free text. | In delivery |
 | SUPPORT-TICKETING-R-021 | WCAG 2.2 AA across hub, form, screenshots (labels, error summary, keyboard controls, both languages). | In delivery |
-| SUPPORT-TICKETING-R-022 | Support data is private customer data; GitHub only in AgathaTrackPrivate; engineering AgathaCheck issues carry no user text; privacy notice names GitHub and 7-day redacted-issue deletion. | Planned |
+| SUPPORT-TICKETING-R-022 | Support data is private customer data; GitHub only in AgathaTrackPrivate under the AgathaTrack org; engineering AgathaTrack/AgathaTrack issues carry no user text; privacy notice names GitHub and 7-day redacted-issue deletion. | Planned |
 
 ## Acceptance criteria
 
@@ -108,13 +108,17 @@ In-app replies or ticket history, customer-visible statuses, status-change email
 | SUPPORT-TICKETING-D-001 | Native AgathaTrack ticketing in Postgres | Avoid helpdesk SaaS; own records for automation later | Live | 2026-11-11 | TBD |
 | SUPPORT-TICKETING-D-002 | `customer_support` domain slug; code under `support/` not `contact/` | Disambiguate from People directory Contacts | Live | 2026-11-11 | TBD |
 | SUPPORT-TICKETING-D-003 | Phase 1 is intake only; after receipt, conversation continues by email from `support@` | Clear support boundary for users | Live | 2026-11-13 | TBD |
-| SUPPORT-TICKETING-D-004 | Workflow on @ATSupport (`users/KanopeeKa/projects/4`); built-in auto-add `is:issue`; category/priority as GitHub labels; no `support` label | Confirmed auto-add; DB stores category + issue number only | Live | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-004 | Workflow on @ATSupport (`users/KanopeeKa/projects/4`); built-in auto-add `is:issue`; category/priority as GitHub labels; no `support` label | Confirmed auto-add; DB stores category + issue number only | Superseded by SUPPORT-TICKETING-D-012 | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-012 | @ATSupport on org project `AgathaTrack/projects/1` (`orgs/AgathaTrack/projects/1`); built-in auto-add `is:issue`; category/priority as GitHub labels; no `support` label | GitHub org migration 2026-11-14; replaces personal board URL | Live | 2026-11-14 | TBD |
 | SUPPORT-TICKETING-D-005 | `users.is_support_staff` via `server/scripts/support_staff.js` only; not in profile or tokens; DB lookup per staff request; any staff can read all tickets | Simple ops model; closed former “admin role” open point | Live | 2026-11-13 | TBD |
-| SUPPORT-TICKETING-D-006 | Agents use `pawpet-bot`; may comment/label; cannot move board cards; issue text untrusted | Token cannot reach personal board fields | Live | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-006 | Agents use `pawpet-bot`; may comment/label; cannot move board cards; issue text untrusted | Token cannot reach personal board fields | Superseded by SUPPORT-TICKETING-D-013 | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-013 | Agents use `pawpet-bot`; may comment/label on AgathaTrackPrivate; cannot move @ATSupport cards; issue text untrusted | Bot PAT has no project write on org boards | Live | 2026-11-14 | TBD |
 | SUPPORT-TICKETING-D-007 | Retention from submission: tickets 12 months, screenshots 90 days | Bounded private data | Live | 2026-11-13 | TBD |
 | SUPPORT-TICKETING-D-008 | Issues only in private AgathaTrackPrivate; startup check; empty repo → `disabled`; non-private → `blocked` then `pending` when fixed | Never leak support content to public repo | Live | 2026-11-13 | TBD |
-| SUPPORT-TICKETING-D-009 | No API issue delete; erasure/retention **redact** title/body to `[removed]` + `redacted` label; owner deletes issue within 7 days (`Redacted: delete` view) | Removes edit history and comments when owner deletes | Live | 2026-11-13 | TBD |
-| SUPPORT-TICKETING-D-010 | Engineering handover is human; AgathaCheck issue from template with `AT-` ref only; Phase 4+ may automate; agent comments removed only when redacted issue deleted | No PII in public engineering backlog | Live | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-009 | No API issue delete; erasure/retention **redact** title/body to `[removed]` + `redacted` label; owner deletes issue within 7 days (`Redacted: delete` view) | Removes edit history and comments when owner deletes | Superseded by SUPPORT-TICKETING-D-014 | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-014 | No API issue delete; erasure/retention **redact** title/body to `[removed]` + `redacted` label; **org admin** deletes issue within 7 days (`Redacted: delete` view); support PAT cannot delete | Fine-grained support tokens lack delete; org owner finishes erasure | Live | 2026-11-14 | TBD |
+| SUPPORT-TICKETING-D-010 | Engineering handover is human; AgathaCheck issue from template with `AT-` ref only; Phase 4+ may automate; agent comments removed only when redacted issue deleted | No PII in public engineering backlog | Superseded by SUPPORT-TICKETING-D-015 | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-015 | Engineering handover is human; **AgathaTrack/AgathaTrack** issue from template with `AT-` ref only; Phase 4+ may automate; agent comments removed only when redacted issue deleted | No PII in public engineering backlog after org migration | Live | 2026-11-14 | TBD |
 | SUPPORT-TICKETING-D-011 | Email stays Nodemailer + SMTP; Brevo not adopted | Closed former Brevo open point | Live | 2026-11-13 | TBD |
 
 ## Related
