@@ -1,6 +1,6 @@
 ---
 name: steward
-description: Repo conventions for pull requests Claude Code opens or drives in AgathaCheck (pre-PR order, docs gate before every push, review triage pointers).
+description: Repo conventions for pull requests Claude Code opens or drives in AgathaTrack (pre-PR order, docs gate before every push, review triage pointers).
 ---
 
 # Steward (Claude Code PR conventions)

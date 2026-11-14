@@ -10,7 +10,7 @@
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const REPO = process.env.GITHUB_REPOSITORY || 'KanopeeKa/AgathaCheck';
+const REPO = process.env.GITHUB_REPOSITORY || 'AgathaTrack/AgathaTrack';
 
 function parseDays(argv) {
   const i = argv.indexOf('--days');

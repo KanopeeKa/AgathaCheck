@@ -8,7 +8,7 @@
 
 const { observeUat, observeUatChain, parseProofJobLog, resolveMergeSource, watchPreUat, watchDeploy, verifyComplete } = require('./execute_plan_uat_observe');
 
-const DEFAULT_REPO = 'KanopeeKa/AgathaCheck';
+const DEFAULT_REPO = process.env.GITHUB_REPOSITORY || 'AgathaTrack/AgathaTrack';
 const PREUAT_GRACE_MS = 10 * 60 * 1000;
 const MAIN_RED_MS = 6 * 60 * 60 * 1000;
 const NOT_A_VERDICT = new Set(['cancelled', 'skipped']);

@@ -34,7 +34,7 @@ node scripts/uat_coordinator_bootstrap.js --write --pin
 Then set the repo variable (agent tokens often lack this permission):
 
 ```bash
-gh variable set UAT_COORDINATION_ISSUE --body "<issue_number>" --repo KanopeeKa/AgathaCheck
+gh variable set UAT_COORDINATION_ISSUE --body "<issue_number>" --repo AgathaTrack/AgathaTrack
 ```
 
 Verify:

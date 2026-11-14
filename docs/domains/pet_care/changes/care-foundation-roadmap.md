@@ -642,7 +642,7 @@ Vision-only until activity (or equivalent second signal) is a validated, structu
 | Phases | Behaviour |
 |--------|-----------|
 | **A → B → C** | Complete on integration branch (`cursor/care-foundation-c7a1-integration-dc3b`). |
-| **D** | [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) — resume at **D0** after replan PR merges and execute-plan **re-approval** on [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082). |
+| **D** | [phase-d-review-relevance-plan.md](./phase-d-review-relevance-plan.md) — resume at **D0** after replan PR merges and execute-plan **re-approval** on [#1082](https://github.com/AgathaTrack/AgathaTrack/issues/1082). |
 | **E** | After D5b (`model_selection_approval_required`). |
 
 **Canonical behaviour:** [care-intelligence.md](../features/care-intelligence.md)

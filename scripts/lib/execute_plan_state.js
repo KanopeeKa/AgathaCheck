@@ -9,7 +9,7 @@
 const { deriveControl, leaseAlive, launchCounts } = require('./execute_plan_control');
 const { decideUat } = require('./execute_plan_uat');
 
-const DEFAULT_REPO = 'KanopeeKa/AgathaCheck';
+const DEFAULT_REPO = process.env.GITHUB_REPOSITORY || 'AgathaTrack/AgathaTrack';
 const COPILOT_WAIT_MS = 15 * 60 * 1000;
 const AUTO_MERGE_FALLBACK_MS = 10 * 60 * 1000;
 const MISSING_CHECK_MS = 15 * 60 * 1000;

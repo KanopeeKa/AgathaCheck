@@ -138,7 +138,7 @@ const promptText = [
   "Run this exact command once and reply with its output, nothing else:",
   "for v in OWNER_GH_TOKEN BOT_GH_TOKEN GH_TOKEN EXECUTE_PLAN_TOKEN; do if [ -n \"${!v}\" ]; then echo \"$v present\"; else echo \"$v absent\"; fi; done; echo \"injected: $CLOUD_AGENT_INJECTED_SECRET_NAMES\"",
 ].join("\n");
-launchAgent({ apiKey: process.env.CURSOR_API_KEY, repoUrl: "https://github.com/KanopeeKa/AgathaCheck",
+launchAgent({ apiKey: process.env.CURSOR_API_KEY, repoUrl: "https://github.com/AgathaTrack/AgathaTrack",
   promptText, envVars: workerLaunchEnvVars("probe-not-a-token") })
   .then((r) => console.log("agent:", r.id || JSON.stringify(r)));'
 ```

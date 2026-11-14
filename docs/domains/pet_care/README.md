@@ -126,7 +126,7 @@ Rename only when touching the owning feature — not bulk F-22 reopen.
 
 ## Security and hardening
 
-Phase A discovery (findings, actor matrix, follow-on plan map) lives in [changes/hardening-discovery.md](changes/hardening-discovery.md). Implementation programme (merged slices F-01–F-23): [pet-care-hardening](/docs/engineering/pet-care-hardening/README.md). Control issue [#993](https://github.com/KanopeeKa/AgathaCheck/issues/993).
+Phase A discovery (findings, actor matrix, follow-on plan map) lives in [changes/hardening-discovery.md](changes/hardening-discovery.md). Implementation programme (merged slices F-01–F-23): [pet-care-hardening](/docs/engineering/pet-care-hardening/README.md). Control issue [#993](https://github.com/AgathaTrack/AgathaTrack/issues/993).
 
 | ID | Status | Summary |
 |----|--------|---------|

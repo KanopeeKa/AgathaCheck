@@ -48,7 +48,7 @@ owned by another personal account (`owner.type = User`, live read), so this is t
    - After WP7b: a PR merged by the bot token starts **Pre-UAT E2E** (Actions tab).
 
 **Path B — GitHub App (driver only; workers still need Path A).** Permissions Contents RW, Pull
-requests RW, Issues RW, Metadata R, Workflows **none**; install on `AgathaCheck`; secrets
+requests RW, Issues RW, Metadata R, Workflows **none**; install on `AgathaTrack`; secrets
 `EXECUTE_PLAN_APP_ID` + `EXECUTE_PLAN_APP_PRIVATE_KEY`; the workflows mint a token with
 `actions/create-github-app-token@v2` and export it as `EXECUTE_PLAN_BOT_TOKEN`; `bot_login` =
 `<app-slug>[bot]`. Only worth it if PAT renewal becomes a burden.
@@ -69,7 +69,7 @@ Every required context is **pinned to GitHub Actions** (`integration_id: 15368`,
 `main` ruleset already uses). Without the pin, the bot's PAT could post a commit status with the
 same name and satisfy the check.
 
-**Integration branches — create** (`gh api -X POST repos/KanopeeKa/AgathaCheck/rulesets --input integration-ruleset.json`):
+**Integration branches — create** (`gh api -X POST repos/AgathaTrack/AgathaTrack/rulesets --input integration-ruleset.json`):
 ```json
 {
   "name": "Execute-plan integration",
@@ -98,19 +98,19 @@ disable the ruleset. If the API rejects `allowed_merge_methods`, drop that key (
 allows squash and merge commits). `do_not_enforce_on_create` lets the approve workflow create the branch.
 
 **`main` — edit ruleset 18979034 "Main protection":**
-`gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 > main-ruleset.json`; in the
+`gh api repos/AgathaTrack/AgathaTrack/rulesets/18979034 > main-ruleset.json`; in the
 `required_status_checks` rule add `{ "context": "execute-plan-scope", "integration_id": 15368 }`;
 keep `strict_required_status_checks_policy: false` (a clean behind PR may merge; light-plan does not catch integration up to `main`). The execute-plan driver still runs `update-branch` when it observes `behind`. Reviews 0 and
 `copilot_code_review`; set `required_review_thread_resolution: true` in the `pull_request` rule so
 review threads must be resolved before auto-merge. `require_extra_approval_for_unattributed_changes`
 is currently `true`: keep it unless WP8 step 2 shows it blocks bot PRs, then set it to `false`.
-Apply with `gh api -X PUT repos/KanopeeKa/AgathaCheck/rulesets/18979034 --input main-ruleset.json`.
-Verify: `gh api repos/KanopeeKa/AgathaCheck/rules/branches/main --jq '.[] | select(.type=="required_status_checks") | .parameters.required_status_checks'`
+Apply with `gh api -X PUT repos/AgathaTrack/AgathaTrack/rulesets/18979034 --input main-ruleset.json`.
+Verify: `gh api repos/AgathaTrack/AgathaTrack/rules/branches/main --jq '.[] | select(.type=="required_status_checks") | .parameters.required_status_checks'`
 lists three contexts, each with `integration_id: 15368`. Do this only after WP8 step 1 passed.
 
 ### 7.3 Repository settings
 
-`gh api -X PATCH repos/KanopeeKa/AgathaCheck -F allow_auto_merge=true` (currently `false`). Keep
+`gh api -X PATCH repos/AgathaTrack/AgathaTrack -F allow_auto_merge=true` (currently `false`). Keep
 `allow_squash_merge` and `allow_merge_commit` true (sync PRs use merge commits) and
 `delete_branch_on_merge` true (snapshots are read at `init_sha`; merged PRs remain queryable by
 head ref even when GitHub deletes the branch — the driver does not depend on branch refs surviving).

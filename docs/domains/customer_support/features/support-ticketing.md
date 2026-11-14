@@ -14,12 +14,12 @@ feature_id: support-ticketing
 ## Summary / scope
 
 - **Owns:** EN/FR contact hub, private support intake, Postgres tickets, one receipt email, private GitHub issues on @ATSupport, read-only staff queue, retention and erasure hooks.
-- **Does not own:** In-app ticket history or replies, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, public AgathaCheck support issues.
+- **Does not own:** In-app ticket history or replies, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, public AgathaTrack engineering support issues.
 - **Depends on:** Auth (optional submit), Nodemailer SMTP, private screenshot storage outside `uploads/`, Postgres migrations, AgathaTrackPrivate + built-in board auto-add.
 
-Anyone signed in or not can send a categorised request from the hub. It is stored privately with an `AT-` reference, acknowledged by email, and appears as an issue in **AgathaTrackPrivate** on the **@ATSupport** board. Conversation after the receipt continues by email from `support@`. Engineering work is handed to AgathaCheck by a human with personal content stripped first.
+Anyone signed in or not can send a categorised request from the hub. It is stored privately with an `AT-` reference, acknowledged by email, and appears as an issue in **AgathaTrackPrivate** on the **@ATSupport** board. Conversation after the receipt continues by email from `support@`. Engineering work is handed to AgathaTrack by a human with personal content stripped first.
 
-Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--contact-foundation-and-ticketing). Product spec source: [issue #2271](https://github.com/KanopeeKa/AgathaCheck/issues/2271). Ops: [support-intake-runbook.md](/docs/ops/support-intake-runbook.md).
+Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--contact-foundation-and-ticketing). Product spec source: [issue #2271](https://github.com/AgathaTrack/AgathaTrack/issues/2271). Ops: [support-intake-runbook.md](/docs/ops/support-intake-runbook.md).
 
 ## Vocabulary
 
@@ -50,7 +50,7 @@ Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--conta
 | SUPPORT-TICKETING-R-019 | Daily `support_retention` on `scheduler_daily_runs`; erasure in `acceptAccountErasure` before user delete (tickets, paths, issue numbers, outbox, redact rows); export matches normalised email; hand `source:email` issues per runbook. | In delivery |
 | SUPPORT-TICKETING-R-020 | EN/FR UI (`app_*.arb`) and email copy (`server/lib/email/i18n.js`); no machine translation of free text. | In delivery |
 | SUPPORT-TICKETING-R-021 | WCAG 2.2 AA across hub, form, screenshots (labels, error summary, keyboard controls, both languages). | In delivery |
-| SUPPORT-TICKETING-R-022 | Support data is private customer data; GitHub only in AgathaTrackPrivate; engineering AgathaCheck issues carry no user text; privacy notice names GitHub and 7-day redacted-issue deletion. | Planned |
+| SUPPORT-TICKETING-R-022 | Support data is private customer data; GitHub only in AgathaTrackPrivate; engineering AgathaTrack issues carry no user text; privacy notice names GitHub and 7-day redacted-issue deletion. | Planned |
 
 ## Acceptance criteria
 
@@ -93,7 +93,7 @@ Worker: outbox drain and `support_retention` run from the existing cleanup poll;
 
 ## Out of scope (Phase 1)
 
-In-app replies or ticket history, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, `support` GitHub label, board token / Actions add-to-project workflow, issues in public AgathaCheck.
+In-app replies or ticket history, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, `support` GitHub label, board token / Actions add-to-project workflow, issues in public AgathaTrack.
 
 ## Still open
 
@@ -114,7 +114,7 @@ In-app replies or ticket history, customer-visible statuses, status-change email
 | SUPPORT-TICKETING-D-007 | Retention from submission: tickets 12 months, screenshots 90 days | Bounded private data | Live | 2026-11-13 | TBD |
 | SUPPORT-TICKETING-D-008 | Issues only in private AgathaTrackPrivate; startup check; empty repo → `disabled`; non-private → `blocked` then `pending` when fixed | Never leak support content to public repo | Live | 2026-11-13 | TBD |
 | SUPPORT-TICKETING-D-009 | No API issue delete; erasure/retention **redact** title/body to `[removed]` + `redacted` label; owner deletes issue within 7 days (`Redacted: delete` view) | Removes edit history and comments when owner deletes | Live | 2026-11-13 | TBD |
-| SUPPORT-TICKETING-D-010 | Engineering handover is human; AgathaCheck issue from template with `AT-` ref only; Phase 4+ may automate; agent comments removed only when redacted issue deleted | No PII in public engineering backlog | Live | 2026-11-13 | TBD |
+| SUPPORT-TICKETING-D-010 | Engineering handover is human; AgathaTrack issue from template with `AT-` ref only; Phase 4+ may automate; agent comments removed only when redacted issue deleted | No PII in public engineering backlog | Live | 2026-11-13 | TBD |
 | SUPPORT-TICKETING-D-011 | Email stays Nodemailer + SMTP; Brevo not adopted | Closed former Brevo open point | Live | 2026-11-13 | TBD |
 
 ## Related

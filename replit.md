@@ -42,13 +42,13 @@ sources conflict, follow `AGENTS.md` §Precedence and fix the losing text; do no
    git -c credential.helper='!f() { echo "username=x-access-token"; echo "password=$GITHUB_TOKEN"; }; f' \
      push origin HEAD:refs/heads/replit/<topic>
    ```
-   If the sandbox blocks local commits, push files via `PUT /repos/KanopeeKa/AgathaCheck/contents/<path>` (base64
+   If the sandbox blocks local commits, push files via `PUT /repos/AgathaTrack/AgathaTrack/contents/<path>` (base64
    content, current blob SHA, branch name).
 4. **Open the PR** via the GitHub REST API with `GITHUB_TOKEN`, ready (not draft), with `## Docs` in the body.
-5. **Review:** Copilot (`POST /repos/KanopeeKa/AgathaCheck/pulls/{n}/requested_reviewers` with
+5. **Review:** Copilot (`POST /repos/AgathaTrack/AgathaTrack/pulls/{n}/requested_reviewers` with
    `{"reviewers":["copilot-pull-request-reviewer"]}` when credits allow). Bugbot is retired. Triage threads per
    `docs/agent-efficiency/autonomous-pr-policy.md`.
-6. **CI:** poll `GET /repos/KanopeeKa/AgathaCheck/commits/{sha}/check-runs` every 60–90 s and fix failures (Flutter
+6. **CI:** poll `GET /repos/AgathaTrack/AgathaTrack/commits/{sha}/check-runs` every 60–90 s and fix failures (Flutter
    shards ~3–5 min, full suite ~8–10 min). New blocking jobs go in ci-gate `needs` and `scripts/ci/assert-ci-gate.sh`.
 7. **Merge** per `AGENTS.md` §Autonomy and merging. After merge: `git fetch origin && git checkout main && git reset --hard origin/main`.
 

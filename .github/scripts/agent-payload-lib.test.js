@@ -34,12 +34,12 @@ No`;
   const payload = buildAgentPayload(
     {
       number: 12,
-      url: 'https://github.com/KanopeeKa/AgathaCheck/issues/12',
+      url: 'https://github.com/AgathaTrack/AgathaTrack/issues/12',
       title: '[FEATURE] Dashboard empty',
       body,
       labels: ['feature'],
     },
-    'https://github.com/KanopeeKa/AgathaCheck',
+    'https://github.com/AgathaTrack/AgathaTrack',
   );
 
   assert.equal(payload.issue.number, 12);

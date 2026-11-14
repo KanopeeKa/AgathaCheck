@@ -164,7 +164,7 @@ Map milestone and establishment persistence in [DATA_MAP.md](/regulatory/DATA_MA
 | CP-6 — When guardian sees milestone moment on profile or dashboard then Prominent card respects safeguard-first hierarchy | CARE-PROGRESSION-R-024 | none — #1770 |
 | CP-5 — When rhythms list renders Established inline then Marker is secondary to due state | CARE-PROGRESSION-R-025 | none — #1770 |
 
-Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (progression presentation E2E: milestone moment, Established inline on rhythms).
+Coverage gaps: [#1770](https://github.com/AgathaTrack/AgathaTrack/issues/1770) (progression presentation E2E: milestone moment, Established inline on rhythms).
 
 ## Still open
 

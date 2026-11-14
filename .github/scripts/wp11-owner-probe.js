@@ -13,7 +13,9 @@ const {
   workerLaunchEnvVars,
 } = require('./execute-plan-launch');
 
-const REPO_URL = 'https://github.com/KanopeeKa/AgathaCheck';
+const REPO_URL = process.env.GITHUB_REPOSITORY
+  ? `https://github.com/${process.env.GITHUB_REPOSITORY}`
+  : 'https://github.com/AgathaTrack/AgathaTrack';
 const POLL_MS = 15_000;
 const TIMEOUT_MS = 12 * 60 * 1000;
 

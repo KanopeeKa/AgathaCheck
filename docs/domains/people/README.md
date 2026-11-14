@@ -30,13 +30,13 @@ Part of the AgathaTrack domain-first documentation tree. Cross-cutting architect
 
 | Capability | Status | Notes |
 |------------|--------|-------|
-| Contacts + pet relationships API | Shipped | `people-server-7f3b` ([#1523](https://github.com/KanopeeKa/AgathaCheck/pull/1523)) |
+| Contacts + pet relationships API | Shipped | `people-server-7f3b` ([#1523](https://github.com/AgathaTrack/AgathaTrack/pull/1523)) |
 | Fifth nav tab `/pc/people` + Today desk | Shipped | `people-ui-hub-a58d`, `people-client-core-7f3b` |
 | Hub list, detail, edit, unified add | Shipped | `people-hub-remodel-a58d`, `people-client-core-7f3b` |
 | Households + sharing integration | Shipped | `people-client-core-7f3b` c7 |
 | Cross-feature consumers + integration E2E | Shipped | `people-client-integration-7f3b` |
 | Absence guest access + timezone (D24) | Shipped | `people-care-team-a58d` p4 |
-| Vet table sunset | Debt | [#1653](https://github.com/KanopeeKa/AgathaCheck/issues/1653) |
+| Vet table sunset | Debt | [#1653](https://github.com/AgathaTrack/AgathaTrack/issues/1653) |
 
 Residual gaps: [people-domain-refactor.md](changes/people-domain-refactor.md) §4.
 

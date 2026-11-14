@@ -79,7 +79,7 @@ describe('github repo gate', () => {
   });
 
   it('blocks create-issue rows when repo is public', async () => {
-    process.env.SUPPORT_GITHUB_REPO = 'KanopeeKa/AgathaCheck';
+    process.env.SUPPORT_GITHUB_REPO = 'AgathaTrack/AgathaTrack';
     fetchGithubRepoPrivacy.mockResolvedValue({ ok: false, reason: 'repo is not private' });
     mockQuery.mockResolvedValue({ rowCount: 2 });
 

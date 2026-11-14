@@ -180,7 +180,7 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 ### 15. Per-test `resetHostingWafSession()` re-probes signup (added Jul 26)
 
-**Problem:** After #387 (single Playwright run), deploy [30203441553](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30203441553) passed the a11y smoke test then failed on the **second** `@smoke-uat` test. `testUser` and `loginAs` each called `resetHostingWafSession()` → full `passHostingWaf` with auth signup probe again → WAF after ~2.3m.
+**Problem:** After #387 (single Playwright run), deploy [30203441553](https://github.com/AgathaTrack/AgathaTrack/actions/runs/30203441553) passed the a11y smoke test then failed on the **second** `@smoke-uat` test. `testUser` and `loginAs` each called `resetHostingWafSession()` → full `passHostingWaf` with auth signup probe again → WAF after ~2.3m.
 
 **Fix:** Reuse in-process `sessionWafCleared` across `@smoke-uat` tests; `loginAs` clears browser cookies but does not reset the WAF session flag. Anonymous sharing tests use `prepareLiveApiAccess` after cookie clear without reset.
 
@@ -188,7 +188,7 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 ### 16. Catch-up skip must not fall through to tag slow-scan (added Jul 26)
 
-**Problem:** Deploy [30207687290](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30207687290) was **cancelled** on `Resolve trigger context` after 5 minutes. Catch-up promote [30207665212](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30207665212) skipped **Create UAT tag (catch-up)** (cadence still active — 66 min wait). `resolve-uat-deploy-trigger.sh` only recognized skipped job name `Create UAT tag`, not the catch-up variant → fell through to `slow_scan()` over 137 tags → hit `resolve-trigger` `timeout-minutes: 5`.
+**Problem:** Deploy [30207687290](https://github.com/AgathaTrack/AgathaTrack/actions/runs/30207687290) was **cancelled** on `Resolve trigger context` after 5 minutes. Catch-up promote [30207665212](https://github.com/AgathaTrack/AgathaTrack/actions/runs/30207665212) skipped **Create UAT tag (catch-up)** (cadence still active — 66 min wait). `resolve-uat-deploy-trigger.sh` only recognized skipped job name `Create UAT tag`, not the catch-up variant → fell through to `slow_scan()` over 137 tags → hit `resolve-trigger` `timeout-minutes: 5`.
 
 **Fix:** Treat any job whose name starts with `Create UAT tag` as the promote-tag step (merge promote + catch-up).
 
@@ -196,7 +196,7 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 ### 17. WAF cookies must persist across Playwright test contexts (added Jul 26)
 
-**Problem:** Deploy [30210675285](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30210675285) — `warmup-uat` passed but the first `uat-smoke` test failed with WAF on signup after 2.2m. #390 reused `sessionWafCleared` in Node memory, but each Playwright test gets a **fresh browser context** without Tiger Protect cookies. `passHostingWaf` returned early → new context re-ran full warmup and hit rate limits.
+**Problem:** Deploy [30210675285](https://github.com/AgathaTrack/AgathaTrack/actions/runs/30210675285) — `warmup-uat` passed but the first `uat-smoke` test failed with WAF on signup after 2.2m. #390 reused `sessionWafCleared` in Node memory, but each Playwright test gets a **fresh browser context** without Tiger Protect cookies. `passHostingWaf` returned early → new context re-ran full warmup and hit rate limits.
 
 **Fix:**
 
@@ -209,7 +209,7 @@ Acquiring a 90-minute lease **before** a successful agent launch blocked all pro
 
 ### 18. Landing navigation must not re-run WAF after warmup (added Jul 26)
 
-**Problem:** Deploy [30210675285](https://github.com/KanopeeKa/AgathaCheck/actions/runs/30210675285) — first `@smoke-uat` test (`auth.login` a11y landing) called `waitForFlutterRoute('/landing')` → `passHostingWaf` with full signup probe even after warmup + storage state. Tiger Protect rate-limited CI after ~2.2m.
+**Problem:** Deploy [30210675285](https://github.com/AgathaTrack/AgathaTrack/actions/runs/30210675285) — first `@smoke-uat` test (`auth.login` a11y landing) called `waitForFlutterRoute('/landing')` → `passHostingWaf` with full signup probe even after warmup + storage state. Tiger Protect rate-limited CI after ~2.2m.
 
 **Fix:**
 

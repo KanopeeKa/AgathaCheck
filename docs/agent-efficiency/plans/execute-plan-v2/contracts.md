@@ -275,7 +275,7 @@ fit. A jump over about 1.5% of main.dart.js, or one you cannot explain, gets one
 { "schema": 1, "plan_id": "proof-build-label-7f3a", "state": "phase:ready", "phase": "1",
   "action": { "actor": "driver", "kind": "arm-auto-merge", "launch": false, "args": { "pr": 1950, "method": "squash" } },
   "stop": null,
-  "evidence": [ { "label": "phase 1 PR", "url": "https://github.com/KanopeeKa/AgathaCheck/pull/1950" } ],
+  "evidence": [ { "label": "phase 1 PR", "url": "https://github.com/AgathaTrack/AgathaTrack/pull/1950" } ],
   "budgets": { "failed_attempts": { "1": 0 }, "launches_phase": { "1": 1 }, "launches_today": 1, "sync_resolves": 0, "remedial_rounds": 0 } }
 ```
 

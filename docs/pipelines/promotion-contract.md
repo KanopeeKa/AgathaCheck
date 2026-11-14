@@ -8,7 +8,7 @@ tags: [uat, promotion, pipeline]
 ---
 # Promotion contract
 
-Canonical reference for **auto-promotion** on `KanopeeKa/AgathaCheck`: merge to
+Canonical reference for **auto-promotion** on `AgathaTrack/AgathaTrack`: merge to
 `main` → Pre-UAT E2E → UAT tag → UAT deploy → prod stub/release tag.
 
 Pipeline tiers: [e2e/uat-deploy-tiers.md](./e2e/uat-deploy-tiers.md).

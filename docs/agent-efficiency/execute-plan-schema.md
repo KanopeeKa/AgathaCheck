@@ -86,7 +86,7 @@ Multi-phase delivery uses snapshot **`base_branch`** (integration) for every pha
 | Track | Typical base | Skill | Example (`agatha-care-journey`) |
 |-------|--------------|-------|----------------------------------|
 | **Phase PRs** | `base_branch` (integration) | `/babysit-plus` | PR-01…PR-14 → `cursor/agatha-care-journey-integration-b994`; control **#1835** |
-| **Release** | `main` | `/babysit-uat` | [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) integration → `main` |
+| **Release** | `main` | `/babysit-uat` | [#1875](https://github.com/AgathaTrack/AgathaTrack/pull/1875) integration → `main` |
 
 Orchestrators must read **`base_branch` from the snapshot**, not from stale PR descriptions on the same programme.
 

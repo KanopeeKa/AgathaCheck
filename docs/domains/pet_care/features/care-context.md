@@ -197,7 +197,7 @@ Pet Sitting workflow, environmental context, calendar integrations, AI interpret
 | AP-14 — Hub lists absences including a pet the viewer has Full access to, labelled with the traveller | CARE-CONTEXT-R-039 | test: flutter_app/test/features/pet_care/context/planned_absence_hub_screen_test.dart#ownership sections (section heading only); bdd: away_planning.feature#Away planning hub shows Your absences for an owned absence; test: e2e/playwright/tests/absence.per.pet.spec.ts; none — #1770 (co-visible card: traveller label, accessible pets only) |
 | AP-15 — Full-trip PDF by Sam contains Buddy only | CARE-CONTEXT-R-040 | test: e2e/playwright/tests/away.plans.journeys.spec.ts#Co-parent edits Buddy pet note and full-trip PDF succeeds (download snackbar only); none — #1770 (PDF contents: accessible pets only) |
 
-Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (declarer “You're away” on all surfaces, pill/pet-page status priority, pet delete cascades absence, care-item deep link regression, AP-5 none-branch, AP-6 co-parent carer assign, AP-7 Can-log-care UI, AP-8 guest widen confirm, AP-9 non-last remove side effects, AP-10 confirm copy, AP-14 co-visible hub card, AP-15 PDF pet filter); AP-12 status priority UX.
+Coverage gaps: [#1770](https://github.com/AgathaTrack/AgathaTrack/issues/1770) (declarer “You're away” on all surfaces, pill/pet-page status priority, pet delete cascades absence, care-item deep link regression, AP-5 none-branch, AP-6 co-parent carer assign, AP-7 Can-log-care UI, AP-8 guest widen confirm, AP-9 non-last remove side effects, AP-10 confirm copy, AP-14 co-visible hub card, AP-15 PDF pet filter); AP-12 status priority UX.
 
 ## Still open
 

@@ -227,7 +227,7 @@ Evidence column cites file paths inspected 2026-09-05. Severity: **P0** release 
 
 ## Product decisions (locked 2026-09-05)
 
-Signed off via user chat + control issue [#993](https://github.com/KanopeeKa/AgathaCheck/issues/993). Findings table **accepted**. Architecture should stay **flexible** where noted (scopes/tiers may evolve).
+Signed off via user chat + control issue [#993](https://github.com/AgathaTrack/AgathaTrack/issues/993). Findings table **accepted**. Architecture should stay **flexible** where noted (scopes/tiers may evolve).
 
 ### A. Share links
 
