@@ -11,7 +11,15 @@ if [[ -n "${GITHUB_REPOSITORY:-}" ]]; then
 elif GH_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null); then
   :
 else
-  GH_REPO=$(git remote get-url origin | sed -E 's#.*github.com[:/]([^/]+/[^/.]+?)(?:\.git)?$#\1#')
+  _origin=$(git remote get-url origin 2>/dev/null || true)
+  GH_REPO=$(printf '%s' "$_origin" | sed -n 's#.*github.com[:/]\([^/]*/[^/.]*\)\.git$#\1#p')
+  if [[ -z "$GH_REPO" ]]; then
+    GH_REPO=$(printf '%s' "$_origin" | sed -n 's#.*github.com[:/]\([^/]*/[^/.]*\)$#\1#p')
+  fi
+fi
+if [[ -z "${GH_REPO:-}" ]]; then
+  echo "Could not resolve repository; set GITHUB_REPOSITORY or run from a gh-authenticated clone." >&2
+  exit 1
 fi
 PR_NUMBER=""
 PR_URL=""
