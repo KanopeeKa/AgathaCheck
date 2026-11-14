@@ -156,7 +156,7 @@ Coverage gaps: [#1770](https://github.com/AgathaTrack/AgathaTrack/issues/1770) (
 | AWAY-PLANNING-CARER-D-016 | People phase 2 amends D-AWAY-002/003/005 presentation | Primary+backup model, `unavailable` carer fact, contact-backed carers; UI one carer until later | Live | 2026-10-08 | documentation-migration |
 | AWAY-PLANNING-CARER-D-017 | Traveller is never a carer on their own absence | Who is going away = person logging it (CARE-CONTEXT-D-012); assigning them as carer is incoherent | Live | 2026-11-03 | — |
 | AWAY-PLANNING-CARER-D-018 | Carer candidate list omits traveller when absence context is visible | `planned_absence_id` query on `GET /api/pets/:id/carer-candidates`; silent ignore when absence not visible | Live | 2026-11-06 | away-plans co-parent fix |
-| AWAY-PLANNING-CARER-D-019 | Multi-pet carer invite offer deferred | AWAY-PLANNING-CARER-R-018 tracked as Planned until UX ships; issue [#2103](https://github.com/AgathaTrack/AgathaTrack/issues/2103) | Live | 2026-11-06 | docs honesty |
+| AWAY-PLANNING-CARER-D-019 | Multi-pet carer invite offer deferred | AWAY-PLANNING-CARER-R-018 tracked as Planned until UX ships; issue [#2103](https://github.com/KanopeeKa/AgathaCheck/issues/2103) | Live | 2026-11-06 | docs honesty |
 | AWAY-PLANNING-CARER-D-020 | Unchanged `contact_id` is pet-note-only | When PATCH repeats the stored `contact_id` without `carer_kind`, skip `resolveCarerWrite` so co-parent pet-note saves do not clear `carer_note` or 403 the traveller | Live | 2026-11-07 | co-parent carer fix |
 
 ## Related
