@@ -954,10 +954,10 @@ export class PeoplePage {
 
   async openPetEmergencyManage(): Promise<void> {
     await refreshFlutterAccessibility(this.page);
-    const manage = this.page
-      .locator('[data-flutter-key="pet_emergency_manage_button"]')
-      .or(this.page.getByRole('button', { name: /^Manage$/i }));
-    await manage.first().click();
+    await this.page
+      .getByRole('button', { name: /^(Manage|Gérer)$/i })
+      .first()
+      .click();
     await refreshFlutterAccessibility(this.page);
   }
 
