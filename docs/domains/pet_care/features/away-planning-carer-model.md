@@ -129,10 +129,10 @@ Per-care-item permanent carer assignment (Pet Sitting). Public share links from 
 | APC-16 — When contact carer assigned on away plan then Name on carer row | AWAY-PLANNING-CARER-R-017 | test: flutter_app/test/features/pet_care/context/away_plan_carer_edit_test.dart#edit affordance per pet row saves a contact carer |
 | AP-16 — When declarer PATCH assigns self as carer then Rejected | AWAY-PLANNING-CARER-R-016 | test: server/test/careContext/plannedAbsencePetLifecycle.test.js#rejects declarer as shared_user carer |
 | AP-17 — When away plan screen opened then Who's caring and pet notes editable inline | AWAY-PLANNING-CARER-R-017 | test: flutter_app/test/features/pet_care/context/away_plan_carer_edit_test.dart#edit affordance per pet row saves a contact carer; bdd: away_planning.feature#Co-parent edits the pet note on the away plan page |
-| AP-18 — When carer invite from one pet then Other pets on absence offered where applicable | AWAY-PLANNING-CARER-R-018 | none — [#2103](https://github.com/KanopeeKa/AgathaCheck/issues/2103) |
+| AP-18 — When carer invite from one pet then Other pets on absence offered where applicable | AWAY-PLANNING-CARER-R-018 | none — [#2103](https://github.com/AgathaTrack/AgathaTrack/issues/2103) |
 | APC-17 — When handover downloaded then Emergency contacts and vets listed | AWAY-PLANNING-CARER-R-009 | none — #1770 |
 
-Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (handover PDF emergency contacts and vets); [#2103](https://github.com/KanopeeKa/AgathaCheck/issues/2103) (multi-pet carer invite offer, AWAY-PLANNING-CARER-R-018).
+Coverage gaps: [#1770](https://github.com/AgathaTrack/AgathaTrack/issues/1770) (handover PDF emergency contacts and vets); [#2103](https://github.com/AgathaTrack/AgathaTrack/issues/2103) (multi-pet carer invite offer, AWAY-PLANNING-CARER-R-018).
 
 ## Still open
 

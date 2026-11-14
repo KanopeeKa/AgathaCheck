@@ -10,7 +10,24 @@
 import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const REPO = process.env.GITHUB_REPOSITORY || 'KanopeeKa/AgathaCheck';
+function resolveRepo() {
+  if (process.env.GITHUB_REPOSITORY) return process.env.GITHUB_REPOSITORY;
+  try {
+    const out = execFileSync(
+      'gh',
+      ['repo', 'view', '--json', 'nameWithOwner', '-q', '.nameWithOwner'],
+      { encoding: 'utf8' },
+    ).trim();
+    if (out) return out;
+  } catch {
+    /* fall through */
+  }
+  throw new Error(
+    'Could not resolve repository; set GITHUB_REPOSITORY or run from a gh-authenticated clone.',
+  );
+}
+
+const REPO = resolveRepo();
 
 function parseDays(argv) {
   const i = argv.indexOf('--days');

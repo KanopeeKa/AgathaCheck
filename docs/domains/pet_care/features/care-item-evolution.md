@@ -350,7 +350,7 @@ Instructions are not yet on the wire; defer until the field exists.
 - When no resolved past occurrences qualify, the module shows **No history yet** (no **See history**).
 - **No inline shortcuts** (e.g. Unmark done) in the list; changes, including undoing Done, happen on the occurrence's screen (D-CIE-040).
 - Each row is one pill: `{due dd MMM yy}` or `{due} at {HH:mm}` – **icon** `{close dd MMM yy when applicable}` — ✓ (green) for Done, ⏭ (grey) for Skipped / Not given, ? (grey) with no close date for Not recorded. No status words on the row; screen readers get full meaning via semantics (CARE-ITEM-R-023).
-- Attribution (**who recorded, when**) lives on the Care date screen footer (CARE-ITEM-R-022), not on History rows — narrows [#2056](https://github.com/KanopeeKa/AgathaCheck/issues/2056).
+- Attribution (**who recorded, when**) lives on the Care date screen footer (CARE-ITEM-R-022), not on History rows — narrows [#2056](https://github.com/AgathaTrack/AgathaTrack/issues/2056).
 - A row opens that occurrence's record (inline or from the pop-up; pop-up closes first).
 - An unresolved overdue occurrence never appears here.
 - A **Not recorded** dose offers **Record as given** (D-CSM-023) from its occurrence screen; it becomes Done; nothing else changes.
@@ -780,7 +780,7 @@ New FR wording is proposed and needs the FR copy pass.
 | NBR-1 — When Care date neighbour replace hops A→B→C then Each screen loads that occurrence; Previous returns to B | CARE-ITEM-R-020 | test: flutter_app/test/features/experience/presentation/care_item/occurrence/occurrence_neighbor_go_router_test.dart#replace neighbour hops reload occurrence data through two next and one previous |
 | PAUSE-1 — When item is paused with open occurrences on Care item view then Paused banner only; no per-occurrence or bulk action keys | CARE-ITEM-R-026 | test: flutter_app/test/features/care_item/presentation/detail/care_item_dates_section_test.dart#paused item with open occurrences shows only the paused banner |
 
-Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770).
+Coverage gaps: [#1770](https://github.com/AgathaTrack/AgathaTrack/issues/1770).
 
 ## Still open
 

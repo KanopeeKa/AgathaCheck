@@ -4,6 +4,8 @@
 /**
  * One-off generator for documentation-migration-514a.snapshot.json
  * Run: node scripts/generate_documentation_migration_plan_snapshot.js
+ *
+ * PR URLs embedded in phase extras are historical (written during the personal-repo era).
  */
 
 const fs = require('fs');
@@ -55,25 +57,25 @@ function phase(id, title, branch, extraAllowed = [], status = 'pending', extras 
 
 const merged = [
   ['1', 'Phase A — docs gate warn on integration', 'cursor/documentation-migration-gate-warn-514a', {
-    pr_url: 'https://github.com/KanopeeKa/AgathaCheck/pull/1768',
+    pr_url: 'https://github.com/AgathaTrack/AgathaTrack/pull/1768',
     pr_head_sha: '37024b8114ddd57e4a4666c20ee6eb953758e039',
   }],
   ['2', 'Wave 1.1 — care-schedule-management', 'cursor/documentation-migration-csm-514a', {}],
   ['3', 'Wave 1.2 — care-item', 'cursor/documentation-migration-care-item-514a', {
-    pr_url: 'https://github.com/KanopeeKa/AgathaCheck/pull/1775',
+    pr_url: 'https://github.com/AgathaTrack/AgathaTrack/pull/1775',
     pr_head_sha: '6af0b467926ee98f5983c661add8794905a49561',
   }],
   ['4', 'Phase B — restore docs gate block + stragglers', 'cursor/documentation-migration-integration-harden-514a', {}],
   ['5', 'Batch merge integration → main (Wave 1.1–1.2)', 'cursor/documentation-migration-integration-main-514a', {
-    pr_url: 'https://github.com/KanopeeKa/AgathaCheck/pull/1780',
+    pr_url: 'https://github.com/AgathaTrack/AgathaTrack/pull/1780',
     pr_head_sha: '7d5a5229f031747d8ef71983293d9861b39edfcf',
   }],
   ['6', 'Wave 1.3a — care-context', 'cursor/documentation-migration-care-context-514a', {
-    pr_url: 'https://github.com/KanopeeKa/AgathaCheck/pull/1782',
+    pr_url: 'https://github.com/AgathaTrack/AgathaTrack/pull/1782',
     pr_head_sha: 'c0331308bd1f1ef17e1db404a3408c91fe34657a',
   }],
   ['7', 'Wave 1.3b — away-planning-carer-model', 'cursor/documentation-migration-carer-model-514a', {
-    pr_url: 'https://github.com/KanopeeKa/AgathaCheck/pull/1784',
+    pr_url: 'https://github.com/AgathaTrack/AgathaTrack/pull/1784',
     pr_head_sha: '7beb2e2aa8463c5983585a6486b2c0c46a6758a5',
   }],
 ];

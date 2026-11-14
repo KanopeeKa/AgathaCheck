@@ -59,7 +59,7 @@ test('handleMergedPr enqueues UAT queue when PR has no linked issues', async (t)
 
   const result = await handleMergedPr({
     owner: 'KanopeeKa',
-    repo: 'AgathaCheck',
+    repo: 'AgathaTrack',
     prNumber: 361,
     prBody: 'Wave B integration merge — no Closes line',
     mergeSha: '4a9036584b7f4dc0ccb446b93022c8f4903d2067',
@@ -139,7 +139,7 @@ test('handleMergedPr reopens a plan issue without UAT status', async (t) => {
 
   const result = await handleMergedPr({
     owner: 'KanopeeKa',
-    repo: 'AgathaCheck',
+    repo: 'AgathaTrack',
     prNumber: 2280,
     prBody: 'Release\n\nCloses #2258',
     mergeSha: '639cb48148a47a6edfcde28d880a3f582f772e46',
@@ -164,10 +164,10 @@ test('handleUatWorkflowResult does not reopen a closed plan issue', async (t) =>
 
   const result = await handleUatWorkflowResult({
     owner: 'KanopeeKa',
-    repo: 'AgathaCheck',
+    repo: 'AgathaTrack',
     deployRef: 'uat-261111-2280',
     conclusion: 'success',
-    workflowUrl: 'https://github.com/KanopeeKa/AgathaCheck/actions/runs/43084042911',
+    workflowUrl: 'https://github.com/AgathaTrack/AgathaTrack/actions/runs/43084042911',
     token: 'test-token',
     projectsPat: 'projects-pat',
     projectId: 'project',
@@ -189,10 +189,10 @@ test('handleUatWorkflowResult still reopens a closed product issue', async (t) =
 
   const result = await handleUatWorkflowResult({
     owner: 'KanopeeKa',
-    repo: 'AgathaCheck',
+    repo: 'AgathaTrack',
     deployRef: 'uat-261111-2280',
     conclusion: 'success',
-    workflowUrl: 'https://github.com/KanopeeKa/AgathaCheck/actions/runs/1',
+    workflowUrl: 'https://github.com/AgathaTrack/AgathaTrack/actions/runs/1',
     token: 'test-token',
     projectsPat: null,
     projectId: null,

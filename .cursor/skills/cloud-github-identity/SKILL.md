@@ -5,6 +5,8 @@ description: Default GitHub identity for Cursor Cloud Agents and Actions-launche
 
 # Cloud GitHub identity (default bot)
 
+Canonical engineering repo: **`AgathaTrack/AgathaTrack`** — set that URL on the Cursor Cloud environment and on every execute-plan launch `repos[].url`.
+
 ## Two identities on Cloud
 
 | Operation | Identity |

@@ -196,7 +196,7 @@ gh pr checks <PR_NUMBER> | rg '^ci-gate'
 **Verify:**
 
 ```bash
-gh api repos/KanopeeKa/AgathaCheck/rulesets/18979034 --jq '.rules[] | select(.type=="required_status_checks")'
+gh api repos/AgathaTrack/AgathaTrack/rulesets/18979034 --jq '.rules[] | select(.type=="required_status_checks")'
 ```
 
 **Troubleshooting — “Expected — Waiting for status to be reported” for `CI passed`:**
@@ -239,7 +239,7 @@ Re-verify before editing branch protection (names can differ by org/ruleset):
 ```bash
 gh pr checks 170 | rg '^flutter-'
 # or via API (authoritative check-run names):
-gh api repos/KanopeeKa/AgathaCheck/commits/$(gh pr view 170 --json headRefOid -q .headRefOid)/check-runs \
+gh api repos/AgathaTrack/AgathaTrack/commits/$(gh pr view 170 --json headRefOid -q .headRefOid)/check-runs \
   --jq '.check_runs[] | select(.name | startswith("flutter-")) | .name'
 ```
 
@@ -258,7 +258,7 @@ If your ruleset UI shows a `(pull_request)` suffix, use the **exact** string fro
 **Verify immediately after save:**
 
 ```bash
-gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
+gh api repos/AgathaTrack/AgathaTrack/branches/main/protection \
   --jq '.required_status_checks.contexts'
 # or for rulesets: inspect the ruleset required-check list in the UI
 ```
@@ -346,7 +346,7 @@ After Phase 6 merged (#168), add the startup smoke check using the **exact** str
 
 ```bash
 gh pr checks 168   # or any open PR to main — copy exact check names
-gh api repos/KanopeeKa/AgathaCheck/branches/main/protection \
+gh api repos/AgathaTrack/AgathaTrack/branches/main/protection \
   --jq '.required_status_checks.contexts'
 ```
 
@@ -525,10 +525,10 @@ gh run view <RUN_ID> --json jobs --jq '.jobs[] | {name, conclusion}'
 gh pr checks <PR_NUMBER>
 
 # Branch protection (admin)
-gh api repos/KanopeeKa/AgathaCheck/branches/main/protection
+gh api repos/AgathaTrack/AgathaTrack/branches/main/protection
 
 # PROD environment protection rules
-gh api repos/KanopeeKa/AgathaCheck/environments/PROD
+gh api repos/AgathaTrack/AgathaTrack/environments/PROD
 ```
 
 Confirm **`Deploy UAT / Prod ready`** appears in the PROD environment required checks.

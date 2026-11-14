@@ -3,13 +3,21 @@ title: Cursor Cloud environment
 owner: Documentation Team
 audience: agent
 status: active
-last_updated: 2026-11-02
+last_updated: 2026-11-14
 tags: [agent, engineering, cursor, environment]
 ---
 
 # Cursor Cloud environment
 
 Cursor Cloud Agents only. Shared toolchain and commands: [`AGENTS.md`](../../AGENTS.md) §Toolchain.
+
+## Repository URL (org)
+
+Canonical GitHub slug: **`AgathaTrack/AgathaTrack`** (`https://github.com/AgathaTrack/AgathaTrack`).
+
+- **Cursor → Cloud Agents → Environment:** set the linked repository to `AgathaTrack/AgathaTrack` (rebuild or refresh the environment after the org transfer).
+- **Execute-plan / issue dispatch (Cursor API):** `repos: [{ url: "https://github.com/AgathaTrack/AgathaTrack", startingRef: "…" }]`.
+- **GitHub Actions:** `GITHUB_REPOSITORY` is set automatically; scripts use it instead of hard-coding the slug.
 
 ## GitHub identity secrets (dashboard)
 
@@ -47,7 +55,7 @@ The Flutter SDK is baked into the image via `.cursor/Dockerfile` (`FLUTTER_VERSI
 **Operator steps** (when agents still show Flutter 3.32 or `cloud-install.sh` fails the version gate):
 
 1. Open [Cloud Agents → Environments](https://cursor.com/dashboard/cloud-agents#environments) for this repo.
-2. Delete the saved environment for AgathaCheck, **or** create a fresh environment from the repo (do not use the
+2. Delete the saved environment for AgathaTrack, **or** create a fresh environment from the repo (do not use the
    interactive wizard snapshot — it ignores `build.dockerfile`).
 3. Confirm `.cursor/environment.json` has `build.dockerfile` only — **no** `snapshot` field.
 4. Start a new Cloud Agent from `main` (or a branch that includes the latest `.cursor/Dockerfile`).

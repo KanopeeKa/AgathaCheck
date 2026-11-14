@@ -29,7 +29,7 @@ Normative product requirements for cross-cutting capabilities live in domain `fe
 
 | Plan | Focus | Status |
 |------|-------|--------|
-| [agatha-care-journey](/.agents/plans/agatha-care-journey.md) | Profile facts → welfare → coordination (PR-01–14); release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) | **Completed** — [care-intelligence.md](/docs/domains/pet_care/features/care-intelligence.md) · [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) |
+| [agatha-care-journey](/.agents/plans/agatha-care-journey.md) | Profile facts → welfare → coordination (PR-01–14); release [#1875](https://github.com/AgathaTrack/AgathaTrack/pull/1875) | **Completed** — [care-intelligence.md](/docs/domains/pet_care/features/care-intelligence.md) · [pet-profile-decisions.md](/docs/domains/pet_profile/features/pet-profile-decisions.md) |
 
 **Documentation migration:** authoritative handover is [documentation-migration-handover.md](/docs/domains/documentation/changes/documentation-migration-handover.md). The Aug 2025 cross-domain consolidation plan was retired in Wave 0 (file deleted).
 

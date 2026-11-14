@@ -100,7 +100,7 @@ Legal or technical **guardianship** is separate from Pet Care relationship langu
 | Term | Rule |
 |------|------|
 | **AgathaTrack** | Current product name — use in all new UI and design work |
-| **AgathaCheck** | Legacy repository/product name — do not introduce in new copy |
+| **AgathaCheck** | Legacy repository/product name before the 2026-11-14 move to org **AgathaTrack/AgathaTrack** — do not introduce in new copy |
 | **Agatha** | Product voice for explainable suggestions — not a chat persona, simulated person, or veterinarian |
 
 ## Workspace shells (Pet Care vs Shelter)

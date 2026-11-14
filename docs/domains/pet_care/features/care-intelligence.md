@@ -22,7 +22,7 @@ Care Intelligence helps guardians **understand** longitudinal pet-care data and 
 - **Does not own:** Care Status or overdue semantics ([care-schedule-management.md](./care-schedule-management.md)); establishment and milestones ([care-progression.md](./care-progression.md)); occurrence commands ([care-item-evolution.md](./care-item-evolution.md)); weight storage wire rules ([weight-monitoring-model.md](../../weight_tracking/features/weight-monitoring-model.md)).
 - **Depends on:** Recurring care and `CareSource` on `health_entries`; weight observations; CSM `explainGap` for schedule facts ([care-schedule-management.md](./care-schedule-management.md) CSM-13); presentation slot ordering with progression and milestones ([care-progression.md](./care-progression.md) CARE-PROGRESSION-R-024).
 
-**Programme sequencing (pointers only):** [care-foundation-roadmap.md](../changes/care-foundation-roadmap.md) Phases A–E · Phase D mechanics [phase-d-review-relevance-plan.md](../changes/phase-d-review-relevance-plan.md) · Execute-plan `care-foundation-c7a1` control [#1082](https://github.com/KanopeeKa/AgathaCheck/issues/1082).
+**Programme sequencing (pointers only):** [care-foundation-roadmap.md](../changes/care-foundation-roadmap.md) Phases A–E · Phase D mechanics [phase-d-review-relevance-plan.md](../changes/phase-d-review-relevance-plan.md) · Execute-plan `care-foundation-c7a1` control [#1082](https://github.com/AgathaTrack/AgathaTrack/issues/1082).
 
 ```text
 care_planning / care_observations
@@ -220,7 +220,7 @@ Benchmark curation, evidence traces, and production safeguard persistence must a
 | CIM-12 — When pet profile suggestion section loads then Provider surfaces suggestion state | CARE-INTELLIGENCE-R-009 | test: flutter_app/test/features/care_intelligence/presentation/providers/care_recommendations_provider_test.dart |
 | CIM-13 — When guardian sees production safeguard then Presentation respects safeguard-first slot order | CARE-INTELLIGENCE-R-010 | none — #1770 |
 
-Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (safeguard and suggestion E2E on dashboard/profile).
+Coverage gaps: [#1770](https://github.com/AgathaTrack/AgathaTrack/issues/1770) (safeguard and suggestion E2E on dashboard/profile).
 
 ## Still open
 
@@ -230,12 +230,12 @@ Coverage gaps: [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770) (sa
 
 ## Agatha care journey — delivery record
 
-Execute-plan **`agatha-care-journey`** (control [#1835](https://github.com/KanopeeKa/AgathaCheck/issues/1835), **completed** 2026-10-14): PR-01…PR-14 via integration branch, release [#1875](https://github.com/KanopeeKa/AgathaCheck/pull/1875) → `main`.
+Execute-plan **`agatha-care-journey`** (control [#1835](https://github.com/AgathaTrack/AgathaTrack/issues/1835), **completed** 2026-10-14): PR-01…PR-14 via integration branch, release [#1875](https://github.com/AgathaTrack/AgathaTrack/pull/1875) → `main`.
 
 | Milestone | Detail |
 |-----------|--------|
 | **Pre-UAT on release** | Workflow run **704** on merge commit `7a6ea79` **failed** (shard 1/9) — `expectLinkedVet` locator after profile reorder (PR-04). |
-| **Remedial fix** | Playwright locator update in [#1888](https://github.com/KanopeeKa/AgathaCheck/pull/1888) (dependency batch; not a standalone `/e2e-debug` PR). |
+| **Remedial fix** | Playwright locator update in [#1888](https://github.com/AgathaTrack/AgathaTrack/pull/1888) (dependency batch; not a standalone `/e2e-debug` PR). |
 | **First green pre-UAT on `main`** | Run **705** on `895977c` (ACJ + deps + E2E fix). |
 
 Pet-profile fact model and PUT semantics: [pet-profile-decisions.md](../../pet_profile/features/pet-profile-decisions.md) (ACJ-PF-*). Plan artifacts: [`.agents/plans/agatha-care-journey.md`](../../../.agents/plans/agatha-care-journey.md).

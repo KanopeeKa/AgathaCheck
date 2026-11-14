@@ -11,7 +11,7 @@ last_updated: 2026-10-07
 
 # Away Planning — Per-pet note & per-pet handover export
 
-**Status:** Shipped (AW-11, [#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
+**Status:** Shipped (AW-11, [#1266](https://github.com/AgathaTrack/AgathaTrack/pull/1266)).
 **Extends:** [away-planning-carer-model.md](../features/away-planning-carer-model.md) (canonical; migration `063` / `071`).
 **Delivery context:** AW-11 row in [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
 **Frozen context:** D-AWAY-004, D-AWAY-008, D-AWAY-009, D-AWAY-010 (care-context), D-AWAY-014a/b — [away-planning-carer-model.md](../features/away-planning-carer-model.md#decision-log).
@@ -208,7 +208,7 @@ Future growth (vet details, etc.) should land as additive fields on the per-pet 
 
 **Docs**
 - [ ] Update [away-planning-carer-model.md](../features/away-planning-carer-model.md) and [api-reference.md](/docs/architecture/api-reference.md).
-- [x] D-AWAY-014a/b copied into [away-planning-decisions.md](./away-planning-decisions.md) with **Status: Frozen** ([#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
+- [x] D-AWAY-014a/b copied into [away-planning-decisions.md](./away-planning-decisions.md) with **Status: Frozen** ([#1266](https://github.com/AgathaTrack/AgathaTrack/pull/1266)).
 - [ ] Add implementation row to [away-planning-delivery-plan.md](./away-planning-delivery-plan.md).
 
 ---
@@ -225,7 +225,7 @@ One atomic PR — migration, API, entity/model, dialog field, row UI, PDF builde
 
 ## 11. Frozen decisions (D-AWAY-014)
 
-**Status:** Frozen — copied into [away-planning-decisions.md](./away-planning-decisions.md) on merge ([#1266](https://github.com/KanopeeKa/AgathaCheck/pull/1266)).
+**Status:** Frozen — copied into [away-planning-decisions.md](./away-planning-decisions.md) on merge ([#1266](https://github.com/AgathaTrack/AgathaTrack/pull/1266)).
 
 ### D-AWAY-014a — Per-pet handover PDF content & privacy (2026-09-22)
 

@@ -163,23 +163,23 @@ assert.equal(isLeaseStale('2026-09-22T11:30:00.000Z', NOW, 45), false);
 assert.equal(parsePrNumber(2188), '2188');
 assert.equal(parsePrNumber(' 2303 '), '2303');
 assert.equal(
-  parsePrNumber('https://github.com/KanopeeKa/AgathaCheck/pull/2303'),
+  parsePrNumber('https://github.com/AgathaTrack/AgathaTrack/pull/2303'),
   '2303',
 );
 assert.equal(
-  parsePrNumber('https://github.com/KanopeeKa/AgathaCheck/pull/2303/files'),
+  parsePrNumber('https://github.com/AgathaTrack/AgathaTrack/pull/2303/files'),
   '2303',
 );
 assert.equal(parsePrNumber('cursor/some-head'), null);
 
-const CHECKOUT = 'KanopeeKa/AgathaCheck';
+const CHECKOUT = 'AgathaTrack/AgathaTrack';
 assert.equal(
-  prRefCheckoutMismatch('https://github.com/KanopeeKa/AgathaCheck/pull/2303', CHECKOUT),
+  prRefCheckoutMismatch('https://github.com/AgathaTrack/AgathaTrack/pull/2303', CHECKOUT),
   null,
 );
 assert.equal(
   prRefCheckoutMismatch(
-    'https://github.com/kanopeeka/agathacheck/pull/2303/files',
+    'https://github.com/AgathaTrack/AgathaTrack/pull/2303/files',
     CHECKOUT,
   ),
   null,
@@ -192,7 +192,7 @@ assert.equal(
 );
 assert.equal(
   prRefCheckoutMismatch('https://github.com/other/repo/pull/123', CHECKOUT),
-  'PR URL targets other/repo#123; this checkout is KanopeeKa/AgathaCheck',
+  'PR URL targets other/repo#123; this checkout is AgathaTrack/AgathaTrack',
 );
 assert.equal(
   prRefCheckoutMismatch('https://github.com/other/repo/issues/2188', ''),

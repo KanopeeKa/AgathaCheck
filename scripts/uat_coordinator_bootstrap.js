@@ -172,7 +172,8 @@ async function ensureMarkerComment(issueNumber, token, write) {
 function printRepoVariableInstructions(issueNumber) {
   console.log('');
   console.log('Manual step (requires repo admin / actions:write on token):');
-  console.log(`  gh variable set UAT_COORDINATION_ISSUE --body "${issueNumber}" --repo KanopeeKa/AgathaCheck`);
+  const { owner, repo } = resolveRepository();
+  console.log(`  gh variable set UAT_COORDINATION_ISSUE --body "${issueNumber}" --repo ${owner}/${repo}`);
   console.log('Or: Settings → Secrets and variables → Actions → Variables');
 }
 

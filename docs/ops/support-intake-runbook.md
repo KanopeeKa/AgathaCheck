@@ -16,7 +16,7 @@ Operator guide for **Phase 1** private support intake. Canonical product rules: 
 | Item | Value |
 |------|--------|
 | Support issues repo | **AgathaTrackPrivate** (private; support requests only) |
-| Engineering repo | **KanopeeKa/AgathaCheck** (public; no user text from support) |
+| Engineering repo | **AgathaTrack/AgathaTrack** (public; no user text from support) |
 | Support board | [@ATSupport](https://github.com/users/KanopeeKa/projects/4) |
 | Issue feed | Built-in auto-add: repo AgathaTrackPrivate, filter `is:issue` — **confirmed**. No `actions/add-to-project` workflow and no board PAT unless auto-add later fails (record risk first). |
 | Pawpet engineering board | Engineering issues only — support issues must not appear there |
@@ -44,7 +44,7 @@ Local dev / tests: leave `SUPPORT_GITHUB_REPO` empty so GitHub outbox rows stay 
 | Triaged | Read; fix `category:*` if needed; set priority | Operator |
 | Waiting on user | Emailed for more information | Operator |
 | In progress | Handled directly or engineering link filled | Operator |
-| Engineering done | Linked AgathaCheck issue closed or fix deployed; user not told yet | Operator (later phase may automate) |
+| Engineering done | Linked AgathaTrack issue closed or fix deployed; user not told yet | Operator (later phase may automate) |
 | Done | User told by email; issue closed | Automatic on close |
 
 ## Labels (AgathaTrackPrivate)
@@ -67,9 +67,9 @@ Local dev / tests: leave `SUPPORT_GITHUB_REPO` empty so GitHub outbox rows stay 
 | Redacted: delete | `label:redacted` — delete these issues within 7 days |
 | From email | `label:source:email` |
 
-## Engineering issue template (AgathaCheck)
+## Engineering issue template (AgathaTrack)
 
-Create manually in **KanopeeKa/AgathaCheck** when handing work to engineering. Copy into `.github/ISSUE_TEMPLATE/` is **out of plan scope** — paste from here until a separate PR adds the file.
+Create manually in **AgathaTrack/AgathaTrack** when handing work to engineering. Copy into `.github/ISSUE_TEMPLATE/` is **out of plan scope** — paste from here until a separate PR adds the file.
 
 **Title:** `Support ref AT-XXXXXXXX — <short technical title>`
 
@@ -86,7 +86,7 @@ AT-XXXXXXXX (category: <bug|suggestion|account|billing>)
 
 ## Links
 
-- Private support issue: **do not paste URL or body** — use the AT- reference only in AgathaCheck.
+- Private support issue: **do not paste URL or body** — use the AT- reference only in AgathaTrack.
 - Engineering issue URL: fill the **Engineering issue** field on the @ATSupport card after creation.
 
 ## Acceptance
@@ -94,7 +94,7 @@ AT-XXXXXXXX (category: <bug|suggestion|account|billing>)
 <!-- What “done” means for engineering. -->
 ```
 
-After creation, put the AgathaCheck issue URL in the card's **Engineering issue** field on @ATSupport.
+After creation, put the AgathaTrack issue URL in the card's **Engineering issue** field on @ATSupport.
 
 ## Redacted issues (D-009)
 
@@ -142,5 +142,5 @@ Run after the Phase 3 migration on each environment. Staff read tickets at `/sta
 
 Track implementation gaps opened during plan phase 1:
 
-- Screenshot re-encoding / metadata stripping (`sharp`) — [#2301](https://github.com/KanopeeKa/AgathaCheck/issues/2301).
-- `listProjectIssues` in `.github/scripts/github-project-lib.js` (first 100 items, no repository filter) — [#2302](https://github.com/KanopeeKa/AgathaCheck/issues/2302).
+- Screenshot re-encoding / metadata stripping (`sharp`) — [#2301](https://github.com/AgathaTrack/AgathaTrack/issues/2301).
+- `listProjectIssues` in `.github/scripts/github-project-lib.js` (first 100 items, no repository filter) — [#2302](https://github.com/AgathaTrack/AgathaTrack/issues/2302).

@@ -286,7 +286,7 @@ Care Through Change reschedule/pause **UI** (postâ€“CC-4 tranche) is unblocked â
 ## Still open
 
 - GDPR export must read occurrences before `health_history` table drop (D-CSM-035).
-- Coverage gaps tracked in [#1770](https://github.com/KanopeeKa/AgathaCheck/issues/1770).
+- Coverage gaps tracked in [#1770](https://github.com/AgathaTrack/AgathaTrack/issues/1770).
 
 ## Acceptance criteria
 

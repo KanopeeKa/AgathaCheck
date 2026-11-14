@@ -247,7 +247,7 @@ Retention rule PR (delete terminal snapshots > N days; keep `_example`). Never d
 | Item | Choice |
 |------|--------|
 | **Single plan** | `documentation-migration-514a` — `.agents/plans/documentation-migration-514a.{md,snapshot.json}` |
-| Control issue | [#1787](https://github.com/KanopeeKa/AgathaCheck/issues/1787) |
+| Control issue | [#1787](https://github.com/AgathaTrack/AgathaTrack/issues/1787) |
 | Integration `base_branch` | `cursor/documentation-migration-wave13-integration-514a` (resume after Wave 1.3b on `main`) |
 | Phases | **26** in one snapshot (phases 1–7 already `merged`; **8** = care-progression next) |
 | Phase exit | merge-done on integration; `/babysit-plus` each phase |

@@ -235,7 +235,7 @@ Localhost CI: `E2E=1` disables auth + general API rate limits — bypass not nee
 | `500` on `/pets/all`, `/custody-transfers/pending` | 20 pending migrations on UAT | `UAT_AUTO_MIGRATE` + ownership |
 | Weight `@smoke` timeout | API seed after login | Seed before login (#225) |
 | Health `@smoke` passed after migrations | Was blocked by API 500s / separate UI timing | Migrations first; remount for home due events |
-| All live `@smoke` timeout ~2.4 min | UAT Node missing `E2E=1` | Set `E2E=1` + restart; verified [run 29694789075](https://github.com/KanopeeKa/AgathaCheck/actions/runs/29694789075) |
+| All live `@smoke` timeout ~2.4 min | UAT Node missing `E2E=1` | Set `E2E=1` + restart; verified [run 29694789075](https://github.com/AgathaTrack/AgathaTrack/actions/runs/29694789075) |
 | Warmup WAF: health OK, signup 503 | `passHostingWaf` cleared on health only | Auth signup browser probe before `sessionWafCleared` (#351) |
 | `promote-uat` skipped after failed deploy | `failed` head blocked promote | Auto `setBarrier` on enqueue (#344); manual `set-barrier` + tag |
 | Coordinator dispatch crashes instantly | `launch-cursor-agent` ran `main()` on `require()` | `require.main === module` guard (#346) |

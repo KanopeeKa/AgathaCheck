@@ -14,12 +14,12 @@ feature_id: support-ticketing
 ## Summary / scope
 
 - **Owns:** EN/FR contact hub, private support intake, Postgres tickets, one receipt email, private GitHub issues on @ATSupport, read-only staff queue, retention and erasure hooks.
-- **Does not own:** In-app ticket history or replies, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, public AgathaCheck support issues.
+- **Does not own:** In-app ticket history or replies, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, public AgathaTrack engineering support issues.
 - **Depends on:** Auth (optional submit), Nodemailer SMTP, private screenshot storage outside `uploads/`, Postgres migrations, AgathaTrackPrivate + built-in board auto-add.
 
-Anyone signed in or not can send a categorised request from the hub. It is stored privately with an `AT-` reference, acknowledged by email, and appears as an issue in **AgathaTrackPrivate** on the **@ATSupport** board. Conversation after the receipt continues by email from `support@`. Engineering work is handed to AgathaCheck by a human with personal content stripped first.
+Anyone signed in or not can send a categorised request from the hub. It is stored privately with an `AT-` reference, acknowledged by email, and appears as an issue in **AgathaTrackPrivate** on the **@ATSupport** board. Conversation after the receipt continues by email from `support@`. Engineering work is handed to AgathaTrack by a human with personal content stripped first.
 
-Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--contact-foundation-and-ticketing). Product spec source: [issue #2271](https://github.com/KanopeeKa/AgathaCheck/issues/2271). Ops: [support-intake-runbook.md](/docs/ops/support-intake-runbook.md).
+Roadmap: [support-roadmap.md §4](../changes/support-roadmap.md#4-phase-1--contact-foundation-and-ticketing). Product spec source: [issue #2271](https://github.com/AgathaTrack/AgathaTrack/issues/2271). Ops: [support-intake-runbook.md](/docs/ops/support-intake-runbook.md).
 
 ## Vocabulary
 
@@ -93,7 +93,7 @@ Worker: outbox drain and `support_retention` run from the existing cleanup poll;
 
 ## Out of scope (Phase 1)
 
-In-app replies or ticket history, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, `support` GitHub label, board token / Actions add-to-project workflow, issues in public AgathaCheck.
+In-app replies or ticket history, customer-visible statuses, status-change emails, notification-bell events, diagnostic sessions, AI triage, automatic engineering handover, live chat, `support` GitHub label, board token / Actions add-to-project workflow, issues in public AgathaTrack.
 
 ## Still open
 

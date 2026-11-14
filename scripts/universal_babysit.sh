@@ -6,6 +6,21 @@
 # Usage: ./scripts/universal_babysit.sh --pr <number|url> [--merge] [--dry-run] [--model composer-2.5]
 
 REPO_ROOT=$(git rev-parse --show-toplevel)
+if [[ -n "${GITHUB_REPOSITORY:-}" ]]; then
+  GH_REPO="$GITHUB_REPOSITORY"
+elif GH_REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner 2>/dev/null); then
+  :
+else
+  _origin=$(git remote get-url origin 2>/dev/null || true)
+  GH_REPO=$(printf '%s' "$_origin" | sed -n 's#.*github.com[:/]\([^/]*/[^/.]*\)\.git$#\1#p')
+  if [[ -z "$GH_REPO" ]]; then
+    GH_REPO=$(printf '%s' "$_origin" | sed -n 's#.*github.com[:/]\([^/]*/[^/.]*\)$#\1#p')
+  fi
+fi
+if [[ -z "${GH_REPO:-}" ]]; then
+  echo "Could not resolve repository; set GITHUB_REPOSITORY or run from a gh-authenticated clone." >&2
+  exit 1
+fi
 PR_NUMBER=""
 PR_URL=""
 PR_DATA=""
@@ -29,7 +44,7 @@ while [[ $# -gt 0 ]]; do
       shift
       if [[ "$1" =~ ^[0-9]+$ ]]; then
         PR_NUMBER="$1"
-        PR_URL="https://github.com/KanopeeKa/AgathaCheck/pull/$1"
+        PR_URL="https://github.com/${GH_REPO}/pull/$1"
       elif [[ "$1" =~ ^https://github.com/.*/pull/([0-9]+) ]]; then
         PR_NUMBER="${BASH_REMATCH[1]}"
         PR_URL="$1"
@@ -76,7 +91,7 @@ echo ""
 
 # Get PR data using gh CLI
 get_pr_data() {
-  PR_DATA=$(gh pr view "$PR_NUMBER" --repo KanopeeKa/AgathaCheck --json number,title,state,isDraft,baseRefName,headRefName,mergeable,mergeStateStatus,labels,statusCheckRollup 2>/dev/null || echo "{}")
+  PR_DATA=$(gh pr view "$PR_NUMBER" --repo "$GH_REPO" --json number,title,state,isDraft,baseRefName,headRefName,mergeable,mergeStateStatus,labels,statusCheckRollup 2>/dev/null || echo "{}")
   
   if [[ -z "$PR_DATA" || "$PR_DATA" == "{}" ]]; then
     echo "${RED}Error: Could not fetch PR data${NC}"
@@ -219,7 +234,7 @@ Next Steps
 - Replying on and resolving every thread (merge stays blocked until then)"
   
   if [[ "$DRY_RUN" == false ]]; then
-    echo "$triage_comment" | gh pr comment "$PR_NUMBER" --repo KanopeeKa/AgathaCheck --body-file -
+    echo "$triage_comment" | gh pr comment "$PR_NUMBER" --repo "$GH_REPO" --body-file -
   else
     echo "  [DRY RUN] Would post triage comment"
   fi
@@ -467,7 +482,7 @@ merge_pr() {
   if [[ "$is_draft" == "true" ]]; then
     echo "  PR is draft, marking ready for review"
     if [[ "$DRY_RUN" == false ]]; then
-      gh pr ready "$PR_NUMBER" --repo KanopeeKa/AgathaCheck
+      gh pr ready "$PR_NUMBER" --repo "$GH_REPO"
     else
       echo "  [DRY RUN] Would mark PR as ready"
     fi
@@ -481,7 +496,7 @@ merge_pr() {
   
   if [[ "$DRY_RUN" == false ]]; then
     echo "  Merging PR..."
-    if gh pr merge "$PR_NUMBER" --repo KanopeeKa/AgathaCheck --squash --auto; then
+    if gh pr merge "$PR_NUMBER" --repo "$GH_REPO" --squash --auto; then
       echo -e "  ${GREEN}PR merged successfully${NC}"
       return 0
     else
@@ -511,7 +526,7 @@ main() {
   if [[ "$is_draft" == "true" ]]; then
     echo -e "${YELLOW}PR is draft, marking ready for review...${NC}"
     if [[ "$DRY_RUN" == false ]]; then
-      gh pr ready "$PR_NUMBER" --repo KanopeeKa/AgathaCheck
+      gh pr ready "$PR_NUMBER" --repo "$GH_REPO"
     fi
   fi
   

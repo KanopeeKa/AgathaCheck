@@ -317,7 +317,7 @@ node scripts/uat_queue_runtime.js queue-head-hold   # exit 2 → do not merge ye
 
 | Deliverable | Detail |
 |-------------|--------|
-| Create coordination issue | **Done** — [#313](https://github.com/KanopeeKa/AgathaCheck/issues/313) |
+| Create coordination issue | **Done** — [#313](https://github.com/AgathaTrack/AgathaTrack/issues/313) |
 | Set `UAT_COORDINATION_ISSUE` | **Done** — repo variable `313` |
 | `health-check` command | **Done** |
 | CI smoke | **Done** — `uat-queue-health.yml` (weekly + dispatch) |

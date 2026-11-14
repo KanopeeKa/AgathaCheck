@@ -10,7 +10,7 @@ tags: [cim,fix-plan,agent]
 # CIM Fix Plan
 
 Owner: engineering (agent-executable unless flagged). All changes target the
-`KanopeeKa/AgathaCheck` repo. Items are ordered for safe, atomic PRs; each is
+`AgathaTrack/AgathaTrack` repo. Items are ordered for safe, atomic PRs; each is
 self-contained and independently mergeable.
 
 Two findings from the review are closed and excluded from this plan:
