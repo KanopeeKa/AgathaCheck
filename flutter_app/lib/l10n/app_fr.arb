@@ -1011,7 +1011,7 @@
   "pdfDone": "Fait",
 
   "pdfReportTitle": "Rapport Santé Animal",
-  "pdfAgathaCheck": "AGATHATRACK",
+  "pdfAgathaTrack": "AGATHATRACK",
   "pdfPetProfileSection": "Profil de l'animal",
   "pdfWeightTrackingSection": "Suivi du poids",
   "pdfHealthEventsSection": "Événements santé",

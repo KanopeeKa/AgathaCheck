@@ -2892,7 +2892,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pdfReportTitle => 'Pet Health Report';
 
   @override
-  String get pdfAgathaCheck => 'AGATHATRACK';
+  String get pdfAgathaTrack => 'AGATHATRACK';
 
   @override
   String get pdfPetProfileSection => 'Pet Profile';

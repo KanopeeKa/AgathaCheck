@@ -5015,11 +5015,11 @@ abstract class AppLocalizations {
   /// **'Pet Health Report'**
   String get pdfReportTitle;
 
-  /// No description provided for @pdfAgathaCheck.
+  /// No description provided for @pdfAgathaTrack.
   ///
   /// In en, this message translates to:
   /// **'AGATHATRACK'**
-  String get pdfAgathaCheck;
+  String get pdfAgathaTrack;
 
   /// No description provided for @pdfPetProfileSection.
   ///

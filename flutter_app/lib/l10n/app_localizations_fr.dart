@@ -2924,7 +2924,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pdfReportTitle => 'Rapport Santé Animal';
 
   @override
-  String get pdfAgathaCheck => 'AGATHATRACK';
+  String get pdfAgathaTrack => 'AGATHATRACK';
 
   @override
   String get pdfPetProfileSection => 'Profil de l\'animal';
