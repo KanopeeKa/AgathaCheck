@@ -109,8 +109,8 @@ REVOKE_RE  = ^revoke-autonomous (?<plan>[a-z0-9][a-z0-9-]{2,48})$
 ```
 
 **Valid** (all must hold, checked by `validateControlComment`):
-1. `comment.user.login` ∈ `config.owners` (§3.8) **and** `comment.author_association == "OWNER"`
-   **and** `comment.user.login != config.bot_login`.
+1. `comment.user.login` ∈ `config.owners` (§3.8) **and** `comment.author_association` is `"OWNER"` or `"MEMBER"`
+   (org-owned repos use `MEMBER` for org members) **and** `comment.user.login != config.bot_login`.
 2. `comment.created_at == comment.updated_at` (never edited).
 3. `plan` equals the snapshot `plan_id`; for approve/resume, `hash` equals `snapshot.approval_hash`.
 4. Approve: `until == snapshot.approved_until`. Resume: `until ≤ comment.created_at + 14 days`.
