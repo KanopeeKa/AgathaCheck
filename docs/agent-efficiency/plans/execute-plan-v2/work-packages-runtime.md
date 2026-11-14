@@ -273,7 +273,7 @@ async function runInit({ client, planId, windowDays = 7, dryRun = false, git, no
 **Tests:** `canonical empty`, `canonical sorted`, `approval hash example (contracts §3.4 vector 3)`,
 `hash ignores approval_hash field`, `hash changes when plan_file_sha256 changes`,
 `approve regex accepts exact line`, `approve regex rejects trailing text`, `resume and revoke parse`,
-`validate: not-owner`, `validate: author_association not OWNER`, `validate: bot login`,
+`validate: not-owner`, `validate: MEMBER with owner login passes`, `validate: MEMBER with non-owner login fails`, `validate: CONTRIBUTOR with owner login fails`, `validate: bot login`,
 `validate: edited`, `validate: wrong hash`, `validate: approve until mismatch`,
 `validate: resume until beyond 14 days`, `findControlComments picks latest authorizing`,
 `snapshot caps: raising a budget rejected`, `snapshot caps: lowering accepted`,
