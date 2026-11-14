@@ -15,6 +15,13 @@ const REVOKE_RE = new RegExp(`^revoke-autonomous (?<plan>${PLAN})$`);
 
 const MAX_RESUME_MS = 14 * 24 * 60 * 60 * 1000;
 
+const OWNER_ASSOCIATIONS = new Set(['OWNER', 'MEMBER']);
+
+/** Org-owned repos tag owners as MEMBER, not OWNER. */
+function isOwnerAssociation(association) {
+  return OWNER_ASSOCIATIONS.has(association);
+}
+
 function canonical(value) {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
   if (value && typeof value === 'object') {
@@ -50,7 +57,7 @@ function validateControlComment({ comment, snapshot, config }) {
   const result = (reason) => ({ valid: reason === null, reason, verb, until });
 
   const login = comment.user && comment.user.login;
-  if (!config.owners.includes(login) || comment.author_association !== 'OWNER') return result('not-owner');
+  if (!config.owners.includes(login) || !isOwnerAssociation(comment.author_association)) return result('not-owner');
   if (login === config.bot_login) return result('bot');
   if (comment.created_at !== comment.updated_at) return result('edited');
   if (parsed.plan !== snapshot.plan_id) return result('plan');
@@ -128,6 +135,7 @@ module.exports = {
   canonical,
   computeApprovalHash,
   findControlComments,
+  isOwnerAssociation,
   parseControlComment,
   validateControlComment,
   formatAuthorizationRejection,

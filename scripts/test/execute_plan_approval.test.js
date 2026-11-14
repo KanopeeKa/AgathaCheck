@@ -87,8 +87,21 @@ test('validate: not-owner', () => {
   assert.equal(check(comment({ user: { login: 'someone' } })).reason, 'not-owner');
 });
 
-test('validate: author_association not OWNER', () => {
-  assert.equal(check(comment({ author_association: 'MEMBER' })).reason, 'not-owner');
+test('validate: MEMBER with owner login passes (org-owned repo)', () => {
+  assert.deepEqual(check(comment({ author_association: 'MEMBER' })), {
+    valid: true, reason: null, verb: 'approve', until: SNAP.approved_until,
+  });
+});
+
+test('validate: MEMBER with non-owner login fails', () => {
+  assert.equal(
+    check(comment({ user: { login: 'mallory' }, author_association: 'MEMBER' })).reason,
+    'not-owner',
+  );
+});
+
+test('validate: CONTRIBUTOR with owner login fails', () => {
+  assert.equal(check(comment({ author_association: 'CONTRIBUTOR' })).reason, 'not-owner');
 });
 
 test('validate: bot login', () => {

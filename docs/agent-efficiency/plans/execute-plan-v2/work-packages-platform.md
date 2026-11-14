@@ -279,7 +279,8 @@ jobs:
     name: execute-plan-approve
     if: >-
       github.event.issue.pull_request == null &&
-      github.event.comment.author_association == 'OWNER' &&
+      github.event.comment.user.login == 'KanopeeKa' &&
+      contains(fromJSON('["OWNER","MEMBER"]'), github.event.comment.author_association) &&
       (startsWith(github.event.comment.body, 'approve-autonomous ') ||
        startsWith(github.event.comment.body, 'resume-autonomous ') ||
        startsWith(github.event.comment.body, 'revoke-autonomous '))
