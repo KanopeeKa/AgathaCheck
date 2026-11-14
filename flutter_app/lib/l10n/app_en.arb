@@ -1132,7 +1132,7 @@
   "pdfDone": "Done",
 
   "pdfReportTitle": "Pet Health Report",
-  "pdfAgathaCheck": "AGATHATRACK",
+  "pdfAgathaTrack": "AGATHATRACK",
   "pdfPetProfileSection": "Pet Profile",
   "pdfWeightTrackingSection": "Weight Tracking",
   "pdfHealthEventsSection": "Health Events",

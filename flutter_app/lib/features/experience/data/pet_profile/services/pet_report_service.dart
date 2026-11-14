@@ -261,7 +261,7 @@ class PetReportService {
                 crossAxisAlignment: pw.CrossAxisAlignment.end,
                 children: [
                   pw.Text(
-                    l.pdfAgathaCheck,
+                    l.pdfAgathaTrack,
                     style: pw.TextStyle(
                       fontSize: 9,
                       fontWeight: pw.FontWeight.bold,
