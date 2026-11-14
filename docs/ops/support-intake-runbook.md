@@ -3,7 +3,7 @@ title: Support intake operations runbook
 owner: Documentation Team
 audience: both
 status: active
-last_updated: 2026-11-13
+last_updated: 2026-11-14
 tags: [ops, customer_support, support-intake]
 ---
 
@@ -15,22 +15,22 @@ Operator guide for **Phase 1** private support intake. Canonical product rules: 
 
 | Item | Value |
 |------|--------|
-| Support issues repo | **AgathaTrackPrivate** (private; support requests only) |
+| Support issues repo | **AgathaTrack/AgathaTrackPrivate** (private; support requests only) |
 | Engineering repo | **AgathaTrack/AgathaTrack** (public; no user text from support) |
-| Support board | [@ATSupport](https://github.com/users/KanopeeKa/projects/4) |
+| Support board | [@ATSupport](https://github.com/orgs/AgathaTrack/projects/1) (org project) |
 | Issue feed | Built-in auto-add: repo AgathaTrackPrivate, filter `is:issue` — **confirmed**. No `actions/add-to-project` workflow and no board PAT unless auto-add later fails (record risk first). |
-| Pawpet engineering board | Engineering issues only — support issues must not appear there |
+| Pawpet engineering board | [Pawpet](https://github.com/orgs/AgathaTrack/projects/2) — engineering issues only; support issues must not appear there |
 
 ## Server environment (names only)
 
 | Variable | UAT | Production |
 |----------|-----|------------|
-| `SUPPORT_GITHUB_REPO` | `owner/AgathaTrackPrivate` | Same pattern |
+| `SUPPORT_GITHUB_REPO` | `AgathaTrack/AgathaTrackPrivate` | Same slug |
 | `SUPPORT_GITHUB_TOKEN` | Fine-grained PAT name: `agathatrack-support-uat` | `agathatrack-support-prod` |
 | `SUPPORT_REPLY_TO` | `support@agathatrack.com` (set before receipt smoke tests) | Same |
 | `APP_ENV` | `uat` | `production` |
 
-Tokens are fine-grained, **AgathaTrackPrivate only**, Issues read/write. They can create, edit, and label; they **cannot delete issues** (redaction replaces content; owner deletes manually).
+Tokens are fine-grained, scoped to **AgathaTrackPrivate** only (Issues read/write). They can create, edit, and label; they **cannot delete issues** (redaction replaces content; an org admin deletes manually).
 
 Do not use `NODE_ENV` as the production/uat signal for support labelling — use `APP_ENV`.
 
@@ -96,12 +96,12 @@ AT-XXXXXXXX (category: <bug|suggestion|account|billing>)
 
 After creation, put the AgathaTrack issue URL in the card's **Engineering issue** field on @ATSupport.
 
-## Redacted issues (D-009)
+## Redacted issues (D-014)
 
 When retention or account erasure runs, the worker replaces the GitHub issue title and body with `[removed]` and adds `label:redacted`.
 
 1. Open the **Redacted: delete** saved view.
-2. **Delete each redacted issue within 7 days** (personal-repo owner action only; API tokens cannot delete).
+2. **Delete each redacted issue within 7 days** (org owner or repo admin on **AgathaTrackPrivate**; support API tokens cannot delete).
 3. Deletion removes issue comments and edit history — required to finish erasure on GitHub.
 
 Until you delete the issue, original text may remain in GitHub edit history.
@@ -113,7 +113,7 @@ Until you delete the issue, original text may remain in GitHub edit history.
 Email that bypasses the web form: create an issue in AgathaTrackPrivate with template **Support request from email** (default label `source:email` only).
 
 - No Postgres ticket row — retention is manual on a 12-month clock.
-- Erasure requests for these issues: handle manually (redact + delete per D-009).
+- Erasure requests for these issues: handle manually (redact + delete per D-014).
 - Board auto-add still applies.
 
 ## Staff access

@@ -121,7 +121,7 @@ Goal: Five-minute, privacy-safe capture linked to a ticket.
 
 ## 7. Phase 4 — AI triage and investigation
 
-Goal: Organise reports and prepare engineering handover — **no automated code change in this phase**. Phase 1 already opens the private AgathaTrackPrivate issue; this phase automates **SUPPORT-TICKETING-D-010** (cleaned technical summary and AgathaTrack issue linkage), not first-issue creation.
+Goal: Organise reports and prepare engineering handover — **no automated code change in this phase**. Phase 1 already opens the private AgathaTrackPrivate issue; this phase automates **SUPPORT-TICKETING-D-015** (cleaned technical summary and AgathaTrack/AgathaTrack issue linkage), not first-issue creation.
 
 - Classification with override — `SUPPORT-TRIAGE-R-001`–`R-002`
 - Duplicate grouping (PostHog fingerprints + DB) — `R-003`
