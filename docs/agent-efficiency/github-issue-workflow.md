@@ -50,7 +50,7 @@ Engineering work is tracked on the org Project **Pawpet** (`AgathaTrack` org). T
 | `busy` | A process or agent is currently working on this issue. Do not pick it up concurrently. Remove when work stops or ownership transfers. |
 | `manual-only` | Never send this issue to autonomous implementation. Requires human execution only. |
 | `agent-approved` | The issue passed the deterministic policy gate and is eligible for Cursor. |
-| `blocked` | Agent run started but could not finish; issue stays **In Progress** and needs human input. |
+| `blocked` | Agent run started but could not finish; issue stays **In progress** and needs human input. |
 
 ## Workflow
 
@@ -363,8 +363,7 @@ Use a machine/bot account PAT where possible rather than a personal developer to
 From a clone of this repository:
 
 ```bash
-GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --user <github-login>
-# or: --org <org-login>
+GH_PROJECTS_PAT=ghp_... node .github/scripts/discover-project-ids.js --org AgathaTrack
 ```
 
 The script prints `GH_PROJECT_ID`, `GH_STATUS_FIELD_ID`, and the option IDs for each status value.
